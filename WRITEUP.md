@@ -18,7 +18,7 @@ Because real-world law enforcement intercept data cannot be exposed in open eval
 ### Foundational Academic Research & Benchmark Grounding:
 1. **Elliptic & Elliptic++ Dataset Benchmarks** (*Weber et al., 2019, MIT-IBM Watson AI Lab / ACM KDD*; *Berti et al., 2023*): Validates that actor-level graph aggregation (fusing 55+ temporal and structural features) and transaction temporal dynamics significantly outperform isolated static address inspection for illicit Bitcoin detection.
 2. **Network-Layer Propagation & Deanonymization** (*Koshy et al., Financial Cryptography 2014*; *Biryukov & Tikhomirov, IEEE S&P 2014*): Demonstrates that transaction broadcast timing leaks node origin. Our platform simulates persistent home broadcast nodes for legitimate users and multi-jurisdiction IP hopping for adversarial evaders.
-3. **Multi-Heuristic Entity Clustering** (*Reid & Harrigan, 2011*; *Meiklejohn et al., ACM IMC 2013*; *He et al., IET Blockchain 2022*): Incorporates Common-Input-Ownership (CIOH, 95% confidence) and Constrained Change-Address Detection (CADH, 80% confidence) combined with Louvain modularity.
+3. **Multi-Heuristic Entity Clustering** (*Reid & Harrigan, IEEE PASSAT 2011*; *Meiklejohn et al., ACM IMC 2013*; *Androulaki et al., Financial Cryptography 2013*; *He et al., IET Blockchain 2022*): Incorporates Common-Input-Ownership (CIOH, 95% confidence), Chronological Change-Address Detection (CADH, 85% confidence, zero temporal lookahead), and Peel-Chain Forward Continuation (PCCH, 90% confidence) combined with Louvain modularity.
 
 ---
 
@@ -66,6 +66,8 @@ To perform standardized, apples-to-apples performance comparisons across distinc
 | **Robust Mahalanobis** | Ellipsoidal Distance | 0.5416 | 0.5160 | 0.4480 | 0.4462 | 0.4498 | 1.29 ms |
 | **Isolation Forest** | Tree Partitioning | 0.5218 | 0.4250 | 0.4940 | 0.4940 | 0.4940 | 66.44 ms |
 | **HBOS** | Histogram / Fast Density | 0.4905 | 0.3695 | 0.4056 | 0.4056 | 0.4056 | 854.20 ms |
+
+*\*Note on Latency Measurement: All graph features, model weights, anomaly scores, and evaluation metrics are 100% byte-identical and deterministic across runs with fixed seed 42. Algorithmic Latency (ms) figures reflect live CPU wall-clock execution (via `time.perf_counter()`) and naturally show minor millisecond-scale variations depending on host thread scheduling.*
 
 ### Why the 3-Model Ensemble is Selected Over PCA/CBLOF in Production Deployments:
 A common question in anomaly benchmarking is why a blended meta-ensemble is chosen when standalone linear models (like PCA) or spherical cluster models (like CBLOF) achieve slightly higher standalone ranking metrics on specific distributions:

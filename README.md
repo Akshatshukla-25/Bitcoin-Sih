@@ -8,8 +8,8 @@ An air-gapped, offline AI system that fuses blockchain-layer (wallet/UTXO) and n
 ## Key Capabilities
 - **Tripartite Graph Fusion**: Fuses 699 wallets, 683 transactions, and 1,366 IP broadcast/relay nodes.
 - **Unsupervised Anomaly Ensemble**: Multi-model detection via Isolation Forest, Local Outlier Factor (LOF), and Robust Mahalanobis Distance (10% AML screening prior).
-- **Entity Clustering**: Multi-input common spending ownership (CIOH) + constrained single-use change address (CADH) + Louvain modularity with confidence scoring.
-- **Offline GeoIP & ASN Enrichment**: Built-in offline GeoIP & Autonomous System (ASN) lookup engine in `data/geoip/`.
+- **Entity Clustering**: Multi-input common spending ownership (CIOH) + chronological change-address (CADH) + peel-chain continuation (PCCH) with multi-hop cluster growth.
+- **Offline GeoIP & ASN Enrichment**: Synthetic, internally consistent offline GeoIP & Autonomous System (ASN) CIDR database in `data/geoip/` (100% offline, zero network requests).
 - **SHAP Explainability & SAR Generation**: TreeExplainer attributions + automated FIU/NTRO Suspicious Activity Report (SAR/STR) generator.
 - **Interactive Streamlit Dashboard**: 6 tabs (Overview, Alert Queue, Case Detail, PyVis Network, Model Insights, Evaluation).
 

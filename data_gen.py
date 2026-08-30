@@ -117,6 +117,14 @@ def get_wallet_region(wallet, wallet_regions):
     return wallet_regions[wallet]
 
 
+def get_wallet_home_ip(wallet, wallet_home_ips, wallet_regions):
+    """Assigns persistent home broadcast IP to simulate node-level propagation stability (Koshy et al. 2014)."""
+    if wallet not in wallet_home_ips:
+        reg = get_wallet_region(wallet, wallet_regions)
+        wallet_home_ips[wallet] = random_ip(reg)
+    return wallet_home_ips[wallet]
+
+
 def random_txid():
     return "".join(random.choices("0123456789abcdef", k=64))
 
@@ -253,9 +261,9 @@ def gen_rapid_cashout(used_addresses, start_time):
     return txs
 
 
-def gen_normal_chain(used_addresses, background_wallets, wallet_regions, start_time):
+def gen_normal_chain(used_addresses, background_wallets, wallet_regions, wallet_home_ips, start_time):
     """Background/normal traffic with genuine variation: hop counts 0-4,
-    randomized timing (seconds to days), non-round amounts, and localized IP regions."""
+    randomized timing (seconds to days), non-round amounts, and persistent home broadcast IPs."""
     hop_count = random.choices([0, 1, 2, 3, 4], weights=[0.55, 0.20, 0.12, 0.08, 0.05])[0]
     n_tx = hop_count + 1
     txs = []
@@ -298,10 +306,11 @@ def gen_normal_chain(used_addresses, background_wallets, wallet_regions, start_t
                 dest = random.choice(background_wallets) if background_wallets and random.random() < 0.6 else mint_wallet(used_addresses)
                 outputs.append({"address": dest, "amount": round(remaining * float(s), 8)})
 
-        # Primary region for legitimate normal wallet activity (95% local, 5% roaming)
-        primary_region = get_wallet_region(inputs[0]["address"], wallet_regions)
+        # Persistent home node broadcast for legitimate normal wallet activity (Koshy et al. 2014)
+        sender_addr = inputs[0]["address"]
+        primary_region = get_wallet_region(sender_addr, wallet_regions)
         if random.random() < 0.95:
-            src_ip = random_ip(primary_region)
+            src_ip = get_wallet_home_ip(sender_addr, wallet_home_ips, wallet_regions)
             dst_ip = random_ip(primary_region if random.random() < 0.85 else None)
         else:
             src_ip = random_ip()
@@ -335,12 +344,14 @@ def generate_dataset(total, seed):
 
     used_addresses = set()
     wallet_regions = {}
+    wallet_home_ips = {}
     background_wallets = []
     num_init_wallets = min(30, max(5, total // 2))
     for _ in range(num_init_wallets):
         w = mint_wallet(used_addresses)
         background_wallets.append(w)
         get_wallet_region(w, wallet_regions)
+        get_wallet_home_ip(w, wallet_home_ips, wallet_regions)
 
     peel_budget = max(0, int(total * PEEL_CHAIN_ROW_FRACTION))
     mixer_budget = max(0, int(total * MIXER_ROW_FRACTION))
@@ -386,7 +397,7 @@ def generate_dataset(total, seed):
     remaining = max(total - planted_total, 0)
     rows = 0
     while rows < remaining and len(all_txs) < total:
-        chain = gen_normal_chain(used_addresses, background_wallets, wallet_regions, random_timestamp_in_window())
+        chain = gen_normal_chain(used_addresses, background_wallets, wallet_regions, wallet_home_ips, random_timestamp_in_window())
         if rows + len(chain) > remaining:
             chain = chain[: max(0, remaining - rows)]
         if not chain:

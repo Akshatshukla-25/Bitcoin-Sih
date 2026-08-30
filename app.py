@@ -692,15 +692,29 @@ with tab3:
                     st.altair_chart(shap_bar, width="stretch")
 
             with cd2:
-                st.markdown("#### Entity Cluster Co-Members")
+                st.markdown("#### Entity Cluster Co-Members & Heuristics")
                 members = cluster_meta.get("member_wallets", [selected_wallet])
-                st.html(f"<div style='color:var(--nt-text-muted); font-size:12px; margin-bottom:8px;'>Cluster <b>{cluster_id_esc}</b> links <b>{len(members)}</b> co-controlled wallets:</div>")
+                heuristics = cluster_meta.get("heuristic_reasons", ["SINGLETON_ENTITY"])
+                heur_conf = cluster_meta.get("clustering_confidence", 1.0)
+                rationale_text = cluster_meta.get("investigative_rationale", f"Cluster {cluster_id_esc} links {len(members)} addresses.")
+                
+                heur_badges = " ".join([f"<span style='background:rgba(200,151,59,0.15); color:var(--nt-accent); border:1px solid rgba(200,151,59,0.3); padding:2px 6px; font-size:10px; border-radius:3px; margin-right:4px;'>{html.escape(str(h))}</span>" for h in heuristics])
+                
+                st.html(
+                    f"<div style='background:var(--nt-surface); border:1px solid var(--nt-border); padding:10px 12px; border-radius:var(--nt-radius); margin-bottom:8px; font-size:12px;'>"
+                    f"<div style='display:flex; justify-content:space-between; margin-bottom:4px; align-items:center;'>"
+                    f"<div><b>Method:</b> {heur_badges}</div>"
+                    f"<div><b>Confidence:</b> <span style='color:var(--nt-accent); font-weight:bold;'>{heur_conf:.0%}</span></div>"
+                    f"</div>"
+                    f"<div style='color:var(--nt-text-muted); font-size:11px; line-height:1.4;'>{html.escape(rationale_text)}</div>"
+                    f"</div>"
+                )
                 
                 member_rows = "".join([f"<tr><td class='mono-cell' style='color:var(--nt-accent);'>{html.escape(str(m))}</td></tr>" for m in members])
                 member_table_html = (
-                    f"<div class='dossier-table-wrap' style='max-height:220px;'>"
+                    f"<div class='dossier-table-wrap' style='max-height:165px;'>"
                     f"<table class='dossier-table'>"
-                    f"<thead><tr><th>Co-Member Wallet Address</th></tr></thead>"
+                    f"<thead><tr><th>Co-Member Wallet Address ({len(members)} total)</th></tr></thead>"
                     f"<tbody>{member_rows}</tbody>"
                     f"</table>"
                     f"</div>"

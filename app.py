@@ -804,7 +804,7 @@ with tab4:
         html_content = f.read()
 
     components.html(html_content, height=580)
-    st.caption("Legend: 🔴 Critical (#8B2E2E) / 🟠 High (#B8562E) / 🟡 Medium (#C8973B) / 🟢 Low (#5B7A6B) Wallets | 🟣 Anomaly Tx (#7A6B8F) | 🔵 Normal Tx (#2E4057) | 🔷 IP Nodes (#3E5C76)")
+    st.caption("Legend: 🔴 Critical Wallet  •  🟠 High Risk Wallet  •  🟡 Medium Risk Wallet  •  🟢 Normal Wallet  •  🟣 Anomaly Transaction  •  🔵 Normal Transaction  •  🔷 IP Broadcast / Relay Node")
 
 # ---------------------------------------------------------------------------
 # TAB 5: MODEL INSIGHTS

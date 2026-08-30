@@ -94,25 +94,31 @@ def evaluate_pipeline(
         "grid.alpha": 0.4,
     })
 
-    ntro_cmap = LinearSegmentedColormap.from_list("ntro_heat", ["#131B2E", "#2A364F", "#C8973B", "#8B2E2E"])
+    # Elegant Forensic Diagnostic Colormap (Dark Obsidian -> Steel Blue -> Amber Gold)
+    ntro_cmap = LinearSegmentedColormap.from_list("ntro_forensic", ["#131B2E", "#1F314D", "#3E5C76", "#C8973B"])
 
     # 1. Plot Confusion Matrices
     fig, axes = plt.subplots(1, 3, figsize=(16, 5), facecolor="#0B1220")
     for ax, (band_name, cm) in zip(axes, cm_dict.items()):
+        tn, fp, fn, tp = cm.ravel()
+        labels = np.array([
+            [f"TN\n{tn}", f"FP\n{fp}"],
+            [f"FN\n{fn}", f"TP\n{tp}"]
+        ])
         sns.heatmap(
             cm,
-            annot=True,
-            fmt="d",
+            annot=labels,
+            fmt="",
             cmap=ntro_cmap,
             cbar=False,
             ax=ax,
-            xticklabels=["Normal (0)", "Suspicious (1)"],
-            yticklabels=["Normal (0)", "Suspicious (1)"],
-            annot_kws={"size": 13, "weight": "bold", "color": "#E8E6DE"}
+            xticklabels=["Predicted Normal", "Predicted Alert"],
+            yticklabels=["Actual Normal", "Actual Anomaly"],
+            annot_kws={"size": 12, "weight": "bold", "color": "#E8E6DE"}
         )
         ax.set_title(band_name, fontsize=12, pad=10, weight="bold", color="#E8E6DE")
         ax.set_ylabel("Ground Truth", fontsize=10, color="#94A3B8")
-        ax.set_xlabel("Predicted Alert", fontsize=10, color="#94A3B8")
+        ax.set_xlabel("Operational Classification", fontsize=10, color="#94A3B8")
 
     plt.tight_layout()
     cm_png = os.path.join(outdir, "confusion_matrix.png")

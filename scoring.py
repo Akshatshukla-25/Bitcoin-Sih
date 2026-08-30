@@ -27,9 +27,24 @@ WEIGHT_STRUCTURAL_REASONS = 0.40    # 40% Structural & Behavioral Reason Codes
 WEIGHT_CLUSTER_RISK = 0.20          # 20% Entity Cluster Aggregate Risk
 
 # Thresholds for Alert Risk Bands (Calibrated for high sensitivity & precision)
-BAND_CRITICAL_MIN = 65.0
-BAND_HIGH_MIN = 50.0
-BAND_MEDIUM_MIN = 35.0
+# Thresholds for Alert Risk Bands (Calibrated for high sensitivity & precision)
+BAND_CRITICAL_MIN = 65.0          # Score >= 65 -> CRITICAL (immediate law enforcement triage)
+BAND_HIGH_MIN = 50.0              # Score >= 50 -> HIGH (priority analyst queue)
+BAND_MEDIUM_MIN = 35.0            # Score >= 35 -> MEDIUM (surveillance watch)
+
+# Typology Threshold Constants
+MIXER_FANOUT_MIN_COUNT = 4        # Minimum fanout / fanin counterparties
+MIXER_MAX_ACTIVE_AGE_HOURS = 3.0  # Mixer burst active lifespan window
+RAPID_CASHOUT_MIN_BTC = 0.5       # Minimum BTC volume for rapid cashout alert
+RAPID_CASHOUT_FWD_10M_RATIO = 0.85# 85%+ forwarded within 10 minutes
+RAPID_CASHOUT_FWD_30M_RATIO = 0.90# 90%+ forwarded within 30 minutes
+RAPID_CASHOUT_MAX_DRAIN_MINS = 15.0 # Max drain duration for rapid cashout
+RAPID_CASHOUT_MAX_AGE_HOURS = 1.0 # Transient wallet age ceiling
+PEEL_SKIM_MIN_RATIO = 0.015       # 1.5% minimum skim per hop
+PEEL_MAX_DRAIN_MINS = 30.0        # 30-minute maximum interval between peel hops
+PEEL_MAX_AGE_HOURS = 3.0          # Peel intermediate lifespan ceiling
+NEW_WALLET_MAX_AGE_HOURS = 2.0    # 2 hours maximum age for fresh wallet
+NEW_WALLET_MIN_VOL_BTC = 2.5      # 2.5 BTC minimum volume for fresh wallet spike
 
 # Reason Code Severity Contributions (0 - 100)
 REASON_WEIGHTS = {
@@ -44,34 +59,39 @@ REASON_WEIGHTS = {
 def evaluate_wallet_reason_codes(row: pd.Series, cluster_info: Dict[str, Any]) -> Tuple[List[str], float]:
     """Evaluates which named reason codes fire for a given wallet-entity."""
     reasons = []
+    drain_mins = float(row.get("min_drain_minutes", -1.0))
+    age_hours = float(row.get("wallet_age_hours", 99.0))
 
-    # 1. Mixer Fan-out / Fan-in Hub
-    if row.get("is_mixer_hub", 0) == 1 or row.get("fanout_count", 0) >= 4 or row.get("fanin_count", 0) >= 4:
+    # 1. Mixer Fan-out / Fan-in Hub (Restricted by time window to avoid false flagging long-term hubs)
+    if row.get("is_mixer_hub", 0) == 1 or (
+        (row.get("fanout_count", 0) >= MIXER_FANOUT_MIN_COUNT or row.get("fanin_count", 0) >= MIXER_FANOUT_MIN_COUNT) 
+        and age_hours <= MIXER_MAX_ACTIVE_AGE_HOURS
+    ):
         reasons.append("MIXER_FANOUT")
-    elif row.get("is_mixer_intermediate", 0) == 1 and row.get("wallet_age_hours", 99) <= 2.5:
+    elif row.get("is_mixer_intermediate", 0) == 1 and age_hours <= MIXER_MAX_ACTIVE_AGE_HOURS:
         reasons.append("MIXER_FANOUT")
 
     # 2. Rapid Cash-out
     if row.get("is_rapid_cashout_node", 0) == 1:
         reasons.append("RAPID_CASHOUT")
-    elif (row.get("forwarded_pct_10m", 0) >= 0.85 and row.get("total_received_amount", 0) >= 0.5) or (
-        row.get("forwarded_pct_30m", 0) >= 0.90 and row.get("min_drain_minutes", 99) <= 15.0 and row.get("wallet_age_hours", 99) <= 0.75
+    elif (row.get("forwarded_pct_10m", 0.0) >= RAPID_CASHOUT_FWD_10M_RATIO and row.get("total_received_amount", 0.0) >= RAPID_CASHOUT_MIN_BTC) or (
+        row.get("forwarded_pct_30m", 0.0) >= RAPID_CASHOUT_FWD_30M_RATIO and 0.0 <= drain_mins <= RAPID_CASHOUT_MAX_DRAIN_MINS and age_hours <= RAPID_CASHOUT_MAX_AGE_HOURS
     ):
         reasons.append("RAPID_CASHOUT")
 
     # 3. Peel Chain Layering
     if row.get("is_peel_chain_node", 0) == 1:
         reasons.append("PEEL_CHAIN")
-    elif (row.get("peel_skim_ratio", 0) >= 0.015 and row.get("in_degree", 0) <= 1 and row.get("out_degree", 0) <= 1 and row.get("wallet_age_hours", 99) <= 1.5) or \
-         (row.get("forwarded_pct_30m", 0) >= 0.85 and row.get("min_drain_minutes", 99) <= 30.0 and row.get("in_degree", 0) == 1 and row.get("out_degree", 0) == 1 and row.get("wallet_age_hours", 99) <= 1.0):
+    elif (row.get("peel_skim_ratio", 0.0) >= PEEL_SKIM_MIN_RATIO and row.get("in_degree", 0) <= 1 and row.get("out_degree", 0) <= 1 and age_hours <= PEEL_MAX_AGE_HOURS) or \
+         (row.get("forwarded_pct_30m", 0.0) >= 0.85 and 0.0 <= drain_mins <= PEEL_MAX_DRAIN_MINS and row.get("in_degree", 0) == 1 and row.get("out_degree", 0) == 1 and age_hours <= PEEL_MAX_AGE_HOURS):
         reasons.append("PEEL_CHAIN")
 
     # 4. New Wallet High Volume
-    if row.get("wallet_age_hours", 99) <= 2.0 and row.get("total_received_amount", 0) >= 2.5:
+    if age_hours <= NEW_WALLET_MAX_AGE_HOURS and float(row.get("total_received_amount", 0.0)) >= NEW_WALLET_MIN_VOL_BTC:
         reasons.append("NEW_WALLET_HIGH_VOLUME")
 
-    # 5. Cross-Border / Diverse ASN Hopping
-    if row.get("unique_countries_count", 0) >= 2 or row.get("unique_asns_count", 0) >= 2:
+    # 5. Cross-Border / Diverse ASN Hopping (Origin broadcast multi-region hopping)
+    if row.get("unique_src_countries_count", 0) >= 2 or row.get("unique_countries_count", 0) >= 3 or row.get("unique_src_asns_count", 0) >= 2:
         reasons.append("CROSS_BORDER_HOP")
 
     # 6. Obfuscation Disagreement

@@ -158,12 +158,14 @@ def run_comparison(features_path: str = "data/features.csv", outdir: str = "repo
     except Exception as e:
         print(f"Note: PyOD extra models skipped due to {e}")
 
-    # 8. Blended Ensemble
+    # 8. Blended Ensemble (Variance-standardized meta-ensemble matching production models.py)
     t0 = time.perf_counter()
-    z_if = (scores_iforest - np.mean(scores_iforest)) / np.std(scores_iforest)
-    z_lof = (scores_lof - np.mean(scores_lof)) / np.std(scores_lof)
-    z_mah = (scores_mahal - np.mean(scores_mahal)) / np.std(scores_mahal)
-    scores_ensemble = (z_if + z_lof + z_mah) / 3.0
+    z_if = (scores_iforest - np.mean(scores_iforest)) / (np.std(scores_iforest) if np.std(scores_iforest) > 1e-8 else 1.0)
+    z_lof = (scores_lof - np.mean(scores_lof)) / (np.std(scores_lof) if np.std(scores_lof) > 1e-8 else 1.0)
+    z_mah = (scores_mahal - np.mean(scores_mahal)) / (np.std(scores_mahal) if np.std(scores_mahal) > 1e-8 else 1.0)
+    blended_z = (z_if + z_lof + z_mah) / 3.0
+    mn, mx = np.min(blended_z), np.max(blended_z)
+    scores_ensemble = (blended_z - mn) / (mx - mn if mx > mn else 1.0)
     lat_ens = lat_iforest + lat_lof + lat_mahal
     res = evaluate_detector(y_true, scores_ensemble, contamination)
     res["Algorithm"] = "3-Model Ensemble (Proposed)"

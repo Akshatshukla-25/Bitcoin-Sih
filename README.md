@@ -6,7 +6,7 @@ An air-gapped, offline AI system that fuses blockchain-layer (wallet/UTXO) and n
 ---
 
 ## Key Capabilities
-- **Tripartite Graph Fusion**: Fuses 594 wallets, 683 transactions, and 1,366 IP broadcast/relay nodes.
+- **Tripartite Graph Fusion**: Fuses 663 wallets, 683 transactions, and 1,366 IP broadcast/relay nodes.
 - **Unsupervised Anomaly Ensemble**: Multi-model detection via Isolation Forest, Local Outlier Factor (LOF), and Robust Mahalanobis Distance.
 - **Entity Clustering**: Multi-input common spending ownership + single-use change address heuristic + Louvain community modularity.
 - **Offline GeoIP & ASN Enrichment**: Built-in offline GeoLite2-format database in `data/geoip/`.
@@ -22,7 +22,7 @@ An air-gapped, offline AI system that fuses blockchain-layer (wallet/UTXO) and n
 cd Bitcoin-Sih
 
 # 2. Install dependencies (standard OSS Python packages)
-python3 -m pip install streamlit pyvis shap pyod matplotlib seaborn networkx scikit-learn pandas numpy
+python3 -m pip install -r requirements.txt
 ```
 
 ---
@@ -33,7 +33,7 @@ python3 -m pip install streamlit pyvis shap pyod matplotlib seaborn networkx sci
 ```bash
 python3 pipeline.py
 ```
-This orchestrates all 11 pipeline stages deterministically in ~3.5 seconds and saves precomputed outputs to `data/` and `reports/`.
+This orchestrates all 11 pipeline stages deterministically in ~3.4 seconds (warm step time; ~4.9s cold process) and saves precomputed outputs to `data/` and `reports/`.
 
 ### 2. Launch the Streamlit Dashboard
 ```bash

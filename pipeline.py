@@ -16,7 +16,7 @@ Executes the complete Bitcoin AML monitoring pipeline deterministically:
   11. Part 3: Evaluation Suite & Confusion/ROC Visualizations (evaluate.py)
 
 Usage:
-  python3 pipeline.py [--count 683] [--seed 42] [--outdir data]
+  python3 pipeline.py [--count 683] [--seed 42] [--data-dir data] [--reports-dir reports]
 """
 
 import os
@@ -51,26 +51,37 @@ def main():
     print(f"Seed: {args.seed} | Transactions: {args.count}")
     print("=" * 75)
 
+    tx_csv = os.path.join(args.data_dir, "transactions.csv")
+    tx_json = os.path.join(args.data_dir, "transactions.json")
+    graph_gml = os.path.join(args.data_dir, "graph.gml")
+    graph_json = os.path.join(args.data_dir, "graph.json")
+
     # 1. Data Generation
     import data_gen
     def step_data_gen():
         txs, counts = data_gen.generate_dataset(args.count, args.seed)
-        data_gen.write_outputs(txs, ".")
+        data_gen.write_outputs(txs, args.data_dir)
+        if args.data_dir != ".":
+            data_gen.write_outputs(txs, ".")
         return len(txs)
     run_step("1/11 Generating synthetic Bitcoin blockchain + network transactions", step_data_gen)
 
     # 2. Graph Builder
     import graph_builder
     def step_graph_builder():
-        txs = graph_builder.load_transactions("transactions.csv")
+        txs = graph_builder.load_transactions(tx_csv)
         G = graph_builder.build_graph(txs)
         import networkx as nx
         from networkx.readwrite import json_graph
         import json
-        nx.write_gml(G, "graph.gml")
+        nx.write_gml(G, graph_gml)
         data = json_graph.node_link_data(G, edges="edges")
-        with open("graph.json", "w") as f:
+        with open(graph_json, "w") as f:
             json.dump(data, f, indent=2)
+        if args.data_dir != ".":
+            nx.write_gml(G, "graph.gml")
+            with open("graph.json", "w") as f:
+                json.dump(data, f, indent=2)
         return G.number_of_nodes(), G.number_of_edges()
     run_step("2/11 Building Tripartite IP-Wallet-Tx Network Graph", step_graph_builder)
 
@@ -81,7 +92,7 @@ def main():
     # 4. Feature Store
     import features
     def step_features():
-        df = features.build_feature_table("transactions.csv", "graph.gml")
+        df = features.build_feature_table(tx_csv, graph_gml)
         df.to_csv(os.path.join(args.data_dir, "features.csv"), index=False)
         return len(df)
     run_step("4/11 Engineering Wallet-Entity Feature Store", step_features)
@@ -89,7 +100,7 @@ def main():
     # 5. Entity Clustering
     import clustering
     def step_clustering():
-        return clustering.cluster_wallets("transactions.csv", os.path.join(args.data_dir, "features.csv"), args.data_dir)
+        return clustering.cluster_wallets(tx_csv, os.path.join(args.data_dir, "features.csv"), args.data_dir)
     run_step("5/11 Running Multi-Input + Change Heuristics & Louvain Community Clustering", step_clustering)
 
     # 6. ML Anomaly Ensemble

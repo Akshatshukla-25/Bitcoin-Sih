@@ -73,16 +73,34 @@ PREFIX_REGIONS = {
     "203": {"country": "Australia", "code": "AU", "asn": "AS4804", "org": "Microplex PTY LTD", "city": "Perth", "lat": -31.9505, "lon": 115.8605},
 }
 
+_GEOIP_CACHE = None
+
 def ensure_geoip_database():
     os.makedirs(GEOIP_DIR, exist_ok=True)
     if not os.path.exists(GEOIP_DB_FILE):
         with open(GEOIP_DB_FILE, "w") as f:
             json.dump(PREFIX_REGIONS, f, indent=2)
 
-def resolve_ip(ip_str: str) -> Dict[str, Any]:
+def get_geoip_data() -> Dict[str, Any]:
+    global _GEOIP_CACHE
+    if _GEOIP_CACHE is not None:
+        return _GEOIP_CACHE
     ensure_geoip_database()
+    if os.path.exists(GEOIP_DB_FILE):
+        try:
+            with open(GEOIP_DB_FILE) as f:
+                _GEOIP_CACHE = json.load(f)
+                return _GEOIP_CACHE
+        except Exception:
+            _GEOIP_CACHE = PREFIX_REGIONS
+            return _GEOIP_CACHE
+    _GEOIP_CACHE = PREFIX_REGIONS
+    return _GEOIP_CACHE
+
+def resolve_ip(ip_str: str) -> Dict[str, Any]:
+    db = get_geoip_data()
     first_octet = ip_str.split(".")[0] if "." in ip_str else "0"
-    info = PREFIX_REGIONS.get(first_octet)
+    info = db.get(first_octet)
     if info:
         return {
             "ip": ip_str,

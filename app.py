@@ -9,6 +9,7 @@ Case-file / ledger visual identity with block-explorer monospace data discipline
 import os
 os.environ["MPLCONFIGDIR"] = "/tmp/mpl_config"
 
+import html
 import json
 import streamlit as st
 import streamlit.components.v1 as components
@@ -30,12 +31,10 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------------------------
-# NTRO FORENSIC DOSSIER DESIGN SYSTEM & TOKENS
+# NTRO FORENSIC DOSSIER DESIGN SYSTEM & TOKENS (Offline Air-Gapped Fonts)
 # ---------------------------------------------------------------------------
 st.html("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
-
     :root {
         --nt-bg: #0B1220;
         --nt-surface: #131B2E;
@@ -56,26 +55,26 @@ st.html("""
     .stApp {
         background-color: var(--nt-bg);
         color: var(--nt-text);
-        font-family: 'IBM Plex Sans', sans-serif;
+        font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
     /* Display Headers */
     h1, h2, h3, .dossier-title {
-        font-family: 'Source Serif 4', serif !important;
+        font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif !important;
         font-weight: 700 !important;
         letter-spacing: -0.01em !important;
         color: var(--nt-text) !important;
     }
 
     h4, h5, h6 {
-        font-family: 'IBM Plex Sans', sans-serif !important;
+        font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
         font-weight: 600 !important;
         color: var(--nt-text) !important;
     }
 
     /* Classification Banners */
     .classification-banner {
-        font-family: 'IBM Plex Mono', monospace;
+        font-family: 'IBM Plex Mono', Menlo, Monaco, Consolas, 'Courier New', monospace;
         font-size: 11px;
         font-weight: 600;
         letter-spacing: 0.12em;
@@ -90,7 +89,7 @@ st.html("""
     }
 
     .sidebar-wordmark {
-        font-family: 'IBM Plex Mono', monospace;
+        font-family: 'IBM Plex Mono', Menlo, Monaco, Consolas, 'Courier New', monospace;
         font-size: 11px;
         font-weight: 700;
         letter-spacing: 0.15em;
@@ -102,7 +101,7 @@ st.html("""
     }
 
     .sidebar-caption {
-        font-family: 'IBM Plex Sans', sans-serif;
+        font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         font-size: 11px;
         color: var(--nt-text-muted);
         margin-bottom: 16px;
@@ -346,20 +345,32 @@ def load_all_artifacts():
     scored_df = pd.read_csv(scored_path) if os.path.exists(scored_path) else pd.DataFrame()
     features_df = pd.read_csv(features_path) if os.path.exists(features_path) else pd.DataFrame()
     
-    with open(clusters_path) as f:
-        clusters_json = json.load(f) if os.path.exists(clusters_path) else {}
-        
-    with open(explanations_path) as f:
-        explanations_json = json.load(f) if os.path.exists(explanations_path) else {}
+    if os.path.exists(clusters_path):
+        with open(clusters_path) as f:
+            clusters_json = json.load(f)
+    else:
+        clusters_json = {}
 
-    with open(narratives_path) as f:
-        narratives_json = json.load(f) if os.path.exists(narratives_path) else {}
+    if os.path.exists(explanations_path):
+        with open(explanations_path) as f:
+            explanations_json = json.load(f)
+    else:
+        explanations_json = {}
+
+    if os.path.exists(narratives_path):
+        with open(narratives_path) as f:
+            narratives_json = json.load(f)
+    else:
+        narratives_json = {}
 
     comparison_df = pd.read_csv(comparison_path) if os.path.exists(comparison_path) else pd.DataFrame()
     eval_metrics_df = pd.read_csv(eval_metrics_path) if os.path.exists(eval_metrics_path) else pd.DataFrame()
 
-    with open("transactions.json") as f:
-        transactions = json.load(f) if os.path.exists("transactions.json") else []
+    if os.path.exists("transactions.json"):
+        with open("transactions.json") as f:
+            transactions = json.load(f)
+    else:
+        transactions = []
 
     return {
         "scored_df": scored_df,
@@ -411,8 +422,8 @@ if selected_country != "ALL":
     filtered_df = filtered_df[filtered_df["dominant_country"] == selected_country]
 if search_query:
     filtered_df = filtered_df[
-        filtered_df["wallet_address"].str.contains(search_query, case=False, na=False) |
-        filtered_df["cluster_id"].str.contains(search_query, case=False, na=False)
+        filtered_df["wallet_address"].str.contains(search_query, case=False, na=False, regex=False) |
+        filtered_df["cluster_id"].str.contains(search_query, case=False, na=False, regex=False)
     ]
 
 # ---------------------------------------------------------------------------
@@ -532,16 +543,17 @@ with tab2:
         # Build Evidence-Grade Forensic HTML Table with Monospace styling
         table_rows = []
         for _, r in filtered_df.head(100).iterrows():
-            band = str(r.get("risk_band", "LOW")).upper()
-            badge_class = f"badge-{band.lower()}"
-            w_addr = str(r["wallet_address"])
-            score_val = f"{float(r['composite_risk_score']):.1f}"
-            conf_val = f"{float(r.get('confidence_score', 0)):.0%}"
-            vol_val = f"{float(r.get('total_received_amount', 0)):.4f}"
-            country_val = str(r.get("dominant_country", "Unknown"))
-            asn_val = str(r.get("dominant_asn", "Unknown"))
-            reasons_val = str(r.get("reason_codes", "None"))
-            cluster_val = str(r.get("cluster_id", "N/A"))
+            band_raw = str(r.get("risk_band", "LOW")).upper()
+            band = html.escape(band_raw)
+            badge_class = f"badge-{html.escape(band_raw.lower())}"
+            w_addr = html.escape(str(r["wallet_address"]))
+            score_val = html.escape(f"{float(r['composite_risk_score']):.1f}")
+            conf_val = html.escape(f"{float(r.get('confidence_score', 0)):.0%}")
+            vol_val = html.escape(f"{float(r.get('total_received_amount', 0)):.4f}")
+            country_val = html.escape(str(r.get("dominant_country", "Unknown")))
+            asn_val = html.escape(str(r.get("dominant_asn", "Unknown")))
+            reasons_val = html.escape(str(r.get("reason_codes", "None")))
+            cluster_val = html.escape(str(r.get("cluster_id", "N/A")))
 
             table_rows.append(
                 f"<tr>"
@@ -615,6 +627,9 @@ with tab3:
             k1, k2, k3, k4 = st.columns(4)
             card1_class = "critical-card" if row['risk_band'] == "CRITICAL" else ("high-card" if row['risk_band'] == "HIGH" else "")
             
+            cluster_id_esc = html.escape(str(row.get('cluster_id', 'N/A')))
+            country_esc = html.escape(str(row.get('dominant_country', 'N/A')))
+
             k1.html(
                 f"<div class='metric-card {card1_class}'>"
                 f"<div class='metric-label'>Composite Risk Score</div>"
@@ -632,14 +647,14 @@ with tab3:
             k3.html(
                 f"<div class='metric-card'>"
                 f"<div class='metric-label'>Entity Cluster ID</div>"
-                f"<div class='metric-val' style='font-size:20px;'>{row.get('cluster_id', 'N/A')}</div>"
+                f"<div class='metric-val' style='font-size:20px;'>{cluster_id_esc}</div>"
                 f"</div>"
             )
 
             k4.html(
                 f"<div class='metric-card'>"
                 f"<div class='metric-label'>Geographic Origin</div>"
-                f"<div class='metric-val' style='font-size:20px;'>{row.get('dominant_country', 'N/A')}</div>"
+                f"<div class='metric-val' style='font-size:20px;'>{country_esc}</div>"
                 f"</div>"
             )
 
@@ -648,9 +663,10 @@ with tab3:
             # Plain Language Investigator Summary
             st.markdown("#### Plain-Language Investigator Summary")
             plain_text = exp.get("plain_language_explanation", "No explanation generated.")
+            plain_text_esc = html.escape(plain_text)
             st.html(
                 f"<div style='background:var(--nt-surface); border:1px solid var(--nt-border); border-left:3px solid var(--nt-accent); border-radius:var(--nt-radius); padding:16px 20px; color:var(--nt-text); font-size:13px; line-height:1.6;'>"
-                f"{plain_text}"
+                f"{plain_text_esc}"
                 f"</div>"
             )
 
@@ -678,9 +694,9 @@ with tab3:
             with cd2:
                 st.markdown("#### Entity Cluster Co-Members")
                 members = cluster_meta.get("member_wallets", [selected_wallet])
-                st.html(f"<div style='color:var(--nt-text-muted); font-size:12px; margin-bottom:8px;'>Cluster <b>{row.get('cluster_id', 'N/A')}</b> links <b>{len(members)}</b> co-controlled wallets:</div>")
+                st.html(f"<div style='color:var(--nt-text-muted); font-size:12px; margin-bottom:8px;'>Cluster <b>{cluster_id_esc}</b> links <b>{len(members)}</b> co-controlled wallets:</div>")
                 
-                member_rows = "".join([f"<tr><td class='mono-cell' style='color:var(--nt-accent);'>{m}</td></tr>" for m in members])
+                member_rows = "".join([f"<tr><td class='mono-cell' style='color:var(--nt-accent);'>{html.escape(str(m))}</td></tr>" for m in members])
                 member_table_html = (
                     f"<div class='dossier-table-wrap' style='max-height:220px;'>"
                     f"<table class='dossier-table'>"

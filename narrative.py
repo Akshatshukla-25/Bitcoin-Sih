@@ -13,13 +13,12 @@ for flagged entities by fusing:
 Supports:
   1. High-fidelity offline rule/template forensic narrative engine (100% air-gapped)
   2. Pre-cached narratives for top flagged cases stored in data/cached_narratives.json
-  3. Optional LLM API generation gated behind --live-llm (default OFF)
 """
 
 import argparse
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, List
 import pandas as pd
 
@@ -110,11 +109,11 @@ def generate_sar_export_document(
     narrative_text: str
 ) -> Dict[str, Any]:
     """Builds a standardized SAR/STR JSON export package for investigative handoff."""
-    from datetime import timezone
+    now = datetime.now(timezone.utc)
     return {
         "report_type": "SUSPICIOUS_ACTIVITY_REPORT_STR_SAR",
-        "report_id": f"SAR-NTRO-2025-{wallet[:8].upper()}",
-        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "report_id": f"SAR-NTRO-{now.year}-{wallet[:8].upper()}",
+        "timestamp_utc": now.isoformat(),
         "agency": "National Technical Research Organisation (NTRO) / FIU-IND Reference",
         "investigation_case": "SIH26146-BITCOIN-TRAFFIC-MONITOR",
         "subject_entity": {

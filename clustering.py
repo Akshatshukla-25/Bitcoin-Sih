@@ -82,12 +82,13 @@ def perform_heuristic_clustering(transactions: List[Dict[str, Any]]) -> Tuple[Un
         outputs = tx.get("output_wallet_addresses", [])
         if len(inputs) >= 1 and len(outputs) == 2:
             sender = inputs[0]["address"]
-            for out in outputs:
-                out_addr = out["address"]
-                # If output is single-use/fresh address
-                if address_appearance_count[out_addr] == 1 and out_addr != sender:
-                    # Likely change address
-                    uf.union(sender, out_addr)
+            fresh_outputs = [
+                out["address"] for out in outputs
+                if address_appearance_count[out["address"]] == 1 and out["address"] != sender
+            ]
+            # Standard change address heuristic: cluster ONLY when exactly ONE output is fresh
+            if len(fresh_outputs) == 1:
+                uf.union(sender, fresh_outputs[0])
 
     return uf
 
@@ -123,7 +124,9 @@ def perform_community_detection(transactions: List[Dict[str, Any]]) -> Dict[str,
             for node in comm:
                 community_map[node] = comm_id
         return community_map
-    except Exception:
+    except Exception as e:
+        import warnings
+        warnings.warn(f"Louvain community detection failed ({e}); falling back to connected components.")
         # Fallback to connected components
         components = list(nx.connected_components(G))
         community_map = {}

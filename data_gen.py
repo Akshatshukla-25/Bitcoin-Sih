@@ -103,11 +103,18 @@ def mint_wallet(used_addresses, script_type=None):
             return addr
 
 
-def random_ip():
-    region = random.choice(REGIONS)
+def random_ip(region=None):
+    if not region:
+        region = random.choice(REGIONS)
     template = random.choice(IP_BLOCKS_BY_REGION[region])
     b, c, d = random.randint(0, 255), random.randint(0, 255), random.randint(1, 254)
     return template.format(b=b, c=c, d=d)
+
+
+def get_wallet_region(wallet, wallet_regions):
+    if wallet not in wallet_regions:
+        wallet_regions[wallet] = random.choice(REGIONS)
+    return wallet_regions[wallet]
 
 
 def random_txid():
@@ -148,8 +155,8 @@ def make_tx(timestamp, inputs, outputs, src_ip, dst_ip, label, script_type=None)
 # Pattern generators
 # ---------------------------------------------------------------------------
 def gen_peel_chain(used_addresses, start_time):
-    """Wallet A -> B -> C -> ... ; each hop keeps a small randomized skim
-    (2-8%) and forwards the rest; hops are minutes apart."""
+    """Wallet A -> B + Skim; each hop keeps a small randomized skim (2-8%)
+    and forwards the rest to the next hop; hops are minutes apart."""
     n_hops = random.randint(3, 7)
     amount = round(random.uniform(0.5, 8.0), 6)
     current_wallet = mint_wallet(used_addresses)
@@ -157,11 +164,17 @@ def gen_peel_chain(used_addresses, start_time):
     txs = []
     for _ in range(n_hops):
         next_wallet = mint_wallet(used_addresses)
+        skim_wallet = mint_wallet(used_addresses)
         skim_pct = random.uniform(0.02, 0.08)
         miner_fee = round(random.uniform(0.00001, 0.0005), 8)
-        forward_amount = round(max(amount * (1 - skim_pct) - miner_fee, 0.00000001), 8)
+        skim_amount = round(amount * skim_pct, 8)
+        forward_amount = round(max(amount - skim_amount - miner_fee, 0.00000001), 8)
         inputs = [{"address": current_wallet, "amount": amount}]
-        outputs = [{"address": next_wallet, "amount": forward_amount}]
+        outputs = [
+            {"address": next_wallet, "amount": forward_amount},
+            {"address": skim_wallet, "amount": skim_amount}
+        ]
+        # Cross-border hops for layering obfuscation
         txs.append(make_tx(t, inputs, outputs, random_ip(), random_ip(), "peel_chain"))
         t = t + timedelta(minutes=random.uniform(1, 25))
         current_wallet = next_wallet
@@ -240,10 +253,9 @@ def gen_rapid_cashout(used_addresses, start_time):
     return txs
 
 
-def gen_normal_chain(used_addresses, background_wallets, start_time):
+def gen_normal_chain(used_addresses, background_wallets, wallet_regions, start_time):
     """Background/normal traffic with genuine variation: hop counts 0-4,
-    randomized timing (seconds to days), non-round amounts, and a mix of
-    single/multi input & output shapes."""
+    randomized timing (seconds to days), non-round amounts, and localized IP regions."""
     hop_count = random.choices([0, 1, 2, 3, 4], weights=[0.55, 0.20, 0.12, 0.08, 0.05])[0]
     n_tx = hop_count + 1
     txs = []
@@ -286,7 +298,16 @@ def gen_normal_chain(used_addresses, background_wallets, start_time):
                 dest = random.choice(background_wallets) if background_wallets and random.random() < 0.6 else mint_wallet(used_addresses)
                 outputs.append({"address": dest, "amount": round(remaining * float(s), 8)})
 
-        txs.append(make_tx(t, inputs, outputs, random_ip(), random_ip(), "normal"))
+        # Primary region for legitimate normal wallet activity (95% local, 5% roaming)
+        primary_region = get_wallet_region(inputs[0]["address"], wallet_regions)
+        if random.random() < 0.95:
+            src_ip = random_ip(primary_region)
+            dst_ip = random_ip(primary_region if random.random() < 0.85 else None)
+        else:
+            src_ip = random_ip()
+            dst_ip = random_ip()
+
+        txs.append(make_tx(t, inputs, outputs, src_ip, dst_ip, "normal"))
 
         gap_bucket = random.random()
         if gap_bucket < 0.4:
@@ -313,34 +334,50 @@ def generate_dataset(total, seed):
     np.random.seed(seed)
 
     used_addresses = set()
+    wallet_regions = {}
     background_wallets = []
-    for _ in range(30):
-        background_wallets.append(mint_wallet(used_addresses))
+    num_init_wallets = min(30, max(5, total // 2))
+    for _ in range(num_init_wallets):
+        w = mint_wallet(used_addresses)
+        background_wallets.append(w)
+        get_wallet_region(w, wallet_regions)
 
-    peel_budget = max(1, int(total * PEEL_CHAIN_ROW_FRACTION))
-    mixer_budget = max(1, int(total * MIXER_ROW_FRACTION))
-    cashout_budget = max(1, int(total * RAPID_CASHOUT_ROW_FRACTION))
+    peel_budget = max(0, int(total * PEEL_CHAIN_ROW_FRACTION))
+    mixer_budget = max(0, int(total * MIXER_ROW_FRACTION))
+    cashout_budget = max(0, int(total * RAPID_CASHOUT_ROW_FRACTION))
 
     all_txs = []
     pattern_counts = {"peel_chain": 0, "mixer": 0, "rapid_cashout": 0, "normal": 0}
 
     rows = 0
-    while rows < peel_budget:
+    while rows < peel_budget and len(all_txs) < total:
         chain = gen_peel_chain(used_addresses, random_timestamp_in_window())
+        if rows + len(chain) > peel_budget:
+            chain = chain[: max(0, peel_budget - rows)]
+        if not chain:
+            break
         all_txs.extend(chain)
         rows += len(chain)
         pattern_counts["peel_chain"] += len(chain)
 
     rows = 0
-    while rows < mixer_budget:
+    while rows < mixer_budget and len(all_txs) < total:
         instance = gen_mixer(used_addresses, random_timestamp_in_window())
+        if rows + len(instance) > mixer_budget:
+            instance = instance[: max(0, mixer_budget - rows)]
+        if not instance:
+            break
         all_txs.extend(instance)
         rows += len(instance)
         pattern_counts["mixer"] += len(instance)
 
     rows = 0
-    while rows < cashout_budget:
+    while rows < cashout_budget and len(all_txs) < total:
         instance = gen_rapid_cashout(used_addresses, random_timestamp_in_window())
+        if rows + len(instance) > cashout_budget:
+            instance = instance[: max(0, cashout_budget - rows)]
+        if not instance:
+            break
         all_txs.extend(instance)
         rows += len(instance)
         pattern_counts["rapid_cashout"] += len(instance)
@@ -348,13 +385,18 @@ def generate_dataset(total, seed):
     planted_total = len(all_txs)
     remaining = max(total - planted_total, 0)
     rows = 0
-    while rows < remaining:
-        chain = gen_normal_chain(used_addresses, background_wallets, random_timestamp_in_window())
+    while rows < remaining and len(all_txs) < total:
+        chain = gen_normal_chain(used_addresses, background_wallets, wallet_regions, random_timestamp_in_window())
         if rows + len(chain) > remaining:
-            chain = chain[: max(1, remaining - rows)]
+            chain = chain[: max(0, remaining - rows)]
+        if not chain:
+            break
         all_txs.extend(chain)
         rows += len(chain)
         pattern_counts["normal"] += len(chain)
+
+    # Hard cap to exact total count requested
+    all_txs = all_txs[:total]
 
     # Interleave planted and normal transactions across the full time range.
     all_txs.sort(key=lambda r: r["timestamp"])

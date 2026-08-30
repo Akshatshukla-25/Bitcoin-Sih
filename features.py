@@ -41,7 +41,9 @@ def build_feature_table(transactions_path: str = "transactions.csv", graph_path:
     if os.path.exists(graph_path):
         try:
             G = nx.read_gml(graph_path)
-        except Exception:
+        except Exception as e:
+            import warnings
+            warnings.warn(f"Failed to read graph file {graph_path} ({e}); using empty MultiDiGraph fallback.")
             G = nx.MultiDiGraph()
     else:
         G = nx.MultiDiGraph()
@@ -59,9 +61,12 @@ def build_feature_table(transactions_path: str = "transactions.csv", graph_path:
     rows = []
     for wallet, sig in signals.items():
         ips = sig.get("associated_ips", [])
+        src_ips = sig.get("associated_src_ips", [])
         countries = set()
         asns = set()
         country_counts = {}
+        src_countries = set()
+        src_asns = set()
 
         for ip in ips:
             g = geo_map.get(ip, {})
@@ -72,6 +77,15 @@ def build_feature_table(transactions_path: str = "transactions.csv", graph_path:
                 country_counts[c] = country_counts.get(c, 0) + 1
             if a != "Unknown":
                 asns.add(a)
+
+        for ip in src_ips:
+            g = geo_map.get(ip, {})
+            c = g.get("country", "Unknown")
+            a = g.get("asn", "Unknown")
+            if c != "Unknown":
+                src_countries.add(c)
+            if a != "Unknown":
+                src_asns.add(a)
 
         dominant_country = sorted(country_counts.items(), key=lambda x: (-x[1], x[0]))[0][0] if country_counts else "Unknown"
         dominant_asn = sorted(list(asns))[0] if asns else "Unknown"
@@ -101,7 +115,7 @@ def build_feature_table(transactions_path: str = "transactions.csv", graph_path:
             "peel_skim_ratio": sig["peel_skim_ratio"],
             "peel_signal": round(sig["peel_skim_ratio"] * 100.0, 4),
             "transient_velocity": round(sig["turnover_ratio"] / (sig["wallet_age_hours"] + 0.05), 4),
-            "velocity_drain_score": round(sig["forwarded_pct_30m"] * 10.0 / (sig["min_drain_minutes"] + 1.0), 4),
+            "velocity_drain_score": round(sig["forwarded_pct_30m"] * 10.0 / (sig["min_drain_minutes"] + 1.0), 4) if sig["min_drain_minutes"] >= 0.0 else 0.0,
             "fanout_burst_signal": round(sig["fanout_count"] / (sig["wallet_age_hours"] + 0.1), 4),
             "fanin_burst_signal": round(sig["fanin_count"] / (sig["wallet_age_hours"] + 0.1), 4),
             "is_peel_chain_node": sig["is_peel_chain_node"],
@@ -110,8 +124,11 @@ def build_feature_table(transactions_path: str = "transactions.csv", graph_path:
             "is_rapid_cashout_node": sig["is_rapid_cashout_node"],
             "unique_counterparties": sig["unique_counterparties"],
             "unique_ips_count": sig["unique_ips_count"],
+            "unique_src_ips_count": len(src_ips),
             "unique_countries_count": len(countries),
+            "unique_src_countries_count": len(src_countries),
             "unique_asns_count": len(asns),
+            "unique_src_asns_count": len(src_asns),
             "dominant_country": dominant_country,
             "dominant_asn": dominant_asn,
             "timestamp_entropy": sig["timestamp_entropy"],

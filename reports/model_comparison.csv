@@ -1,9 +1,0 @@
-Algorithm,Type,ROC_AUC,PR_AUC,F1_Score,Precision,Recall,Latency_ms
-PCA,Linear Subspace Projection,0.7558,0.6405,0.5493,0.5493,0.5493,0.74
-Local Outlier Factor (LOF),Density Estimation,0.737,0.5345,0.5587,0.5587,0.5587,12.03
-Robust Mahalanobis,Ellipsoidal Distance,0.7292,0.5353,0.6197,0.6197,0.6197,1.15
-3-Model Ensemble (Proposed),Blended Meta-Ensemble,0.7065,0.5283,0.5587,0.5587,0.5587,77.92
-CBLOF,Clustering Outlier,0.6981,0.4849,0.5302,0.5253,0.5352,586.26
-Isolation Forest,Tree Partitioning,0.6689,0.4926,0.5117,0.5117,0.5117,64.73
-k-NN,Distance to k-th Neighbor,0.5629,0.4327,0.4366,0.4366,0.4366,2.01
-HBOS,Histogram / Fast Density,0.558,0.3915,0.4413,0.4413,0.4413,894.98

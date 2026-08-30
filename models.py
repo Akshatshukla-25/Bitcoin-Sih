@@ -76,7 +76,8 @@ def train_ensemble(df: pd.DataFrame, random_state: int = 42):
         lw.fit(X_scaled)
         cov_inv = lw.get_precision()
         mean_vec = lw.location_
-    except Exception:
+    except Exception as e:
+        warnings.warn(f"Ledoit-Wolf shrinkage failed ({e}); falling back to EmpiricalCovariance.")
         emp = EmpiricalCovariance()
         emp.fit(X_scaled)
         cov_inv = np.linalg.pinv(emp.covariance_)
@@ -86,31 +87,28 @@ def train_ensemble(df: pd.DataFrame, random_state: int = 42):
         mahalanobis(x, mean_vec, cov_inv) for x in X_scaled
     ])
 
-    # Z-score normalization for balanced blending
-    def z_normalize(arr):
+    # Equalize score variances via standard Z-normalization before blending
+    def z_normalize(arr: np.ndarray) -> np.ndarray:
         std = np.std(arr)
         return (arr - np.mean(arr)) / (std if std > 1e-8 else 1.0)
 
-    def min_max_scale(arr):
+    def min_max_scale(arr: np.ndarray) -> np.ndarray:
         mn, mx = np.min(arr), np.max(arr)
         return (arr - mn) / (mx - mn if mx > mn else 1.0)
 
+    # Standardize individual model score distributions
     z_iforest = z_normalize(scores_iforest)
     z_lof = z_normalize(scores_lof)
     z_mahal = z_normalize(scores_mahal)
 
-    s_iforest_norm = min_max_scale(z_iforest)
-    s_lof_norm = min_max_scale(z_lof)
-    s_mahal_norm = min_max_scale(z_mahal)
-
-    # Blended ensemble score
-    blended_raw = (s_iforest_norm + s_lof_norm + s_mahal_norm) / 3.0
-    blended_score = min_max_scale(blended_raw)
+    # Equal-weight variance-standardized ensemble blend
+    blended_z = (z_iforest + z_lof + z_mahal) / 3.0
+    blended_score = min_max_scale(blended_z)
 
     result_df = df.copy()
-    result_df["score_iforest"] = np.round(s_iforest_norm, 4)
-    result_df["score_lof"] = np.round(s_lof_norm, 4)
-    result_df["score_mahalanobis"] = np.round(s_mahal_norm, 4)
+    result_df["score_iforest"] = np.round(min_max_scale(scores_iforest), 4)
+    result_df["score_lof"] = np.round(min_max_scale(scores_lof), 4)
+    result_df["score_mahalanobis"] = np.round(min_max_scale(scores_mahal), 4)
     result_df["ensemble_anomaly_score"] = np.round(blended_score, 4)
 
     models_bundle = {

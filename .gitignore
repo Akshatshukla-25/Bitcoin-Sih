@@ -1,17 +1,26 @@
-# Byte-compiled / optimized / DLL files
+# Python bytecode & cache
 __pycache__/
 *.py[cod]
 *$py.class
 
-# OS artifacts
+# Generated deterministic pipeline artifacts (regenerated via pipeline.py)
+data/
+reports/
+graph.gml
+graph.json
+transactions.csv
+transactions.json
+
+# Operating System artifacts
 .DS_Store
 .DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
 
-# Environments
+# Virtual Environments
 .env
 .venv
 env/
 venv/
+ENV/

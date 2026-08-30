@@ -1,0 +1,3562 @@
+[
+  {
+    "wallet_address": "11pu7mGTTe9n1yG4pLhdZgosvd",
+    "risk_score": 47.48,
+    "risk_band": "MEDIUM",
+    "confidence": 0.66,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "China",
+    "dominant_asn": "AS13285",
+    "total_volume": 8.94602561,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1385qmVNzZTvUi1RZPJfSQabvt6p",
+    "risk_score": 38.36,
+    "risk_band": "MEDIUM",
+    "confidence": 0.67,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0009",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS16509",
+    "total_volume": 0.18856319,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "13KPCjNTqEuUxWQsdEXV5bRZhnm3HHez",
+    "risk_score": 36.07,
+    "risk_band": "MEDIUM",
+    "confidence": 0.66,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0011",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS3356",
+    "total_volume": 0.07780017,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "13Qq91W8MaDGULTZrDHWDV6BHQa",
+    "risk_score": 71.4,
+    "risk_band": "CRITICAL",
+    "confidence": 0.81,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0013",
+    "cluster_size": 1,
+    "dominant_country": "Singapore",
+    "dominant_asn": "AS25513",
+    "total_volume": 3.4560793,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "13bMnSz7uC3SXogwjCSxvdf8uWfKhZ",
+    "risk_score": 39.54,
+    "risk_band": "MEDIUM",
+    "confidence": 0.6,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS17547",
+    "total_volume": 12.70327611,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "13g4rEvDmMqFKiPD966bXinYcCbdCDQ",
+    "risk_score": 60.53,
+    "risk_band": "HIGH",
+    "confidence": 0.8,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0014",
+    "cluster_size": 1,
+    "dominant_country": "United States",
+    "dominant_asn": "AS12389",
+    "total_volume": 6.18811754,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "13ytpCS6wcJUmX98RitmrZMNd7S",
+    "risk_score": 49.12,
+    "risk_band": "MEDIUM",
+    "confidence": 0.6,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0016",
+    "cluster_size": 1,
+    "dominant_country": "United States",
+    "dominant_asn": "AS28573",
+    "total_volume": 8.21705247,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "142EVm1Gxfn3DnNXxGVkcLgLKEMQcy",
+    "risk_score": 50.44,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0017",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS1221",
+    "total_volume": 4.30493504,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "14oUYWPgByhTg1DaKcGYEUcNVDhN",
+    "risk_score": 58.22,
+    "risk_band": "HIGH",
+    "confidence": 0.74,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0020",
+    "cluster_size": 1,
+    "dominant_country": "United Kingdom",
+    "dominant_asn": "AS13285",
+    "total_volume": 1.63335551,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "15NZ3GvrArt15Q3Y7BaVZmVcaPC59PK",
+    "risk_score": 38.58,
+    "risk_band": "MEDIUM",
+    "confidence": 0.67,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0022",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS12389",
+    "total_volume": 5.00569888,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "15Rzadmus18GZvk82Shz8svuMQZ",
+    "risk_score": 52.37,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0023",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS28573",
+    "total_volume": 7.53973292,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "15aCFFmdW96E3jWeCrfNa3gxuprUCw5G",
+    "risk_score": 48.31,
+    "risk_band": "MEDIUM",
+    "confidence": 0.65,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0024",
+    "cluster_size": 14,
+    "dominant_country": "China",
+    "dominant_asn": "AS12714",
+    "total_volume": 8.23345696,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "15sTRDtB4tRxJCwUYnySuapZtCia9fpj",
+    "risk_score": 82.26,
+    "risk_band": "CRITICAL",
+    "confidence": 0.86,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0025",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS13335",
+    "total_volume": 0.0,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "16jXBXFdBkR7eMTftABQLAzSMKzKNmRjcZ",
+    "risk_score": 56.23,
+    "risk_band": "HIGH",
+    "confidence": 0.73,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0028",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS17547",
+    "total_volume": 4.1402648,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "16oBPEF2m4wvZypz1tWRh7mWJhEQ",
+    "risk_score": 40.48,
+    "risk_band": "MEDIUM",
+    "confidence": 0.69,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0029",
+    "cluster_size": 2,
+    "dominant_country": "India",
+    "dominant_asn": "AS12389",
+    "total_volume": 14.67750086,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1Ae7H3i5LLQfyB4YpLzBfjt1dHi4ia",
+    "risk_score": 56.57,
+    "risk_band": "HIGH",
+    "confidence": 0.73,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0039",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS1221",
+    "total_volume": 4.83442234,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "1AqasZTZqfqWah3h8rMxiJ3RqBK",
+    "risk_score": 66.21,
+    "risk_band": "CRITICAL",
+    "confidence": 0.82,
+    "reason_codes": [
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0040",
+    "cluster_size": 5,
+    "dominant_country": "United States",
+    "dominant_asn": "AS2856",
+    "total_volume": 4.62228006,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1Av8rN53GMoAJzGg96LQdEDg3AB88EYx1",
+    "risk_score": 38.44,
+    "risk_band": "MEDIUM",
+    "confidence": 0.59,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "China",
+    "dominant_asn": "AS24940",
+    "total_volume": 21.31606299,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1Ay8FnLFMRozmXxmpmfJu91nDhY7Ede5cu",
+    "risk_score": 43.41,
+    "risk_band": "MEDIUM",
+    "confidence": 0.71,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0042",
+    "cluster_size": 2,
+    "dominant_country": "India",
+    "dominant_asn": "AS1221",
+    "total_volume": 12.87567193,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1D7JfiRkgfnY2ZuxKi9rPa3teeySHUB3",
+    "risk_score": 40.19,
+    "risk_band": "MEDIUM",
+    "confidence": 0.68,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0048",
+    "cluster_size": 1,
+    "dominant_country": "Singapore",
+    "dominant_asn": "AS12714",
+    "total_volume": 2.35516132,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "1DwRjh2Qvj2o1Z4N3cAWJd5penJ4uGgsU",
+    "risk_score": 67.61,
+    "risk_band": "CRITICAL",
+    "confidence": 0.79,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0052",
+    "cluster_size": 1,
+    "dominant_country": "Nigeria",
+    "dominant_asn": "AS18881",
+    "total_volume": 8.87370743,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "1EwVsNYFRdKtm5Y17pCHoKT8fVW",
+    "risk_score": 38.59,
+    "risk_band": "MEDIUM",
+    "confidence": 0.57,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0056",
+    "cluster_size": 5,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS13335",
+    "total_volume": 1.42722561,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1GPGkndgja934muKJWn6cCPNFyCE",
+    "risk_score": 41.72,
+    "risk_band": "MEDIUM",
+    "confidence": 0.61,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS12389",
+    "total_volume": 11.27283724,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1GvgDKm4poQ4uZiDVte99kYkRaMz9Vkr",
+    "risk_score": 35.14,
+    "risk_band": "MEDIUM",
+    "confidence": 0.64,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0064",
+    "cluster_size": 3,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS13285",
+    "total_volume": 6.54147983,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1HaGQ1mqhAEbW8iiDapetaw6AyzmS4Brm",
+    "risk_score": 48.59,
+    "risk_band": "MEDIUM",
+    "confidence": 0.59,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0067",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS12389",
+    "total_volume": 2.59131434,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "1HpYh645Sb3zu6Qyaif52rfvt3X",
+    "risk_score": 57.42,
+    "risk_band": "HIGH",
+    "confidence": 0.74,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0068",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS1221",
+    "total_volume": 4.94912267,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "1Hx4mBV1rvXCnWhcgMey6HQfQC1hvYjZaM",
+    "risk_score": 62.16,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0069",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS133982",
+    "total_volume": 1.75883645,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "1JbRhM3sMzGyw5dNogx9cn34nNPZcg",
+    "risk_score": 61.97,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0071",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS28573",
+    "total_volume": 4.01362871,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "1KJRt8RpPUtAegS2h7ih2pP4Fhs",
+    "risk_score": 35.15,
+    "risk_band": "MEDIUM",
+    "confidence": 0.65,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0074",
+    "cluster_size": 2,
+    "dominant_country": "China",
+    "dominant_asn": "AS3216",
+    "total_volume": 16.43979231,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1Lxu5fQZewt6nJGUh4bpCVT2zb",
+    "risk_score": 61.83,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0079",
+    "cluster_size": 1,
+    "dominant_country": "Russia",
+    "dominant_asn": "AS133982",
+    "total_volume": 2.60830171,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "1MZ9SduMyCHDGBrFCBG6q8etLDT",
+    "risk_score": 62.07,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0082",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS3216",
+    "total_volume": 0.89046858,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "1Maa42vUu6ofuKQ6u6y7ojjEoiUC",
+    "risk_score": 40.17,
+    "risk_band": "MEDIUM",
+    "confidence": 0.69,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0004",
+    "cluster_size": 9,
+    "dominant_country": "India",
+    "dominant_asn": "AS13335",
+    "total_volume": 19.52597715,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1PRUmwjFcwHiJ2wqq7mxGSGj2UWBx9",
+    "risk_score": 48.58,
+    "risk_band": "MEDIUM",
+    "confidence": 0.74,
+    "reason_codes": [
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0088",
+    "cluster_size": 1,
+    "dominant_country": "United Kingdom",
+    "dominant_asn": "AS2856",
+    "total_volume": 2.22640847,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1PrrA3brtMatoQ77VzUJTHkRTWn9PaJ",
+    "risk_score": 55.48,
+    "risk_band": "HIGH",
+    "confidence": 0.73,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0091",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS12714",
+    "total_volume": 10.89606001,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "1Q2n7Qr5fYNxSK1nTwKH4cfWMebT5C",
+    "risk_score": 36.84,
+    "risk_band": "MEDIUM",
+    "confidence": 0.66,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0093",
+    "cluster_size": 1,
+    "dominant_country": "India",
+    "dominant_asn": "AS13335",
+    "total_volume": 11.0304625,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1QYBWeP8AGR1s6mswZoTqNUbGkZF1x2URx",
+    "risk_score": 49.35,
+    "risk_band": "MEDIUM",
+    "confidence": 0.72,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0096",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS24940",
+    "total_volume": 3.01580332,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1QfNuTF42Zb1i442LWHVYitaFUQ6fM",
+    "risk_score": 43.3,
+    "risk_band": "MEDIUM",
+    "confidence": 0.63,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "United Kingdom",
+    "dominant_asn": "AS13285",
+    "total_volume": 19.69322126,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1Qo88vs4wTfLF2KEN88dJFDSgouiu4R",
+    "risk_score": 41.39,
+    "risk_band": "MEDIUM",
+    "confidence": 0.6,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0024",
+    "cluster_size": 14,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS13335",
+    "total_volume": 9.56121693,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1QsdQ6pn7N33qrAvoEYhQMuU7LxUZC",
+    "risk_score": 51.48,
+    "risk_band": "HIGH",
+    "confidence": 0.83,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0024",
+    "cluster_size": 14,
+    "dominant_country": "United States",
+    "dominant_asn": "AS12714",
+    "total_volume": 2.59687378,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1Qwaa35fZKGfKG8eTvw1dZ6YW8M4F",
+    "risk_score": 36.69,
+    "risk_band": "MEDIUM",
+    "confidence": 0.58,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS1221",
+    "total_volume": 15.67365184,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1RzFL2FKDCbPGRBT5tZMaPK3NU1N7XT",
+    "risk_score": 51.28,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0098",
+    "cluster_size": 1,
+    "dominant_country": "United Kingdom",
+    "dominant_asn": "AS3320",
+    "total_volume": 3.22648349,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "1StK9J8LUq2PwFtZHUwF7akonFNxuX1",
+    "risk_score": 58.31,
+    "risk_band": "HIGH",
+    "confidence": 0.74,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0100",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS28573",
+    "total_volume": 10.47246855,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "1T5XbeAQU6SaQSB9heevzbpJVj2HEDxj",
+    "risk_score": 35.95,
+    "risk_band": "MEDIUM",
+    "confidence": 0.75,
+    "reason_codes": [
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0102",
+    "cluster_size": 1,
+    "dominant_country": "India",
+    "dominant_asn": "AS29465",
+    "total_volume": 2.7151853,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1TALtcnecAyr6rVzbqHjjFKatb9a1y3Um",
+    "risk_score": 60.86,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0103",
+    "cluster_size": 1,
+    "dominant_country": "Singapore",
+    "dominant_asn": "AS3320",
+    "total_volume": 7.72533004,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "1TS5gR4jZoD7voJcZC6MeEcTvC",
+    "risk_score": 63.47,
+    "risk_band": "HIGH",
+    "confidence": 0.81,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS18881",
+    "total_volume": 1.89762826,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1UevBadV6MLfrLhHwpYTKKyQWzfY",
+    "risk_score": 40.44,
+    "risk_band": "MEDIUM",
+    "confidence": 0.68,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0108",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS1221",
+    "total_volume": 1.29413441,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1WcWPk4EWabgHoxAvJsMXbB7pgPpW4X3",
+    "risk_score": 45.7,
+    "risk_band": "MEDIUM",
+    "confidence": 0.63,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0111",
+    "cluster_size": 3,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS12389",
+    "total_volume": 27.45175343,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1XBw3H1xbjFB4awZn2G1vC2cU6ZELg",
+    "risk_score": 39.69,
+    "risk_band": "MEDIUM",
+    "confidence": 0.6,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "Nigeria",
+    "dominant_asn": "AS133982",
+    "total_volume": 14.04524506,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1XS1L7rhUE6o6NJPpseg4ZcAMDkvc",
+    "risk_score": 59.63,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0114",
+    "cluster_size": 1,
+    "dominant_country": "India",
+    "dominant_asn": "AS3356",
+    "total_volume": 2.02760882,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "1YHzsDquR4Bg9DXCGFqToe1TAW2Ffzekq",
+    "risk_score": 45.06,
+    "risk_band": "MEDIUM",
+    "confidence": 0.64,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "India",
+    "dominant_asn": "AS12714",
+    "total_volume": 14.57495013,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1YnX1K2vsqJ4sw5V5mm8UYGsRDYj",
+    "risk_score": 69.54,
+    "risk_band": "CRITICAL",
+    "confidence": 0.83,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0056",
+    "cluster_size": 5,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS1221",
+    "total_volume": 0.73657858,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1YszRBNqWndmFeamQZ4PKM2q25mSa",
+    "risk_score": 60.92,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0118",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS3320",
+    "total_volume": 2.82043847,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "1ZLN7varfeBetvhHcPFGc2TK41Z69yMmpQ",
+    "risk_score": 36.84,
+    "risk_band": "MEDIUM",
+    "confidence": 0.66,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0119",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS4134",
+    "total_volume": 0.55620682,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "1cvrUVkqbZgbn8LhyXc4dwsbEvKECyCLgH",
+    "risk_score": 44.06,
+    "risk_band": "MEDIUM",
+    "confidence": 0.57,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0129",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS13335",
+    "total_volume": 3.45090378,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "1dKxayRPvr9fsmksiBwjhcaDgG987SnN",
+    "risk_score": 60.11,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0131",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS3356",
+    "total_volume": 12.62644186,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "1enXQQdYyPLpbnSnYEf5vaVbTZpBx57pmN",
+    "risk_score": 60.42,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0132",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS13335",
+    "total_volume": 5.55607081,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "1erzuHqQtv3e56oiGkQZKcPhTr",
+    "risk_score": 59.82,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0134",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS2856",
+    "total_volume": 0.3322108,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "1fGTnd6EiDcjcTRbYUZLKp9rVXAPQfa5",
+    "risk_score": 75.16,
+    "risk_band": "CRITICAL",
+    "confidence": 0.9,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0136",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS12389",
+    "total_volume": 0.0,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "1fRTw1r9UckKu4HN4wBEampA2Gv",
+    "risk_score": 38.38,
+    "risk_band": "MEDIUM",
+    "confidence": 0.67,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0137",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS13285",
+    "total_volume": 0.20144731,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "1gucJY1HRaeTSDUuoA5WdLpkgEC2FUr5",
+    "risk_score": 44.62,
+    "risk_band": "MEDIUM",
+    "confidence": 0.61,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0056",
+    "cluster_size": 5,
+    "dominant_country": "India",
+    "dominant_asn": "AS1221",
+    "total_volume": 18.2083518,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1gz6QLrFCTRHFvSrY3zqyvrAVD",
+    "risk_score": 39.77,
+    "risk_band": "MEDIUM",
+    "confidence": 0.59,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0024",
+    "cluster_size": 14,
+    "dominant_country": "China",
+    "dominant_asn": "AS13335",
+    "total_volume": 3.22009173,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1hDrBqjtLgnGwrEH9LpsbFxU4PeD3z",
+    "risk_score": 76.58,
+    "risk_band": "CRITICAL",
+    "confidence": 0.89,
+    "reason_codes": [
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0024",
+    "cluster_size": 14,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS28573",
+    "total_volume": 0.47638164,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1iFSvX56cehL9ao92dof4CmHQSN",
+    "risk_score": 65.02,
+    "risk_band": "CRITICAL",
+    "confidence": 0.83,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0144",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS12389",
+    "total_volume": 14.43133783,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "1iMhQknM9VBtpKCKUZg7Ap1JPiDWXa",
+    "risk_score": 44.36,
+    "risk_band": "MEDIUM",
+    "confidence": 0.8,
+    "reason_codes": [
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0145",
+    "cluster_size": 1,
+    "dominant_country": "India",
+    "dominant_asn": "AS12714",
+    "total_volume": 5.71308564,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1iNhh8oZ3WYzedEvjxrJzBLsCNm6",
+    "risk_score": 50.38,
+    "risk_band": "HIGH",
+    "confidence": 0.91,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0146",
+    "cluster_size": 3,
+    "dominant_country": "Nigeria",
+    "dominant_asn": "AS27699",
+    "total_volume": 6.74151886,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1iPQ9gtrtnDohTZv88TXZKkSptRuS",
+    "risk_score": 36.77,
+    "risk_band": "MEDIUM",
+    "confidence": 0.58,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS12389",
+    "total_volume": 5.34606814,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1kJnLGJrUsaw5tWsPJ4r8CQauTKin",
+    "risk_score": 63.36,
+    "risk_band": "HIGH",
+    "confidence": 0.77,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0152",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS16509",
+    "total_volume": 5.1312185,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "1mg5mKnSFhBRfAsjRGTVKAuZ25QY9c2N",
+    "risk_score": 38.4,
+    "risk_band": "MEDIUM",
+    "confidence": 0.67,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0157",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS17547",
+    "total_volume": 1.63006147,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "1oaPFyahg9mFVgLym4M9Y7VKZeMt",
+    "risk_score": 62.25,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0161",
+    "cluster_size": 1,
+    "dominant_country": "Nigeria",
+    "dominant_asn": "AS29465",
+    "total_volume": 4.28122704,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "1pfAaJCiTCzSpcFLaVT36evMqnPprRBc",
+    "risk_score": 57.12,
+    "risk_band": "HIGH",
+    "confidence": 0.74,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0166",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS3216",
+    "total_volume": 0.80807484,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "1qXZxJLwfe4NpQNr9Bi7FUmSUc4iH",
+    "risk_score": 60.92,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0175",
+    "cluster_size": 1,
+    "dominant_country": "Russia",
+    "dominant_asn": "AS25513",
+    "total_volume": 11.6482241,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "1qdGZxC6Sdb2iv5Pk8TdMEuJYFnnmfGw",
+    "risk_score": 41.23,
+    "risk_band": "MEDIUM",
+    "confidence": 0.68,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0176",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS27699",
+    "total_volume": 2.03937206,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "1qen8Hqh9hT15FqYjX7HJ3RoT7u",
+    "risk_score": 63.26,
+    "risk_band": "HIGH",
+    "confidence": 0.77,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0177",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS2856",
+    "total_volume": 4.34833592,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "1rbs6LsNURXXiLL34WajrcrGWPgLpm",
+    "risk_score": 55.13,
+    "risk_band": "HIGH",
+    "confidence": 0.84,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0056",
+    "cluster_size": 5,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS1221",
+    "total_volume": 6.1144446,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1rcojYyNZqcrah3EH5E6HdNNDGwecAj",
+    "risk_score": 46.95,
+    "risk_band": "MEDIUM",
+    "confidence": 0.63,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0056",
+    "cluster_size": 5,
+    "dominant_country": "India",
+    "dominant_asn": "AS1221",
+    "total_volume": 7.35135789,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1s2McQbqQgFizFh4VkKpnas4fZCBJqoQ",
+    "risk_score": 54.16,
+    "risk_band": "HIGH",
+    "confidence": 0.93,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0064",
+    "cluster_size": 3,
+    "dominant_country": "India",
+    "dominant_asn": "AS12714",
+    "total_volume": 7.46183257,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1sVhowbMbcFMbju76BuwkFZB2r",
+    "risk_score": 39.16,
+    "risk_band": "MEDIUM",
+    "confidence": 0.67,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0182",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS25513",
+    "total_volume": 0.45437228,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "1uPsxgZe4i2aM2SSRSMGuGADaWXC3P",
+    "risk_score": 37.25,
+    "risk_band": "MEDIUM",
+    "confidence": 0.66,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0186",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS133982",
+    "total_volume": 1.3377949,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "1vWyV43oQe72R33TCYeSjWC1FqMDvLH",
+    "risk_score": 41.23,
+    "risk_band": "MEDIUM",
+    "confidence": 0.68,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0189",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS1221",
+    "total_volume": 3.54430109,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1vs8KX9738sqkvHscmGKtKzm9rfo49E3G",
+    "risk_score": 61.24,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0191",
+    "cluster_size": 1,
+    "dominant_country": "India",
+    "dominant_asn": "AS2856",
+    "total_volume": 3.43661808,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "1vsU66CNWB9WCuymY5DdXYdhVbLdco",
+    "risk_score": 60.4,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0192",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS25513",
+    "total_volume": 11.56668497,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "1wRLUkejxHrJoJFiKxfUcr64VCA",
+    "risk_score": 62.55,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0193",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS12714",
+    "total_volume": 13.08251019,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "1x6obACiSSbGK7PCMupTtxFQcsxXQ7",
+    "risk_score": 64.1,
+    "risk_band": "HIGH",
+    "confidence": 0.77,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0197",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS24940",
+    "total_volume": 2.95916843,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "1xUbR5s3FtX4qK9UACtpcT2KwG",
+    "risk_score": 37.63,
+    "risk_band": "MEDIUM",
+    "confidence": 0.66,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0199",
+    "cluster_size": 1,
+    "dominant_country": "Nigeria",
+    "dominant_asn": "AS12389",
+    "total_volume": 11.05168918,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1yRWQmKUXVMHi5VPTjgqEQzRrtowN1g",
+    "risk_score": 60.95,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0200",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS37075",
+    "total_volume": 4.15635847,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "1yWj1hVNVokFedMbeeRBdgPJ9KYY",
+    "risk_score": 41.47,
+    "risk_band": "MEDIUM",
+    "confidence": 0.68,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0201",
+    "cluster_size": 1,
+    "dominant_country": "India",
+    "dominant_asn": "AS13335",
+    "total_volume": 9.15764281,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1yvtJ9kTtMWvaSWS1BpG3UU6qqP",
+    "risk_score": 35.58,
+    "risk_band": "MEDIUM",
+    "confidence": 0.65,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0202",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS13285",
+    "total_volume": 0.4457346,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "1zJxhTJzr7PMJh2qP1snyukqumEoDCF",
+    "risk_score": 35.59,
+    "risk_band": "MEDIUM",
+    "confidence": 0.66,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0122",
+    "cluster_size": 2,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS1221",
+    "total_volume": 2.07446013,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "1zVcYAkvC22W9s7DKDjwGUxMYJkVWQC",
+    "risk_score": 50.75,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0207",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS16509",
+    "total_volume": 5.80367065,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "31Bb8oQYvzgV3PNqkpJAupV86wKGxLLk",
+    "risk_score": 36.64,
+    "risk_band": "MEDIUM",
+    "confidence": 0.58,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "United Kingdom",
+    "dominant_asn": "AS12389",
+    "total_volume": 2.83035184,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "31TqHy1wUbqPMdaW3jZJP89ZHS",
+    "risk_score": 58.49,
+    "risk_band": "HIGH",
+    "confidence": 0.74,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0209",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS28573",
+    "total_volume": 5.21214628,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "331Ws5huqLGpguwk67YxhHr5a5uGhLNUSP",
+    "risk_score": 37.21,
+    "risk_band": "MEDIUM",
+    "confidence": 0.57,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0024",
+    "cluster_size": 14,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS17547",
+    "total_volume": 0.0,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "34aDUs6wD9bWbpbq3N1fnydwVRSz",
+    "risk_score": 36.68,
+    "risk_band": "MEDIUM",
+    "confidence": 0.58,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS24940",
+    "total_volume": 4.23933998,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "37ihAxXniA8nGtm2oG4ia5TMVZNF",
+    "risk_score": 58.16,
+    "risk_band": "HIGH",
+    "confidence": 0.74,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0221",
+    "cluster_size": 1,
+    "dominant_country": "United States",
+    "dominant_asn": "AS3356",
+    "total_volume": 1.97424637,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "37v89GB5quD6oQVdDRtdTAJufdr",
+    "risk_score": 61.52,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0222",
+    "cluster_size": 1,
+    "dominant_country": "India",
+    "dominant_asn": "AS25513",
+    "total_volume": 0.03443925,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "39BEBcpd1A3nVCwpnueRGoTEwjH2oVn",
+    "risk_score": 55.53,
+    "risk_band": "HIGH",
+    "confidence": 0.73,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0223",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS25513",
+    "total_volume": 6.62094691,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "3A5MbTyQ1XkK7ZSJyESCSXMTJkgMeN77",
+    "risk_score": 41.06,
+    "risk_band": "MEDIUM",
+    "confidence": 0.6,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0024",
+    "cluster_size": 14,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS13285",
+    "total_volume": 9.26309941,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3AKQm3e31nnGgTMdYiERW3tqfS",
+    "risk_score": 55.78,
+    "risk_band": "HIGH",
+    "confidence": 0.73,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0225",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS25513",
+    "total_volume": 11.10303084,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "3AqbopBfGjLTbEP7CrWR96Uc3nW7U8cpu",
+    "risk_score": 65.22,
+    "risk_band": "CRITICAL",
+    "confidence": 0.78,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0227",
+    "cluster_size": 1,
+    "dominant_country": "United Kingdom",
+    "dominant_asn": "AS2856",
+    "total_volume": 1.88918021,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "3BtNSGTEG4kf5LYybZqpRYsUtU5uiWuo",
+    "risk_score": 62.4,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0228",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS25513",
+    "total_volume": 5.74609493,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "3CadqxZRovcwGMJGKP5DYNtJBqAf8rCT",
+    "risk_score": 39.32,
+    "risk_band": "MEDIUM",
+    "confidence": 0.67,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0231",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS2856",
+    "total_volume": 0.84142375,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "3FYcZp39e3rfqJv3RBfchbnBTa",
+    "risk_score": 59.19,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0236",
+    "cluster_size": 1,
+    "dominant_country": "India",
+    "dominant_asn": "AS133982",
+    "total_volume": 6.49645154,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "3FpyeVAoAiVvYe42rwfmQqEi1WNcfcV",
+    "risk_score": 66.01,
+    "risk_band": "CRITICAL",
+    "confidence": 0.78,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0238",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS24940",
+    "total_volume": 4.00720388,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "3HX7j2SDdqGSimSDqk7RLfcQ3h8h",
+    "risk_score": 64.59,
+    "risk_band": "HIGH",
+    "confidence": 0.95,
+    "reason_codes": [
+      "RAPID_CASHOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0239",
+    "cluster_size": 1,
+    "dominant_country": "Nigeria",
+    "dominant_asn": "AS133982",
+    "total_volume": 0.65900288,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3JzrcvdZaLPvRSJLGuvkJF5ucPvbkFhr",
+    "risk_score": 37.38,
+    "risk_band": "MEDIUM",
+    "confidence": 0.66,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0243",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS3320",
+    "total_volume": 1.37831718,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "3KZPSnREY5HKirvwsYhkyGEn64hsd3yDw",
+    "risk_score": 63.11,
+    "risk_band": "HIGH",
+    "confidence": 0.79,
+    "reason_codes": [
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0149",
+    "cluster_size": 3,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS27699",
+    "total_volume": 1.57966402,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3LP4qkrPd9oonAXJcZtpfks4178KWesnC",
+    "risk_score": 55.96,
+    "risk_band": "HIGH",
+    "confidence": 0.94,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0247",
+    "cluster_size": 3,
+    "dominant_country": "India",
+    "dominant_asn": "AS1221",
+    "total_volume": 6.57909968,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3NTgh9zVJv5qjMLnXM6iT43i2L7ovjWZL",
+    "risk_score": 58.32,
+    "risk_band": "HIGH",
+    "confidence": 0.74,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0250",
+    "cluster_size": 1,
+    "dominant_country": "Nigeria",
+    "dominant_asn": "AS36873",
+    "total_volume": 2.20939264,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "3RjYKhmeBSe1CJa7Fime8bQwTs8BbKH",
+    "risk_score": 59.34,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0258",
+    "cluster_size": 1,
+    "dominant_country": "Nigeria",
+    "dominant_asn": "AS2856",
+    "total_volume": 3.66540865,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "3RuWcHnVcnqyMQAYugUE167aVxn5",
+    "risk_score": 68.07,
+    "risk_band": "CRITICAL",
+    "confidence": 0.79,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0259",
+    "cluster_size": 1,
+    "dominant_country": "United States",
+    "dominant_asn": "AS16509",
+    "total_volume": 4.80537112,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "3S92iyhTC3TFTE53sMXGJoBh2ZBXXMR",
+    "risk_score": 59.59,
+    "risk_band": "HIGH",
+    "confidence": 0.92,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0260",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS13335",
+    "total_volume": 0.0,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "3Ta5HbTxqRecvbuBEio6YernuwmfxPr",
+    "risk_score": 46.09,
+    "risk_band": "MEDIUM",
+    "confidence": 0.71,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0262",
+    "cluster_size": 1,
+    "dominant_country": "Russia",
+    "dominant_asn": "AS13285",
+    "total_volume": 10.85188682,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3Tuq7QqffdfGruYy5NhcWWzauu5S2qWbHf",
+    "risk_score": 43.95,
+    "risk_band": "MEDIUM",
+    "confidence": 0.57,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0263",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS2856",
+    "total_volume": 3.57487213,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "3UEiVyxcsCdLUg1hFtcaQRioJPXGgFZKmo",
+    "risk_score": 55.29,
+    "risk_band": "HIGH",
+    "confidence": 0.87,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS13285",
+    "total_volume": 12.08780893,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3UrWPVycMyK23qMk2tL6MMMfFebu4JL2K",
+    "risk_score": 61.34,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0265",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS13335",
+    "total_volume": 3.95785597,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "3UzSztahg6RjKQoJzTac2JWdViT8",
+    "risk_score": 37.62,
+    "risk_band": "MEDIUM",
+    "confidence": 0.68,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0004",
+    "cluster_size": 9,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS133982",
+    "total_volume": 16.70375752,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3WUVAkKLHWYNp5Sa6VKyk2Q3Ypnx",
+    "risk_score": 63.16,
+    "risk_band": "HIGH",
+    "confidence": 0.77,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0268",
+    "cluster_size": 1,
+    "dominant_country": "United Kingdom",
+    "dominant_asn": "AS1221",
+    "total_volume": 4.52500111,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "3XgzK114QXgMjF2c4btDb8x6cNmeo",
+    "risk_score": 62.81,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0270",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS1221",
+    "total_volume": 5.02192646,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "3YPrVTpTvBHXLTAuPeyQdc9czbjwKFaU6N",
+    "risk_score": 38.4,
+    "risk_band": "MEDIUM",
+    "confidence": 0.67,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0274",
+    "cluster_size": 1,
+    "dominant_country": "Nigeria",
+    "dominant_asn": "AS25513",
+    "total_volume": 1.31999785,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "3YPvWtsHnRwWpHJbzV9YMZYTKBhaEm3kh",
+    "risk_score": 39.36,
+    "risk_band": "MEDIUM",
+    "confidence": 0.67,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0275",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS12389",
+    "total_volume": 14.41733544,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3bjnjFKZUyZTVcNn18FBXsFcFKbk",
+    "risk_score": 69.18,
+    "risk_band": "CRITICAL",
+    "confidence": 0.8,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0277",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS13335",
+    "total_volume": 13.45513774,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "3bm9HDNNHwAdUSJkh9HPd2DJaGikzQ",
+    "risk_score": 40.56,
+    "risk_band": "MEDIUM",
+    "confidence": 0.68,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0278",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS12389",
+    "total_volume": 1.67922511,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "3cguUUwzFbnAmAJjEK3Cc13y4JT4qK9",
+    "risk_score": 42.07,
+    "risk_band": "MEDIUM",
+    "confidence": 0.69,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0281",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS1221",
+    "total_volume": 6.38193998,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3ewk9TL64oZaEGPdS1gYeckah5v7nJ6m",
+    "risk_score": 65.15,
+    "risk_band": "CRITICAL",
+    "confidence": 0.78,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0289",
+    "cluster_size": 1,
+    "dominant_country": "Singapore",
+    "dominant_asn": "AS17547",
+    "total_volume": 2.19588539,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "3fLx3bhJtaTdv2zcshTdtLwvRW4CxUwTU8",
+    "risk_score": 55.73,
+    "risk_band": "HIGH",
+    "confidence": 0.73,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0291",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS27699",
+    "total_volume": 3.84453685,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "3fqWVtUZRkpcSR3LTEg9VdXHSuU98uq",
+    "risk_score": 75.78,
+    "risk_band": "CRITICAL",
+    "confidence": 0.83,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0294",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS18881",
+    "total_volume": 3.25987087,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "3fvdVoLDav4LukjenySEGH7LbBw",
+    "risk_score": 38.49,
+    "risk_band": "MEDIUM",
+    "confidence": 0.67,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0295",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS24940",
+    "total_volume": 0.55445808,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "3iRxPes7AwHrC213QFkW9xdzZWDus",
+    "risk_score": 49.28,
+    "risk_band": "MEDIUM",
+    "confidence": 0.66,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0111",
+    "cluster_size": 3,
+    "dominant_country": "United Kingdom",
+    "dominant_asn": "AS13335",
+    "total_volume": 15.71983201,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3kF96jYb26EbZihRTHsmARHDm6",
+    "risk_score": 40.81,
+    "risk_band": "MEDIUM",
+    "confidence": 0.7,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0004",
+    "cluster_size": 9,
+    "dominant_country": "United States",
+    "dominant_asn": "AS13335",
+    "total_volume": 8.71172422,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3kFaQ6j9ZbEctYfRMEw5Pnfh6FVD84hmmw",
+    "risk_score": 61.29,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0300",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS13335",
+    "total_volume": 5.0125248,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "3mWcgZYA79hymmE6jvXpJGQH2ibg",
+    "risk_score": 56.77,
+    "risk_band": "HIGH",
+    "confidence": 0.73,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0301",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS13335",
+    "total_volume": 14.20873921,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "3mpcki4gE2EbUnfj7D168TchHKT",
+    "risk_score": 59.57,
+    "risk_band": "HIGH",
+    "confidence": 0.82,
+    "reason_codes": [
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0302",
+    "cluster_size": 1,
+    "dominant_country": "United States",
+    "dominant_asn": "AS16509",
+    "total_volume": 2.58961142,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3mt9mJgMYKoaBjseCnqBeVFVGZY9c",
+    "risk_score": 44.32,
+    "risk_band": "MEDIUM",
+    "confidence": 0.57,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0303",
+    "cluster_size": 1,
+    "dominant_country": "India",
+    "dominant_asn": "AS133982",
+    "total_volume": 3.91152116,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "3nTiy6rvJXvz21fPrsFQto9kZqWZ",
+    "risk_score": 40.17,
+    "risk_band": "MEDIUM",
+    "confidence": 0.68,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0307",
+    "cluster_size": 1,
+    "dominant_country": "Singapore",
+    "dominant_asn": "AS13335",
+    "total_volume": 8.34310314,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3nv653CCLJpgGhzzkju1JpnQQaf",
+    "risk_score": 59.1,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0308",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS3216",
+    "total_volume": 0.84717972,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "3ooJavP7zv84wWs5sHkveR2sLmkixMi8",
+    "risk_score": 74.36,
+    "risk_band": "CRITICAL",
+    "confidence": 0.82,
+    "reason_codes": [
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0309",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS12714",
+    "total_volume": 0.60928743,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3pW6fB9KFGEkxJi1eh47JQWthK7vJcD8",
+    "risk_score": 56.53,
+    "risk_band": "HIGH",
+    "confidence": 0.73,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0311",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS2856",
+    "total_volume": 4.4360115,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "3ssni2V6qzzUtxUYFAwh7z2vKPHi",
+    "risk_score": 38.89,
+    "risk_band": "MEDIUM",
+    "confidence": 0.67,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0316",
+    "cluster_size": 1,
+    "dominant_country": "United States",
+    "dominant_asn": "AS12389",
+    "total_volume": 0.55432167,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "3uD73MrEtbB6mexKpF62jDecnhRYXWLiN",
+    "risk_score": 39.89,
+    "risk_band": "MEDIUM",
+    "confidence": 0.69,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0107",
+    "cluster_size": 4,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS13335",
+    "total_volume": 9.57181688,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3uLbNqsE2hRrw1UGXyzAKGQvTb4iyo",
+    "risk_score": 42.25,
+    "risk_band": "MEDIUM",
+    "confidence": 0.69,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0317",
+    "cluster_size": 1,
+    "dominant_country": "United Kingdom",
+    "dominant_asn": "AS16509",
+    "total_volume": 7.42209016,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3vdYySaNs6AWEVFs7XhMv7jmzLiCph",
+    "risk_score": 54.13,
+    "risk_band": "HIGH",
+    "confidence": 0.9,
+    "reason_codes": [
+      "RAPID_CASHOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0319",
+    "cluster_size": 1,
+    "dominant_country": "Singapore",
+    "dominant_asn": "AS3320",
+    "total_volume": 2.62027167,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "3wvET9e7dw29AUp4ioyKGoYd4t",
+    "risk_score": 56.48,
+    "risk_band": "HIGH",
+    "confidence": 0.73,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0321",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS12714",
+    "total_volume": 7.49572409,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "3yebWXNvesUVPf4EC9cj7CVae1kp",
+    "risk_score": 40.75,
+    "risk_band": "MEDIUM",
+    "confidence": 0.68,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0324",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS12714",
+    "total_volume": 0.26647399,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1q2f3ll8akyz34jv97h8t634glh43qv9kzufdnmh",
+    "risk_score": 57.17,
+    "risk_band": "HIGH",
+    "confidence": 0.74,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0328",
+    "cluster_size": 1,
+    "dominant_country": "Russia",
+    "dominant_asn": "AS12389",
+    "total_volume": 12.629873,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "bc1q2h7kxhgjcnl6ftfkyppf75crqf027gmrz0j4ye",
+    "risk_score": 37.28,
+    "risk_band": "MEDIUM",
+    "confidence": 0.58,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "India",
+    "dominant_asn": "AS1221",
+    "total_volume": 20.20559821,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1q3rrc6t6ph3lr6cflwt6wlc8ejtk59yxxptg32k",
+    "risk_score": 56.54,
+    "risk_band": "HIGH",
+    "confidence": 0.73,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0336",
+    "cluster_size": 1,
+    "dominant_country": "India",
+    "dominant_asn": "AS36873",
+    "total_volume": 2.12670874,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "bc1q3stgqma8ct8sf4nzdwu2zfavxktq9zpeza8z2s",
+    "risk_score": 55.43,
+    "risk_band": "HIGH",
+    "confidence": 0.73,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0337",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS12714",
+    "total_volume": 11.28926595,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "bc1q5ecga0mfy2thwdvdcv7telcqkxkft2e23xxsmr820h0lp4ka0gnvr5gtar",
+    "risk_score": 48.4,
+    "risk_band": "MEDIUM",
+    "confidence": 0.59,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0342",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS13285",
+    "total_volume": 2.72917876,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1q5u5tc50wmgznqa7a3q9e2hl6egf4uvy33jfc7z",
+    "risk_score": 62.54,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0345",
+    "cluster_size": 1,
+    "dominant_country": "India",
+    "dominant_asn": "AS133982",
+    "total_volume": 2.58635732,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "bc1q6flvtccmpv8424f7aqzvdgfj6sacht3s9l2lw6",
+    "risk_score": 49.52,
+    "risk_band": "MEDIUM",
+    "confidence": 0.6,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0346",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS133982",
+    "total_volume": 7.76144407,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1q6j062ygxvgq2pxcvkfslj058gq26cp4d9ng5ep",
+    "risk_score": 56.87,
+    "risk_band": "HIGH",
+    "confidence": 0.73,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0347",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS133982",
+    "total_volume": 7.7869487,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "bc1q6lz5pklsntavc4p5223vgm7nyz4af54ykz352y",
+    "risk_score": 58.49,
+    "risk_band": "HIGH",
+    "confidence": 0.74,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0349",
+    "cluster_size": 1,
+    "dominant_country": "United Kingdom",
+    "dominant_asn": "AS2856",
+    "total_volume": 4.60535265,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "bc1q6qc5avjusxd6gf74vfduhz5ctyhavfl6qzks5h9tkx97w69p9cgud5nm9f",
+    "risk_score": 43.96,
+    "risk_band": "MEDIUM",
+    "confidence": 0.57,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0350",
+    "cluster_size": 1,
+    "dominant_country": "Nigeria",
+    "dominant_asn": "AS12389",
+    "total_volume": 9.84165534,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1q7erycej56hudj00mnt8q8m3cscxnr840tcf870",
+    "risk_score": 35.94,
+    "risk_band": "MEDIUM",
+    "confidence": 0.78,
+    "reason_codes": [
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0226",
+    "cluster_size": 4,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS18881",
+    "total_volume": 7.46553006,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1q7fh65hyxyqlnnnn8qzcym059v098dla784xx97wnkmudcn6hv7j35kprwu",
+    "risk_score": 66.29,
+    "risk_band": "CRITICAL",
+    "confidence": 0.78,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0352",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS2856",
+    "total_volume": 7.0300058,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "bc1q7gxrcavadt3rm6wyuryqkjnatgfxjkwrfl5tqmn8406r3v7jy2nmpqavpp",
+    "risk_score": 45.48,
+    "risk_band": "MEDIUM",
+    "confidence": 0.63,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0024",
+    "cluster_size": 14,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS1221",
+    "total_volume": 9.02564032,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1q8chqmhg00ay8ym0sem7lx74x6rswum65j87fw4",
+    "risk_score": 38.44,
+    "risk_band": "MEDIUM",
+    "confidence": 0.59,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS12389",
+    "total_volume": 16.13314903,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1q8g3fwl702l09zdfaw539ccxs2srfnjy9cemn97",
+    "risk_score": 38.92,
+    "risk_band": "MEDIUM",
+    "confidence": 0.67,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0354",
+    "cluster_size": 1,
+    "dominant_country": "United States",
+    "dominant_asn": "AS25513",
+    "total_volume": 1.08058386,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1q9jr2madpj24j884e59nfc9dz4nq42xh83mpjm8",
+    "risk_score": 38.41,
+    "risk_band": "MEDIUM",
+    "confidence": 0.67,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0361",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS29465",
+    "total_volume": 0.40738308,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1qa02e4ghl7m55jphxkcnxxx47ttff6r0ldt6dl2",
+    "risk_score": 39.16,
+    "risk_band": "MEDIUM",
+    "confidence": 0.67,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0362",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS133982",
+    "total_volume": 0.0988798,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1qamhpyx24s29a2tch5knx838lffxk2taegr4vl6",
+    "risk_score": 58.88,
+    "risk_band": "HIGH",
+    "confidence": 0.74,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0365",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS24940",
+    "total_volume": 4.5697851,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "bc1qc9ywvq8ql036wzhd4885tmc7k02dx5mmw5cp22",
+    "risk_score": 42.32,
+    "risk_band": "MEDIUM",
+    "confidence": 0.62,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS1221",
+    "total_volume": 49.33895475,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1qca53dhfkjdvr8uk053v7twcllkmezgmer9qt0x",
+    "risk_score": 65.71,
+    "risk_band": "CRITICAL",
+    "confidence": 0.78,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0369",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS29465",
+    "total_volume": 9.01694635,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "bc1qcmm7t7vrfy97e7597kae8j9fkyh77vl7pna78j",
+    "risk_score": 61.79,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0374",
+    "cluster_size": 1,
+    "dominant_country": "India",
+    "dominant_asn": "AS133982",
+    "total_volume": 6.11744469,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "bc1qd35gzthp2mtfr8ewxa3j0u65c8mm7e0a7rusyy",
+    "risk_score": 62.61,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0376",
+    "cluster_size": 1,
+    "dominant_country": "United Kingdom",
+    "dominant_asn": "AS13335",
+    "total_volume": 3.50240408,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "bc1qd77wncqgay9ha39xwaeq3u0m29h4lfzayjerul",
+    "risk_score": 61.54,
+    "risk_band": "HIGH",
+    "confidence": 0.93,
+    "reason_codes": [
+      "RAPID_CASHOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0378",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS12714",
+    "total_volume": 0.52899243,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1qd98xty2qkkxj28zfxx3k7e4j54d6xp0pgrwnj8",
+    "risk_score": 42.11,
+    "risk_band": "MEDIUM",
+    "confidence": 0.69,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0379",
+    "cluster_size": 1,
+    "dominant_country": "United States",
+    "dominant_asn": "AS3320",
+    "total_volume": 0.39521831,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1qdvpayjlleuldukmh2t6unyv5unnwte5cuz3vhu",
+    "risk_score": 57.96,
+    "risk_band": "HIGH",
+    "confidence": 0.74,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0381",
+    "cluster_size": 1,
+    "dominant_country": "Russia",
+    "dominant_asn": "AS12389",
+    "total_volume": 5.65689083,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "bc1qdyd4tmlfu4gzd9tjtkl730t53ajhph4u9eseac",
+    "risk_score": 45.66,
+    "risk_band": "MEDIUM",
+    "confidence": 0.7,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0382",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS12389",
+    "total_volume": 5.99844724,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1qfeh9jy7mn2pfznhrdrkv5kzpc6ksy4yhvy6ayzet59e6jvys50ekhqjye5",
+    "risk_score": 71.48,
+    "risk_band": "CRITICAL",
+    "confidence": 0.81,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0388",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS133982",
+    "total_volume": 11.47579383,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "bc1qfgd70g3t9u3ap45l78l7jywqjusryt26gsm22q",
+    "risk_score": 66.57,
+    "risk_band": "CRITICAL",
+    "confidence": 0.94,
+    "reason_codes": [
+      "RAPID_CASHOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0390",
+    "cluster_size": 1,
+    "dominant_country": "India",
+    "dominant_asn": "AS12714",
+    "total_volume": 4.95487863,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1qfju35h3pfx7p6mhs9tkar7ukzxx5qaxkaq866l",
+    "risk_score": 55.48,
+    "risk_band": "HIGH",
+    "confidence": 0.78,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0392",
+    "cluster_size": 1,
+    "dominant_country": "Russia",
+    "dominant_asn": "AS12389",
+    "total_volume": 9.99115427,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1qg8a3gqp5xte6te9dkjc6c78lh0x20yv09zmq32",
+    "risk_score": 37.82,
+    "risk_band": "MEDIUM",
+    "confidence": 0.59,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0005",
+    "cluster_size": 34,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS18881",
+    "total_volume": 0.13601898,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1qgc7g0qnre5tarvxjhy87v2ly3thrlmnklhycax",
+    "risk_score": 35.46,
+    "risk_band": "MEDIUM",
+    "confidence": 0.65,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0394",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS1221",
+    "total_volume": 3.71148962,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1qgf9488yqef0lduxgqeg35phepu2fz7u4uv668j",
+    "risk_score": 58.29,
+    "risk_band": "HIGH",
+    "confidence": 0.74,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0396",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS13335",
+    "total_volume": 3.75983504,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "bc1qgqcjtw6jtvutl74cwxu8uy3fhr3hxz86cu5fan",
+    "risk_score": 69.18,
+    "risk_band": "CRITICAL",
+    "confidence": 0.93,
+    "reason_codes": [
+      "RAPID_CASHOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0397",
+    "cluster_size": 1,
+    "dominant_country": "United Kingdom",
+    "dominant_asn": "AS13285",
+    "total_volume": 1.25935352,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1qgrs9wmpnd47z08vh59vf8mj0ke7r9ylnq0edku",
+    "risk_score": 37.17,
+    "risk_band": "MEDIUM",
+    "confidence": 0.66,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0398",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS12389",
+    "total_volume": 0.05501976,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1qhfzt63tuh325djtlcy4u4d7zgya5w34u2aly25",
+    "risk_score": 86.0,
+    "risk_band": "CRITICAL",
+    "confidence": 0.84,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0399",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS12389",
+    "total_volume": 0.0,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1qhredcuqxrpnkphv8xmpsf6h2n42fy48fp7ua5d",
+    "risk_score": 61.02,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0400",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS2856",
+    "total_volume": 4.21489008,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "bc1qjpp0tj7zhsmcgssn854443jnu3qwuj2tlf9knf",
+    "risk_score": 55.67,
+    "risk_band": "HIGH",
+    "confidence": 0.73,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0405",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS13335",
+    "total_volume": 5.18311365,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "bc1qk0cecay0xs30dpgyxfftzn44xkmzyzgw3z8dvf",
+    "risk_score": 52.1,
+    "risk_band": "HIGH",
+    "confidence": 0.91,
+    "reason_codes": [
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0409",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS12714",
+    "total_volume": 3.21017527,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1qkwv495vna2ag74lu49ueut7qmckp22maate4jw",
+    "risk_score": 61.13,
+    "risk_band": "HIGH",
+    "confidence": 0.81,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0410",
+    "cluster_size": 1,
+    "dominant_country": "United Kingdom",
+    "dominant_asn": "AS1221",
+    "total_volume": 3.73302513,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1qmm2mrd69w76w9mddfd03zjuskjjjvl9pc5qzlt",
+    "risk_score": 60.16,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0415",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS3216",
+    "total_volume": 3.95723028,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "bc1qmy3guzzqsqjvja33l0ct8chfwsvs4men9sw974",
+    "risk_score": 65.22,
+    "risk_band": "CRITICAL",
+    "confidence": 0.78,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0417",
+    "cluster_size": 1,
+    "dominant_country": "Singapore",
+    "dominant_asn": "AS17547",
+    "total_volume": 2.0240949,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "bc1qndrjpytlf0eyjpuux60rtmdjjue0hncswwwm2e4d8v37uh5mkjek3r3xnj",
+    "risk_score": 61.9,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0419",
+    "cluster_size": 1,
+    "dominant_country": "Russia",
+    "dominant_asn": "AS2856",
+    "total_volume": 5.52551732,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "bc1qpl7y93exsdw9xdnfj7xm07tv0dndy70cdzaf339vff302kxaqmhtvdvhvf",
+    "risk_score": 52.67,
+    "risk_band": "HIGH",
+    "confidence": 0.89,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0424",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS1221",
+    "total_volume": 0.0,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1qqf9hu9fqpzkfh27vr32f7av6jv99w8c8ye4f98",
+    "risk_score": 56.61,
+    "risk_band": "HIGH",
+    "confidence": 0.73,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0428",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS18881",
+    "total_volume": 5.52347054,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "bc1qqjnwkjarwtjpv6s00kneccyndgkg8yj4wad02llmehjc2nuc20ef45pwze",
+    "risk_score": 64.99,
+    "risk_band": "HIGH",
+    "confidence": 0.81,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0127",
+    "cluster_size": 3,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS13285",
+    "total_volume": 0.86328428,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1qrmytejqgydrzwtjw8nha4f5qlmdrkwu2yynjkv",
+    "risk_score": 61.3,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0436",
+    "cluster_size": 1,
+    "dominant_country": "Nigeria",
+    "dominant_asn": "AS2856",
+    "total_volume": 5.10953922,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "bc1qrtnqpqr2kd9xutulamger7z2neg9ywymcu7dwrsj4l2h8gfz3m4hxzlpqx",
+    "risk_score": 69.69,
+    "risk_band": "CRITICAL",
+    "confidence": 0.8,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0438",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS29465",
+    "total_volume": 0.33552252,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1qruujnlphtwdw6f0y9caazujt5vwsj7rf2jujmd",
+    "risk_score": 52.48,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0439",
+    "cluster_size": 1,
+    "dominant_country": "United States",
+    "dominant_asn": "AS18881",
+    "total_volume": 7.91088837,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1qrvlcz6m8l56tteqe9qxdxh0tnfcseqfqlpm9xx",
+    "risk_score": 36.23,
+    "risk_band": "MEDIUM",
+    "confidence": 0.56,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0024",
+    "cluster_size": 14,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS25513",
+    "total_volume": 0.0,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1qrzt44prh7wegp3k9s2ruyhte83ejw4txdlt4ts",
+    "risk_score": 62.58,
+    "risk_band": "HIGH",
+    "confidence": 0.76,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0440",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS2856",
+    "total_volume": 3.67327932,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "bc1qs9fsymuqx668wakg6s5rqtn9mjt9uhkfv9j7m5",
+    "risk_score": 58.97,
+    "risk_band": "HIGH",
+    "confidence": 0.74,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0441",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS3320",
+    "total_volume": 5.39738511,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "bc1qu53mm9tm9aa2fuxw8nlelsrn2a9w7qp4mlmzdg",
+    "risk_score": 38.39,
+    "risk_band": "MEDIUM",
+    "confidence": 0.67,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0445",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS25513",
+    "total_volume": 1.00353025,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1qudz3q6922upn2wzuuq4t24quhwsql5ajcyytge",
+    "risk_score": 63.63,
+    "risk_band": "HIGH",
+    "confidence": 0.94,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0446",
+    "cluster_size": 1,
+    "dominant_country": "United States",
+    "dominant_asn": "AS29465",
+    "total_volume": 0.68371815,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1qv35vjsx900zncy54q7k7303t6a74ukfrzc2x74",
+    "risk_score": 78.5,
+    "risk_band": "CRITICAL",
+    "confidence": 0.88,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0450",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS12389",
+    "total_volume": 0.0,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1qv7esg4fua4qapqe6sh29jd3vnvpad7vhv298ky",
+    "risk_score": 60.19,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0452",
+    "cluster_size": 1,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS13335",
+    "total_volume": 1.52239385,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1qvja4k5hchevs34m724wljgcnz4aprxeemc78653xh0wqdea242kf97gnvj",
+    "risk_score": 36.68,
+    "risk_band": "MEDIUM",
+    "confidence": 0.67,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0015",
+    "cluster_size": 7,
+    "dominant_country": "Australia",
+    "dominant_asn": "AS1221",
+    "total_volume": 11.61736832,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1qvxpc2059gyg3hf49v3jsg5pz5spqxa3zmmw8es",
+    "risk_score": 56.0,
+    "risk_band": "HIGH",
+    "confidence": 0.73,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0455",
+    "cluster_size": 1,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS18881",
+    "total_volume": 3.57139088,
+    "ground_truth_label": "rapid_cashout"
+  },
+  {
+    "wallet_address": "bc1qwdcjq6s67f0z9n67sv2rscr6wlmmhxe48np4ej9uz7tt2fv53l444cevm2",
+    "risk_score": 36.4,
+    "risk_band": "MEDIUM",
+    "confidence": 0.65,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0247",
+    "cluster_size": 3,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS12714",
+    "total_volume": 25.04518731,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1qwt39df445k7urz6zqarhn35se4mxc3rm7tewa5",
+    "risk_score": 50.09,
+    "risk_band": "HIGH",
+    "confidence": 0.75,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0457",
+    "cluster_size": 1,
+    "dominant_country": "China",
+    "dominant_asn": "AS25513",
+    "total_volume": 3.33155637,
+    "ground_truth_label": "mixer"
+  },
+  {
+    "wallet_address": "bc1qwt4kluxuzv97z9ryyx7qd4a0dhqxqe6s2j5e04",
+    "risk_score": 58.2,
+    "risk_band": "HIGH",
+    "confidence": 0.74,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0458",
+    "cluster_size": 1,
+    "dominant_country": "Germany",
+    "dominant_asn": "AS12389",
+    "total_volume": 7.32480214,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "bc1qxgxgg6hjejg9caqp59uwk89smsuw34rnx3tppp",
+    "risk_score": 36.36,
+    "risk_band": "MEDIUM",
+    "confidence": 0.66,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0107",
+    "cluster_size": 4,
+    "dominant_country": "China",
+    "dominant_asn": "AS133982",
+    "total_volume": 28.00528449,
+    "ground_truth_label": "normal"
+  },
+  {
+    "wallet_address": "bc1qycpzwdndxstr4jsf8lpx7ccfr0dy3834tvhdwz",
+    "risk_score": 63.38,
+    "risk_band": "HIGH",
+    "confidence": 0.77,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "RAPID_CASHOUT",
+      "PEEL_CHAIN",
+      "NEW_WALLET_HIGH_VOLUME",
+      "CROSS_BORDER_HOP"
+    ],
+    "cluster_id": "CLUSTER_0465",
+    "cluster_size": 1,
+    "dominant_country": "Nigeria",
+    "dominant_asn": "AS28573",
+    "total_volume": 4.91115235,
+    "ground_truth_label": "peel_chain"
+  },
+  {
+    "wallet_address": "bc1qygjpte52t2e50whjpwuaac2u0m3hhhh2977h6d",
+    "risk_score": 37.99,
+    "risk_band": "MEDIUM",
+    "confidence": 0.58,
+    "reason_codes": [
+      "MIXER_FANOUT",
+      "CROSS_BORDER_HOP",
+      "OBFUSCATION_DISAGREEMENT"
+    ],
+    "cluster_id": "CLUSTER_0024",
+    "cluster_size": 14,
+    "dominant_country": "Brazil",
+    "dominant_asn": "AS12714",
+    "total_volume": 0.0,
+    "ground_truth_label": "normal"
+  }
+]

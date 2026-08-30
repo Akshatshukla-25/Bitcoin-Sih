@@ -117,12 +117,12 @@ def get_wallet_region(wallet, wallet_regions):
     return wallet_regions[wallet]
 
 
-def get_wallet_home_ip(wallet, wallet_home_ips, wallet_regions):
-    """Assigns persistent home broadcast IP to simulate node-level propagation stability (Koshy et al. 2014)."""
-    if wallet not in wallet_home_ips:
+def get_wallet_ips(wallet, wallet_ips, wallet_regions):
+    """Assigns persistent primary and secondary broadcast IPs (Koshy et al. 2014) simulating home & mobile nodes."""
+    if wallet not in wallet_ips:
         reg = get_wallet_region(wallet, wallet_regions)
-        wallet_home_ips[wallet] = random_ip(reg)
-    return wallet_home_ips[wallet]
+        wallet_ips[wallet] = [random_ip(reg), random_ip(reg)]
+    return wallet_ips[wallet]
 
 
 def random_txid():
@@ -160,14 +160,16 @@ def make_tx(timestamp, inputs, outputs, src_ip, dst_ip, label, script_type=None)
 
 
 # ---------------------------------------------------------------------------
-# Pattern generators
+# Pattern generators with realistic operator infrastructure OPSEC
 # ---------------------------------------------------------------------------
 def gen_peel_chain(used_addresses, start_time):
     """Wallet A -> B + Skim; each hop keeps a small randomized skim (2-8%)
-    and forwards the rest to the next hop; hops are minutes apart."""
+    and forwards the rest to the next hop; hops are minutes apart.
+    Peeling bot/script operates through 1-2 consistent proxy/relay broadcast IPs."""
     n_hops = random.randint(3, 7)
     amount = round(random.uniform(0.5, 8.0), 6)
     current_wallet = mint_wallet(used_addresses)
+    peel_operator_ips = [random_ip(), random_ip()]
     t = start_time
     txs = []
     for _ in range(n_hops):
@@ -182,8 +184,10 @@ def gen_peel_chain(used_addresses, start_time):
             {"address": next_wallet, "amount": forward_amount},
             {"address": skim_wallet, "amount": skim_amount}
         ]
-        # Cross-border hops for layering obfuscation
-        txs.append(make_tx(t, inputs, outputs, random_ip(), random_ip(), "peel_chain"))
+        # Peeling script broadcasts from operator proxy infrastructure
+        src_ip = random.choice(peel_operator_ips)
+        dst_ip = random_ip()
+        txs.append(make_tx(t, inputs, outputs, src_ip, dst_ip, "peel_chain"))
         t = t + timedelta(minutes=random.uniform(1, 25))
         current_wallet = next_wallet
         amount = forward_amount
@@ -192,12 +196,16 @@ def gen_peel_chain(used_addresses, start_time):
 
 def gen_mixer(used_addresses, start_time):
     """One source wallet fans out to 5-15 wallets in a tight window, which
-    then quietly consolidate down to 1-2 wallets in a later window."""
+    then quietly consolidate down to 1-2 wallets in a later window.
+    Mixer service uses dedicated ingress and egress relay nodes."""
     source = mint_wallet(used_addresses)
     source_balance = round(random.uniform(2.0, 20.0), 6)
     n_out = random.randint(5, 15)
     fanout_window_minutes = random.uniform(2, 20)
     mixer_wallets = [mint_wallet(used_addresses) for _ in range(n_out)]
+
+    mixer_ingress_ips = [random_ip(), random_ip()]
+    mixer_egress_ips = [random_ip(), random_ip()]
 
     shares = np.random.dirichlet(np.ones(n_out)) * source_balance
     txs = []
@@ -210,7 +218,9 @@ def gen_mixer(used_addresses, start_time):
         inputs = [{"address": source, "amount": amt}]
         outputs = [{"address": mixer_wallets[i], "amount": amt_after_fee}]
         tx_time = start_time + timedelta(minutes=random.uniform(0, fanout_window_minutes))
-        txs.append(make_tx(tx_time, inputs, outputs, random_ip(), random_ip(), "mixer"))
+        src_ip = random.choice(mixer_ingress_ips)
+        dst_ip = random.choice(mixer_egress_ips)
+        txs.append(make_tx(tx_time, inputs, outputs, src_ip, dst_ip, "mixer"))
 
     consolidation_start = start_time + timedelta(minutes=fanout_window_minutes + random.uniform(5, 60))
     consolidation_window_minutes = random.uniform(10, 90)
@@ -226,23 +236,27 @@ def gen_mixer(used_addresses, start_time):
         tx_time = consolidation_start + timedelta(minutes=random.uniform(0, consolidation_window_minutes))
         inputs = [{"address": wallet, "amount": received_amt}]
         outputs = [{"address": final_wallet, "amount": out_amt}]
-        txs.append(make_tx(tx_time, inputs, outputs, random_ip(), random_ip(), "mixer"))
+        src_ip = random.choice(mixer_egress_ips)
+        dst_ip = random_ip()
+        txs.append(make_tx(tx_time, inputs, outputs, src_ip, dst_ip, "mixer"))
 
     return txs
 
 
 def gen_rapid_cashout(used_addresses, start_time):
     """A brand-new wallet (minted fresh, no prior appearances) receives a
-    lump sum, then forwards 95%+ of it within minutes across 1-3 hops."""
+    lump sum, then forwards 95%+ of it within minutes across 1-3 hops.
+    Liquidation script operates through 1-2 gateway VPN IPs."""
     funder = mint_wallet(used_addresses)
     lump_sum = round(random.uniform(1.0, 15.0), 6)
     victim_wallet = mint_wallet(used_addresses)  # fresh: no prior history anywhere
+    cashout_gateway_ips = [random_ip(), random_ip()]
     fee0 = round(random.uniform(0.00001, 0.0005), 8)
 
     t = start_time
     inputs = [{"address": funder, "amount": lump_sum}]
     outputs = [{"address": victim_wallet, "amount": round(lump_sum - fee0, 8)}]
-    txs = [make_tx(t, inputs, outputs, random_ip(), random_ip(), "rapid_cashout")]
+    txs = [make_tx(t, inputs, outputs, cashout_gateway_ips[0], random_ip(), "rapid_cashout")]
 
     current_wallet = victim_wallet
     amount = round(lump_sum - fee0, 8)
@@ -255,15 +269,17 @@ def gen_rapid_cashout(used_addresses, start_time):
         t = t + timedelta(minutes=random.uniform(1, 10))
         inputs = [{"address": current_wallet, "amount": amount}]
         outputs = [{"address": next_wallet, "amount": forward_amt}]
-        txs.append(make_tx(t, inputs, outputs, random_ip(), random_ip(), "rapid_cashout"))
+        src_ip = random.choice(cashout_gateway_ips)
+        dst_ip = random_ip()
+        txs.append(make_tx(t, inputs, outputs, src_ip, dst_ip, "rapid_cashout"))
         current_wallet, amount = next_wallet, forward_amt
 
     return txs
 
 
-def gen_normal_chain(used_addresses, background_wallets, wallet_regions, wallet_home_ips, start_time):
+def gen_normal_chain(used_addresses, background_wallets, wallet_regions, wallet_ips, start_time):
     """Background/normal traffic with genuine variation: hop counts 0-4,
-    randomized timing (seconds to days), non-round amounts, and persistent home broadcast IPs."""
+    randomized timing (seconds to days), non-round amounts, and persistent home & secondary broadcast IPs."""
     hop_count = random.choices([0, 1, 2, 3, 4], weights=[0.55, 0.20, 0.12, 0.08, 0.05])[0]
     n_tx = hop_count + 1
     txs = []
@@ -306,14 +322,19 @@ def gen_normal_chain(used_addresses, background_wallets, wallet_regions, wallet_
                 dest = random.choice(background_wallets) if background_wallets and random.random() < 0.6 else mint_wallet(used_addresses)
                 outputs.append({"address": dest, "amount": round(remaining * float(s), 8)})
 
-        # Persistent home node broadcast for legitimate normal wallet activity (Koshy et al. 2014)
+        # Persistent home & secondary node broadcast for legitimate normal wallet activity (Koshy et al. 2014)
         sender_addr = inputs[0]["address"]
         primary_region = get_wallet_region(sender_addr, wallet_regions)
-        if random.random() < 0.95:
-            src_ip = get_wallet_home_ip(sender_addr, wallet_home_ips, wallet_regions)
+        w_ips = get_wallet_ips(sender_addr, wallet_ips, wallet_regions)
+        rand_val = random.random()
+        if rand_val < 0.80:
+            src_ip = w_ips[0]  # primary home node
+            dst_ip = random_ip(primary_region if random.random() < 0.85 else None)
+        elif rand_val < 0.95:
+            src_ip = w_ips[1]  # secondary/mobile node in same region
             dst_ip = random_ip(primary_region if random.random() < 0.85 else None)
         else:
-            src_ip = random_ip()
+            src_ip = random_ip()  # occasional travel/roaming
             dst_ip = random_ip()
 
         txs.append(make_tx(t, inputs, outputs, src_ip, dst_ip, "normal"))
@@ -344,14 +365,14 @@ def generate_dataset(total, seed):
 
     used_addresses = set()
     wallet_regions = {}
-    wallet_home_ips = {}
+    wallet_ips = {}
     background_wallets = []
     num_init_wallets = min(30, max(5, total // 2))
     for _ in range(num_init_wallets):
         w = mint_wallet(used_addresses)
         background_wallets.append(w)
         get_wallet_region(w, wallet_regions)
-        get_wallet_home_ip(w, wallet_home_ips, wallet_regions)
+        get_wallet_ips(w, wallet_ips, wallet_regions)
 
     peel_budget = max(0, int(total * PEEL_CHAIN_ROW_FRACTION))
     mixer_budget = max(0, int(total * MIXER_ROW_FRACTION))
@@ -397,7 +418,7 @@ def generate_dataset(total, seed):
     remaining = max(total - planted_total, 0)
     rows = 0
     while rows < remaining and len(all_txs) < total:
-        chain = gen_normal_chain(used_addresses, background_wallets, wallet_regions, wallet_home_ips, random_timestamp_in_window())
+        chain = gen_normal_chain(used_addresses, background_wallets, wallet_regions, wallet_ips, random_timestamp_in_window())
         if rows + len(chain) > remaining:
             chain = chain[: max(0, remaining - rows)]
         if not chain:

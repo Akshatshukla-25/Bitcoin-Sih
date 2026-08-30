@@ -23,7 +23,9 @@ from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.preprocessing import RobustScaler
 
-warnings.filterwarnings('ignore')
+# Standard conservative AML screening prior (10% suspected anomalous base rate)
+# Completely independent of synthetic data composition
+DEFAULT_CONTAMINATION = 0.10
 
 FEATURE_COLS = [
     "forwarded_pct_10m",
@@ -50,20 +52,20 @@ def train_ensemble(df: pd.DataFrame, random_state: int = 42):
     scaler = RobustScaler()
     X_scaled = scaler.fit_transform(X_raw)
 
-    # 1. Isolation Forest
+    # 1. Isolation Forest (Tree-based subspace partitioning)
     iso_forest = IsolationForest(
         n_estimators=150,
-        contamination=0.35,
+        contamination=DEFAULT_CONTAMINATION,
         random_state=random_state,
         n_jobs=-1,
     )
     iso_forest.fit(X_scaled)
     scores_iforest = -iso_forest.decision_function(X_scaled)
 
-    # 2. Local Outlier Factor
+    # 2. Local Outlier Factor (Density-based local reachability)
     lof = LocalOutlierFactor(
         n_neighbors=150,
-        contamination=0.35,
+        contamination=DEFAULT_CONTAMINATION,
         novelty=True,
         n_jobs=-1,
     )

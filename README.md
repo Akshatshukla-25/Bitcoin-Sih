@@ -6,10 +6,10 @@ An air-gapped, offline AI system that fuses blockchain-layer (wallet/UTXO) and n
 ---
 
 ## Key Capabilities
-- **Tripartite Graph Fusion**: Fuses 702 wallets, 683 transactions, and 1,366 IP broadcast/relay nodes.
-- **Unsupervised Anomaly Ensemble**: Multi-model detection via Isolation Forest, Local Outlier Factor (LOF), and Robust Mahalanobis Distance.
+- **Tripartite Graph Fusion**: Fuses 699 wallets, 683 transactions, and 1,366 IP broadcast/relay nodes.
+- **Unsupervised Anomaly Ensemble**: Multi-model detection via Isolation Forest, Local Outlier Factor (LOF), and Robust Mahalanobis Distance (10% AML screening prior).
 - **Entity Clustering**: Multi-input common spending ownership (CIOH) + constrained single-use change address (CADH) + Louvain modularity with confidence scoring.
-- **Offline GeoIP & ASN Enrichment**: Built-in offline GeoLite2-format database in `data/geoip/`.
+- **Offline GeoIP & ASN Enrichment**: Built-in offline GeoIP & Autonomous System (ASN) lookup engine in `data/geoip/`.
 - **SHAP Explainability & SAR Generation**: TreeExplainer attributions + automated FIU/NTRO Suspicious Activity Report (SAR/STR) generator.
 - **Interactive Streamlit Dashboard**: 6 tabs (Overview, Alert Queue, Case Detail, PyVis Network, Model Insights, Evaluation).
 
@@ -33,7 +33,7 @@ python3 -m pip install -r requirements.txt
 ```bash
 python3 pipeline.py
 ```
-This orchestrates all 11 pipeline stages deterministically in ~3.4 seconds (warm step time; ~4.9s cold process) and saves precomputed outputs to `data/` and `reports/`.
+This orchestrates all 11 pipeline stages deterministically in **~3.4 seconds** (warm step time; **~5.6s** cold Python subprocess) and saves precomputed outputs to `data/` and `reports/`.
 
 ### 2. Launch the Streamlit Dashboard
 ```bash

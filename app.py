@@ -364,6 +364,376 @@ st.html("""
         font-family: 'IBM Plex Mono', monospace !important;
     }
 
+    /* ----------------------------------------------------------------------- */
+    /* LUXURY LANDING PORTAL DESIGN SYSTEM                                     */
+    /* ----------------------------------------------------------------------- */
+    .landing-canvas {
+        background-color: #05070B;
+        background-image: 
+            radial-gradient(ellipse 65% 55% at 85% 15%, rgba(200, 151, 59, 0.25) 0%, rgba(139, 46, 46, 0.08) 45%, rgba(5, 7, 11, 0) 80%),
+            radial-gradient(ellipse 40% 40% at 15% 85%, rgba(62, 92, 118, 0.12) 0%, rgba(5, 7, 11, 0) 70%);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        padding: 32px 40px;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.7);
+    }
+
+    .landing-watermark {
+        position: absolute;
+        top: 220px;
+        left: 20px;
+        font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+        font-size: 160px;
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        color: rgba(255, 255, 255, 0.025);
+        pointer-events: none;
+        user-select: none;
+        z-index: 0;
+        line-height: 0.8;
+    }
+
+    .landing-nav-wrap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        padding-bottom: 18px;
+        margin-bottom: 36px;
+        position: relative;
+        z-index: 2;
+    }
+    .landing-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .landing-brand-logo {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #C8973B 0%, #8B2E2E 100%);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 800;
+        color: #FFFFFF;
+        box-shadow: 0 0 16px rgba(200, 151, 59, 0.4);
+    }
+    .landing-brand-name {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        color: #E8E6DE;
+    }
+    .landing-nav-links {
+        display: flex;
+        gap: 24px;
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        color: #94A3B8;
+    }
+    .landing-nav-link {
+        color: #94A3B8;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    .landing-nav-link:hover {
+        color: #C8973B;
+    }
+    .landing-pill-btn {
+        background: rgba(200, 151, 59, 0.15);
+        border: 1px solid rgba(200, 151, 59, 0.4);
+        color: #E8CE9E;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 6px 16px;
+        border-radius: 20px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .landing-pill-btn:hover {
+        background: rgba(200, 151, 59, 0.28);
+        border-color: #C8973B;
+        box-shadow: 0 0 16px rgba(200, 151, 59, 0.35);
+        transform: translateY(-1px);
+    }
+
+    /* Hero Section Grid */
+    .landing-hero-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 40px;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        margin-bottom: 48px;
+    }
+    .landing-tag-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(200, 151, 59, 0.08);
+        border: 1px solid rgba(200, 151, 59, 0.25);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10.5px;
+        font-weight: 600;
+        color: #C8973B;
+        letter-spacing: 0.06em;
+        margin-bottom: 16px;
+    }
+    .landing-tag-pill span.dot {
+        width: 6px;
+        height: 6px;
+        background: #C8973B;
+        border-radius: 50%;
+        box-shadow: 0 0 8px #C8973B;
+    }
+    .landing-headline {
+        font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        font-size: 52px !important;
+        font-weight: 700 !important;
+        line-height: 1.05 !important;
+        letter-spacing: -0.035em !important;
+        color: #FFFFFF !important;
+        margin-bottom: 18px !important;
+    }
+    .landing-headline span.gold-glow {
+        background: linear-gradient(135deg, #FFFFFF 20%, #E8CE9E 60%, #C8973B 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 30px rgba(200, 151, 59, 0.25);
+    }
+    .landing-subtext {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 14.5px;
+        line-height: 1.6;
+        color: #94A3B8;
+        max-width: 520px;
+        margin-bottom: 28px;
+    }
+
+    /* Glass Prompt Search Box */
+    .landing-search-card {
+        background: rgba(14, 20, 32, 0.75);
+        backdrop-filter: blur(24px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 12px 16px;
+        max-width: 480px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.02);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .landing-search-card:hover {
+        border-color: rgba(200, 151, 59, 0.4);
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(200, 151, 59, 0.15);
+    }
+    .landing-search-placeholder {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 12.5px;
+        color: #64748B;
+    }
+    .landing-search-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #C8973B;
+        color: #0B1220;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+        box-shadow: 0 0 12px rgba(200, 151, 59, 0.5);
+    }
+
+    /* Partners Row */
+    .landing-partners-bar {
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 16px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 48px;
+        position: relative;
+        z-index: 2;
+    }
+    .landing-partners-label {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: #64748B;
+    }
+    .landing-partner-item {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: #94A3B8;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Track Record Section */
+    .landing-track-section {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 36px;
+        position: relative;
+        z-index: 2;
+        margin-bottom: 36px;
+    }
+    .landing-track-header {
+        margin-bottom: 24px;
+    }
+    .landing-track-title {
+        font-family: 'IBM Plex Sans', sans-serif !important;
+        font-size: 32px !important;
+        font-weight: 700 !important;
+        color: #FFFFFF !important;
+        line-height: 1.15 !important;
+        margin-bottom: 8px !important;
+    }
+    .landing-track-title span {
+        color: #C8973B;
+    }
+    .landing-track-desc {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 13px;
+        color: #94A3B8;
+        line-height: 1.5;
+    }
+
+    .landing-stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    .landing-stat-card {
+        background: linear-gradient(145deg, rgba(16, 24, 40, 0.75) 0%, rgba(8, 12, 22, 0.92) 100%);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 12px;
+        padding: 24px 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset -1px -1px 24px 0px rgba(200, 151, 59, 0.1);
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .landing-stat-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(200, 151, 59, 0.35);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), inset -1px -1px 30px 0px rgba(200, 151, 59, 0.2);
+    }
+    .landing-stat-num {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 36px;
+        font-weight: 700;
+        color: #FFFFFF;
+        line-height: 1;
+        margin-bottom: 6px;
+        letter-spacing: -0.03em;
+    }
+    .landing-stat-lbl {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 11.5px;
+        color: #94A3B8;
+        font-weight: 500;
+    }
+
+    /* Featured CTA Card */
+    .landing-feature-card {
+        background: linear-gradient(160deg, rgba(20, 28, 48, 0.85) 0%, rgba(10, 15, 28, 0.96) 100%);
+        border: 1px solid rgba(200, 151, 59, 0.25);
+        border-radius: 14px;
+        padding: 30px 26px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), 0 0 30px rgba(200, 151, 59, 0.12);
+        position: relative;
+        overflow: hidden;
+    }
+    .landing-feature-card::before {
+        content: "";
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 160px;
+        height: 160px;
+        background: radial-gradient(circle, rgba(200, 151, 59, 0.25) 0%, rgba(0,0,0,0) 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .landing-feature-title {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        color: #FFFFFF;
+        margin-bottom: 8px;
+    }
+    .landing-feature-text {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 12.5px;
+        color: #94A3B8;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+    .landing-feature-btn {
+        background: #C8973B;
+        color: #070B14;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 8px 18px;
+        border-radius: 6px;
+        text-decoration: none;
+        display: inline-block;
+        box-shadow: 0 4px 16px rgba(200, 151, 59, 0.4);
+        transition: all 0.2s ease;
+        align-self: flex-start;
+    }
+    .landing-feature-btn:hover {
+        background: #DDAE55;
+        box-shadow: 0 6px 22px rgba(200, 151, 59, 0.6);
+        transform: translateY(-1px);
+    }
+
+    /* Bottom Banner */
+    .landing-bottom-banner {
+        text-align: center;
+        padding: 32px 0 12px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        position: relative;
+        z-index: 2;
+    }
+    .landing-bottom-heading {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 26px;
+        font-weight: 700;
+        color: #FFFFFF;
+        letter-spacing: -0.02em;
+    }
+    .landing-bottom-heading span {
+        color: #C8973B;
+    }
+
     /* Subtle tab transition */
     @media (prefers-reduced-motion: no-preference) {
         .tab-content {
@@ -506,7 +876,8 @@ st.html("<h1 style='margin-top:0px; margin-bottom:4px;'>Bitcoin Transaction Traf
 st.html("<div style='color:var(--nt-text-muted); font-size:13px; margin-bottom:16px;'>National Technical Research Organisation (NTRO) • Problem Statement SIH26146 • Air-Gapped Forensic Instrument</div>")
 st.markdown("--- ")
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+tab0, tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    "✦ Portal Landing",
     "1. Overview",
     "2. Alert Queue",
     "3. Case Detail",
@@ -514,6 +885,203 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "5. Model Insights",
     "6. Evaluation"
 ])
+
+# ---------------------------------------------------------------------------
+# TAB 0: LUXURY LANDING PORTAL (Hero, 3D Isometric Tokens, Track Record)
+# ---------------------------------------------------------------------------
+with tab0:
+    landing_html = """
+    <div class="landing-canvas">
+        <div class="landing-watermark">NTRO</div>
+
+        <!-- Navigation Header -->
+        <div class="landing-nav-wrap">
+            <div class="landing-brand">
+                <div class="landing-brand-logo">⚖️</div>
+                <div class="landing-brand-name">NTRO // NROK FORENSIC</div>
+            </div>
+            <div class="landing-nav-links">
+                <span class="landing-nav-link">Tripartite Engine</span>
+                <span class="landing-nav-link">Entity Clustering</span>
+                <span class="landing-nav-link">SAR Generator</span>
+                <span class="landing-nav-link">PyOD Benchmarks</span>
+                <span class="landing-nav-link">Air-Gapped Docs</span>
+            </div>
+            <div class="landing-pill-btn">
+                <span>●</span> AIR-GAPPED ACTIVE
+            </div>
+        </div>
+
+        <!-- Hero Section Grid -->
+        <div class="landing-hero-grid">
+            <div>
+                <div class="landing-tag-pill">
+                    <span class="dot"></span>
+                    <span>✦ NEW • AMPLIFY NATIONAL CRYPTO DEFENSE →</span>
+                </div>
+                <h1 class="landing-headline">
+                    Defense Against<br>
+                    <span class="gold-glow">Digital Threats</span>
+                </h1>
+                <p class="landing-subtext">
+                    Protect sovereign financial systems and critical blockchain networks from sophisticated laundering typologies with intelligent, air-gapped forensic AI. Stay ahead of cyber threats with tripartite graph intelligence.
+                </p>
+                <div class="landing-search-card">
+                    <span class="landing-search-placeholder">Search target wallet address, transaction hash, or entity cluster...</span>
+                    <div class="landing-search-btn">➔</div>
+                </div>
+            </div>
+
+            <!-- 3D Isometric Holographic Security Tokens -->
+            <div style="display: flex; justify-content: center; align-items: center;">
+                <svg width="420" height="340" viewBox="0 0 420 340" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8));">
+                    <!-- Laser beam network lines -->
+                    <line x1="210" y1="20" x2="110" y2="150" stroke="rgba(200, 151, 59, 0.25)" stroke-width="1.2" stroke-dasharray="4 4" />
+                    <line x1="210" y1="20" x2="260" y2="140" stroke="rgba(200, 151, 59, 0.4)" stroke-width="1.5" />
+                    <line x1="210" y1="20" x2="360" y2="160" stroke="rgba(200, 151, 59, 0.2)" stroke-width="1.2" />
+                    <line x1="110" y1="150" x2="260" y2="280" stroke="rgba(200, 151, 59, 0.3)" stroke-width="1.2" />
+                    <line x1="260" y1="140" x2="260" y2="280" stroke="rgba(200, 151, 59, 0.4)" stroke-width="1.5" />
+                    <line x1="360" y1="160" x2="260" y2="280" stroke="rgba(200, 151, 59, 0.25)" stroke-width="1.2" stroke-dasharray="4 4" />
+
+                    <!-- Glow Aura -->
+                    <circle cx="260" cy="140" r="90" fill="url(#goldAura)" opacity="0.35" />
+
+                    <!-- Left Glass Node (Snowflake/Star Symbol) -->
+                    <g transform="translate(60, 90)">
+                        <!-- Isometric Prism -->
+                        <polygon points="50,0 100,28 50,56 0,28" fill="rgba(30, 41, 59, 0.85)" stroke="rgba(255, 255, 255, 0.3)" stroke-width="1.5" />
+                        <polygon points="0,28 50,56 50,96 0,68" fill="rgba(15, 23, 42, 0.9)" stroke="rgba(255, 255, 255, 0.15)" stroke-width="1.5" />
+                        <polygon points="100,28 50,56 50,96 100,68" fill="rgba(30, 41, 59, 0.95)" stroke="rgba(255, 255, 255, 0.2)" stroke-width="1.5" />
+                        <!-- Inner Star -->
+                        <path d="M50,18 L50,38 M40,28 L60,28 M43,21 L57,35 M43,35 L57,21" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+                        <circle cx="50" cy="28" r="4" fill="#C8973B" />
+                    </g>
+
+                    <!-- Center Gold Hardware Security Module Token -->
+                    <g transform="translate(200, 70)">
+                        <!-- Gold Isometric Chassis -->
+                        <polygon points="60,0 120,34 60,68 0,34" fill="url(#goldGradTop)" stroke="#DDAE55" stroke-width="2" />
+                        <polygon points="0,34 60,68 60,118 0,84" fill="url(#goldGradLeft)" stroke="#B8860B" stroke-width="2" />
+                        <polygon points="120,34 60,68 60,118 120,84" fill="url(#goldGradRight)" stroke="#8B2E2E" stroke-width="2" />
+                        <!-- Inner Shield / Bitcoin Emblem -->
+                        <polygon points="60,12 96,34 60,56 24,34" fill="#0A0E17" stroke="#C8973B" stroke-width="1.5" />
+                        <path d="M60,24 L60,44 M52,30 L68,30 M52,38 L68,38" stroke="#E8CE9E" stroke-width="2.5" stroke-linecap="round" />
+                        <circle cx="60" cy="34" r="5" fill="#DDAE55" />
+                        <!-- Cooling vents -->
+                        <line x1="12" y1="52" x2="28" y2="61" stroke="#C8973B" stroke-width="1.5" />
+                        <line x1="12" y1="60" x2="28" y2="69" stroke="#C8973B" stroke-width="1.5" />
+                        <line x1="12" y1="68" x2="28" y2="77" stroke="#C8973B" stroke-width="1.5" />
+                    </g>
+
+                    <!-- Right Translucent Wireframe Token -->
+                    <g transform="translate(310, 110)">
+                        <polygon points="40,0 80,22 40,44 0,22" fill="rgba(15, 23, 42, 0.4)" stroke="rgba(255, 255, 255, 0.2)" stroke-width="1.2" stroke-dasharray="3 3" />
+                        <polygon points="0,22 40,44 40,74 0,52" fill="rgba(15, 23, 42, 0.3)" stroke="rgba(255, 255, 255, 0.15)" stroke-width="1.2" />
+                        <polygon points="80,22 40,44 40,74 80,52" fill="rgba(15, 23, 42, 0.5)" stroke="rgba(255, 255, 255, 0.15)" stroke-width="1.2" />
+                    </g>
+
+                    <defs>
+                        <radialGradient id="goldAura" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#C8973B" stop-opacity="0.8" />
+                            <stop offset="100%" stop-color="#C8973B" stop-opacity="0" />
+                        </radialGradient>
+                        <linearGradient id="goldGradTop" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FFF2D6" />
+                            <stop offset="50%" stop-color="#C8973B" />
+                            <stop offset="100%" stop-color="#996515" />
+                        </linearGradient>
+                        <linearGradient id="goldGradLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#C8973B" />
+                            <stop offset="100%" stop-color="#664614" />
+                        </linearGradient>
+                        <linearGradient id="goldGradRight" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#8B2E2E" />
+                            <stop offset="100%" stop-color="#3B1212" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Agency & Partner Trust Ribbon -->
+        <div class="landing-partners-bar">
+            <span class="landing-partners-label">Deployment Agencies:</span>
+            <div class="landing-partner-item">🏛️ NTRO Command</div>
+            <div class="landing-partner-item">🛡️ FIU-IND Reference</div>
+            <div class="landing-partner-item">⚡ CERT-In Telemetry</div>
+            <div class="landing-partner-item">⚖️ PMLA Enforcement</div>
+            <div class="landing-partner-item">🔒 Air-Gapped Sandbox</div>
+        </div>
+
+        <!-- Our Proven Track Record Section -->
+        <div class="landing-track-section">
+            <div>
+                <div class="landing-track-header">
+                    <h2 class="landing-track-title">Our Proven<br><span>Track Record</span></h2>
+                    <p class="landing-track-desc">
+                        Within milliseconds, our offline multi-model ensemble isolates complex laundering typologies and prepares court-admissible forensic evidence packages with zero external network leakage.
+                    </p>
+                </div>
+                <div class="landing-stats-grid">
+                    <div class="landing-stat-card">
+                        <div class="landing-stat-num">92.5%</div>
+                        <div class="landing-stat-lbl">Success Precision (Critical Tier)</div>
+                    </div>
+                    <div class="landing-stat-card">
+                        <div class="landing-stat-num">699</div>
+                        <div class="landing-stat-lbl">Wallet Entities Triaged</div>
+                    </div>
+                    <div class="landing-stat-card">
+                        <div class="landing-stat-num">80.5 ms</div>
+                        <div class="landing-stat-lbl">Inference Latency (0.013% Block Window)</div>
+                    </div>
+                    <div class="landing-stat-card">
+                        <div class="landing-stat-num">100%</div>
+                        <div class="landing-stat-lbl">Air-Gapped Offline Operation</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Promo Card -->
+            <div class="landing-feature-card">
+                <div>
+                    <div class="landing-feature-title">Interested in full triage?</div>
+                    <p class="landing-feature-text">
+                        Our tripartite graph fuses blockchain UTXOs and TCP/IP broadcast origin telemetry with zero data loss and automated SAR package export.
+                    </p>
+                    <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#C8973B; background:rgba(200,151,59,0.12); padding:4px 10px; border-radius:4px; border:1px solid rgba(200,151,59,0.3); margin-bottom:18px; display:inline-block;">
+                        ● SEED: 42 • DETERMINISTIC ENGINE
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: center; align-items: center; margin: 12px 0;">
+                    <svg width="240" height="130" viewBox="0 0 240 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Layer 3 Top Glass -->
+                        <polygon points="120,10 190,40 120,70 50,40" fill="rgba(30, 41, 59, 0.85)" stroke="#FFFFFF" stroke-width="1.5" />
+                        <path d="M120,30 L120,50 M110,40 L130,40" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+                        <!-- Layer 2 Middle Gold -->
+                        <polygon points="120,40 190,70 120,100 50,70" fill="rgba(200, 151, 59, 0.35)" stroke="#C8973B" stroke-width="1.8" />
+                        <circle cx="120" cy="70" r="5" fill="#C8973B" />
+                        <!-- Layer 1 Base Obsidian -->
+                        <polygon points="120,70 190,100 120,130 50,100" fill="rgba(11, 18, 32, 0.95)" stroke="rgba(200, 151, 59, 0.6)" stroke-width="1.5" />
+                    </svg>
+                </div>
+
+                <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:700; color:#070B14; background:#C8973B; padding:8px 18px; border-radius:6px; text-align:center; box-shadow:0 4px 16px rgba(200,151,59,0.4);">
+                    Switch to Tab 2 to Explore Live Queue →
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Banner -->
+        <div class="landing-bottom-banner">
+            <div class="landing-bottom-heading">
+                Keeping <span>National Sovereign Infrastructure Safe</span> Day And Night!
+            </div>
+        </div>
+    </div>
+    """
+    st.html(landing_html)
 
 # ---------------------------------------------------------------------------
 # TAB 1: OVERVIEW

@@ -107,32 +107,70 @@ st.html("""
         margin-bottom: 16px;
     }
 
-    /* Metric Cards */
+    /* ----------------------------------------------------------------------- */
+    /* MOTION.DEV SPRING PHYSICS & BKLIT COMPONENT TOKENS                      */
+    /* ----------------------------------------------------------------------- */
+    .motion-fade-in {
+        animation: motionFadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes motionFadeUp {
+        0% { opacity: 0; transform: translateY(8px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes radarPulse {
+        0% { box-shadow: 0 0 0 0 rgba(139, 46, 46, 0.6); }
+        70% { box-shadow: 0 0 0 8px rgba(139, 46, 46, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(139, 46, 46, 0); }
+    }
+
+    @keyframes goldPulse {
+        0% { box-shadow: 0 0 0 0 rgba(200, 151, 59, 0.5); }
+        70% { box-shadow: 0 0 0 6px rgba(200, 151, 59, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(200, 151, 59, 0); }
+    }
+
+    /* Metric Cards (BKlit + Motion Spring Hover) */
     .metric-card {
-        background: var(--nt-surface);
-        border: 1px solid var(--nt-border);
+        background: linear-gradient(180deg, rgba(19, 27, 46, 0.95) 0%, rgba(11, 18, 32, 0.98) 100%);
+        backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-top: 3px solid var(--nt-accent);
         border-radius: var(--nt-radius);
         padding: 16px 20px;
-        box-shadow: var(--nt-shadow);
-        transition: border-color 0.2s ease, transform 0.15s ease;
+        box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.45);
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
     }
     .metric-card:hover {
-        transform: translateY(-2px);
+        transform: translateY(-4px) scale(1.015);
         border-top-color: var(--nt-accent-hover);
+        border-color: rgba(200, 151, 59, 0.35);
+        box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.65), 0 0 24px -2px rgba(200, 151, 59, 0.22);
     }
     .metric-card.critical-card {
         border-top-color: var(--nt-critical);
     }
+    .metric-card.critical-card:hover {
+        border-color: rgba(139, 46, 46, 0.5);
+        box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.65), 0 0 24px -2px rgba(139, 46, 46, 0.35);
+    }
     .metric-card.high-card {
         border-top-color: var(--nt-high);
     }
+    .metric-card.high-card:hover {
+        border-color: rgba(184, 86, 46, 0.5);
+        box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.65), 0 0 24px -2px rgba(184, 86, 46, 0.35);
+    }
+
     .metric-val {
         font-family: 'IBM Plex Mono', monospace;
         font-size: 26px;
         font-weight: 600;
         color: var(--nt-text);
         margin-top: 4px;
+        letter-spacing: -0.02em;
     }
     .metric-label {
         font-family: 'IBM Plex Sans', sans-serif;
@@ -140,10 +178,23 @@ st.html("""
         color: var(--nt-text-muted);
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        font-weight: 500;
+        font-weight: 600;
     }
 
-    /* Signature Case Stamp */
+    /* BKlit Card Containers for Data Visualizations */
+    .bklit-container {
+        background: linear-gradient(180deg, rgba(19, 27, 46, 0.7) 0%, rgba(11, 18, 32, 0.9) 100%);
+        border: 1px solid var(--nt-border);
+        border-radius: var(--nt-radius);
+        padding: 16px 18px;
+        margin-bottom: 16px;
+        transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .bklit-container:hover {
+        border-color: rgba(200, 151, 59, 0.25);
+    }
+
+    /* Signature Case Stamp (Motion Active State) */
     .case-stamp {
         display: inline-block;
         font-family: 'IBM Plex Mono', monospace;
@@ -159,6 +210,10 @@ st.html("""
         opacity: 0.92;
         margin-left: 12px;
         vertical-align: middle;
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .case-stamp:hover {
+        transform: rotate(-1deg) scale(1.05);
     }
     .case-stamp::before {
         content: "";
@@ -171,58 +226,75 @@ st.html("""
     .case-stamp.critical {
         color: #E8A3A3;
         border-color: var(--nt-critical);
-        background: rgba(139, 46, 46, 0.15);
+        background: rgba(139, 46, 46, 0.18);
+        animation: radarPulse 2.5s infinite ease-out;
     }
     .case-stamp.high {
         color: #E8B896;
         border-color: var(--nt-high);
-        background: rgba(184, 86, 46, 0.15);
+        background: rgba(184, 86, 46, 0.18);
     }
 
-    /* Risk Badges (Outlined & Tinted Pills) */
+    /* Risk Badges (Outlined & Tinted Motion Pills) */
     .badge-critical {
-        background: rgba(139, 46, 46, 0.15);
+        background: rgba(139, 46, 46, 0.18);
         border: 1px solid var(--nt-critical);
         color: #E8A3A3;
-        padding: 2px 8px;
+        padding: 3px 9px;
         border-radius: 4px;
         font-family: 'IBM Plex Mono', monospace;
         font-size: 11px;
         font-weight: 600;
         display: inline-block;
+        transition: all 0.2s ease;
+    }
+    .badge-critical:hover {
+        background: rgba(139, 46, 46, 0.3);
+        box-shadow: 0 0 10px rgba(139, 46, 46, 0.4);
     }
     .badge-high {
-        background: rgba(184, 86, 46, 0.15);
+        background: rgba(184, 86, 46, 0.18);
         border: 1px solid var(--nt-high);
         color: #E8B896;
-        padding: 2px 8px;
+        padding: 3px 9px;
         border-radius: 4px;
         font-family: 'IBM Plex Mono', monospace;
         font-size: 11px;
         font-weight: 600;
         display: inline-block;
+        transition: all 0.2s ease;
+    }
+    .badge-high:hover {
+        background: rgba(184, 86, 46, 0.3);
+        box-shadow: 0 0 10px rgba(184, 86, 46, 0.4);
     }
     .badge-medium {
-        background: rgba(200, 151, 59, 0.15);
+        background: rgba(200, 151, 59, 0.18);
         border: 1px solid var(--nt-medium);
         color: #E8CE9E;
-        padding: 2px 8px;
+        padding: 3px 9px;
         border-radius: 4px;
         font-family: 'IBM Plex Mono', monospace;
         font-size: 11px;
         font-weight: 600;
         display: inline-block;
+        transition: all 0.2s ease;
+    }
+    .badge-medium:hover {
+        background: rgba(200, 151, 59, 0.3);
+        box-shadow: 0 0 10px rgba(200, 151, 59, 0.4);
     }
     .badge-low {
-        background: rgba(91, 122, 107, 0.15);
+        background: rgba(91, 122, 107, 0.18);
         border: 1px solid var(--nt-low);
         color: #B9CDC0;
-        padding: 2px 8px;
+        padding: 3px 9px;
         border-radius: 4px;
         font-family: 'IBM Plex Mono', monospace;
         font-size: 11px;
         font-weight: 600;
         display: inline-block;
+        transition: all 0.2s ease;
     }
 
     /* Tabs Styling */
@@ -466,7 +538,12 @@ with tab1:
 
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown("#### Composite Risk Score Distribution")
+        st.html("""
+        <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;'>
+            <span style='font-family:"IBM Plex Sans",sans-serif; font-weight:600; font-size:14px; color:#E8E6DE;'>Composite Risk Score Distribution</span>
+            <span style='font-family:"IBM Plex Mono",monospace; font-size:10px; color:#C8973B; background:rgba(200,151,59,0.12); padding:2px 7px; border-radius:3px; border:1px solid rgba(200,151,59,0.3); font-weight:600;'>RISK SPECTRUM</span>
+        </div>
+        """)
         hist_chart = alt.Chart(scored_df).mark_bar(opacity=0.9, cornerRadiusTopLeft=2, cornerRadiusTopRight=2).encode(
             x=alt.X("composite_risk_score:Q", bin=alt.Bin(maxbins=25), title="Composite Risk Score (0-100)"),
             y=alt.Y("count():Q", title="Entity Count"),
@@ -474,11 +551,16 @@ with tab1:
                 domain=["CRITICAL", "HIGH", "MEDIUM", "LOW"],
                 range=["#8B2E2E", "#B8562E", "#C8973B", "#5B7A6B"]
             ), title="Risk Band")
-        ).properties(height=290)
+        ).properties(height=280)
         st.altair_chart(hist_chart, width="stretch")
 
     with c2:
-        st.markdown("#### Triggered Laundering Reason Codes Frequency")
+        st.html("""
+        <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;'>
+            <span style='font-family:"IBM Plex Sans",sans-serif; font-weight:600; font-size:14px; color:#E8E6DE;'>Triggered Laundering Reason Codes Frequency</span>
+            <span style='font-family:"IBM Plex Mono",monospace; font-size:10px; color:#E8A3A3; background:rgba(139,46,46,0.15); padding:2px 7px; border-radius:3px; border:1px solid rgba(139,46,46,0.35); font-weight:600;'>TYPOLOGIES</span>
+        </div>
+        """)
         all_reasons = []
         for rc in scored_df["reason_codes"].dropna():
             for code in str(rc).split(";"):
@@ -491,12 +573,17 @@ with tab1:
             x=alt.X("Count:Q", title="Trigger Count"),
             y=alt.Y("Reason Code:N", sort="-x", title="Typology Reason Code"),
             tooltip=["Reason Code", "Count"]
-        ).properties(height=290)
+        ).properties(height=280)
         st.altair_chart(bar_rc, width="stretch")
 
     c3, c4 = st.columns(2)
     with c3:
-        st.markdown("#### Top Geographic Jurisdictions (GeoIP Origin)")
+        st.html("""
+        <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;'>
+            <span style='font-family:"IBM Plex Sans",sans-serif; font-weight:600; font-size:14px; color:#E8E6DE;'>Top Geographic Jurisdictions (GeoIP Origin)</span>
+            <span style='font-family:"IBM Plex Mono",monospace; font-size:10px; color:#A6C2DE; background:rgba(62,92,118,0.2); padding:2px 7px; border-radius:3px; border:1px solid rgba(62,92,118,0.4); font-weight:600;'>ASN / GEOIP</span>
+        </div>
+        """)
         active_country_df = filtered_df if not filtered_df.empty else scored_df
         country_counts = active_country_df[active_country_df["dominant_country"] != "Unknown"]["dominant_country"].value_counts().reset_index().head(8)
         country_counts.columns = ["Country", "Entities"]
@@ -504,11 +591,16 @@ with tab1:
             x=alt.X("Entities:Q", title="Entities"),
             y=alt.Y("Country:N", sort="-x", title="Jurisdiction"),
             tooltip=["Country", "Entities"]
-        ).properties(height=270)
+        ).properties(height=260)
         st.altair_chart(c_chart, width="stretch")
 
     with c4:
-        st.markdown("#### Flagged Transaction Volume Over Time")
+        st.html("""
+        <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;'>
+            <span style='font-family:"IBM Plex Sans",sans-serif; font-weight:600; font-size:14px; color:#E8E6DE;'>Flagged Transaction Volume Over Time</span>
+            <span style='font-family:"IBM Plex Mono",monospace; font-size:10px; color:#B3D1C2; background:rgba(91,122,107,0.2); padding:2px 7px; border-radius:3px; border:1px solid rgba(91,122,107,0.4); font-weight:600;'>TIMELINE</span>
+        </div>
+        """)
         tx_timeline = []
         for tx in transactions:
             tx_timeline.append({
@@ -527,7 +619,7 @@ with tab1:
                     alt.Tooltip("datetime:T", format="%b %d, %Y", title="Date"),
                     alt.Tooltip("amount:Q", format=".2f", title="Volume (BTC)")
                 ]
-            ).properties(height=270)
+            ).properties(height=260)
             st.altair_chart(t_chart, width="stretch")
 
 # ---------------------------------------------------------------------------

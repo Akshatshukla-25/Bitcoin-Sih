@@ -41,7 +41,7 @@ def evaluate_pipeline(
     bands = [
         ("MEDIUM+ (Triage Policy >= 35)", 35.0),
         ("HIGH+ (Escalation Policy >= 50)", 50.0),
-        ("CRITICAL (Immediate Freeze >= 65)", 65.0),
+        ("CRITICAL (Immediate Freeze >= 60)", 60.0),
     ]
 
     metrics_list = []

@@ -804,7 +804,18 @@ with tab4:
         html_content = f.read()
 
     components.html(html_content, height=580)
-    st.caption("Legend: 🔴 Critical Wallet  •  🟠 High Risk Wallet  •  🟡 Medium Risk Wallet  •  🟢 Normal Wallet  •  🟣 Anomaly Transaction  •  🔵 Normal Transaction  •  🔷 IP Broadcast / Relay Node")
+    legend_html = (
+        "<div style='display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; margin-bottom: 6px; font-size: 11px; font-family: var(--nt-font-mono);'>"
+        "<span style='background: rgba(139,46,46,0.2); color: #E8A3A3; padding: 4px 9px; border: 1px solid rgba(139,46,46,0.5); border-radius: 2px;'>🔴 Critical Wallet (Score &ge; 60)</span>"
+        "<span style='background: rgba(184,86,46,0.2); color: #E8B896; padding: 4px 9px; border: 1px solid rgba(184,86,46,0.5); border-radius: 2px;'>🟠 High Risk Wallet (Score 50–59)</span>"
+        "<span style='background: rgba(200,151,59,0.2); color: #E8D4A2; padding: 4px 9px; border: 1px solid rgba(200,151,59,0.5); border-radius: 2px;'>🟡 Medium Risk Wallet (Score 35–49)</span>"
+        "<span style='background: rgba(91,122,107,0.2); color: #B3D1C2; padding: 4px 9px; border: 1px solid rgba(91,122,107,0.5); border-radius: 2px;'>🟢 Normal Wallet</span>"
+        "<span style='background: rgba(122,107,143,0.2); color: #D1C5DE; padding: 4px 9px; border: 1px solid rgba(122,107,143,0.5); border-radius: 2px;'>🟣 Anomaly Tx</span>"
+        "<span style='background: rgba(46,64,87,0.2); color: #ADC2D8; padding: 4px 9px; border: 1px solid rgba(46,64,87,0.5); border-radius: 2px;'>🔵 Normal Tx</span>"
+        "<span style='background: rgba(62,92,118,0.2); color: #A6C2DE; padding: 4px 9px; border: 1px solid rgba(62,92,118,0.5); border-radius: 2px;'>🔷 IP Node</span>"
+        "</div>"
+    )
+    st.html(legend_html)
 
 # ---------------------------------------------------------------------------
 # TAB 5: MODEL INSIGHTS

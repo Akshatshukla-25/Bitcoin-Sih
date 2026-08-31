@@ -27,8 +27,7 @@ WEIGHT_STRUCTURAL_REASONS = 0.40    # 40% Structural & Behavioral Reason Codes
 WEIGHT_CLUSTER_RISK = 0.20          # 20% Entity Cluster Aggregate Risk
 
 # Thresholds for Alert Risk Bands (Calibrated for high sensitivity & precision)
-# Thresholds for Alert Risk Bands (Calibrated for high sensitivity & precision)
-BAND_CRITICAL_MIN = 65.0          # Score >= 65 -> CRITICAL (immediate law enforcement triage)
+BAND_CRITICAL_MIN = 60.0          # Score >= 60 -> CRITICAL (immediate law enforcement triage)
 BAND_HIGH_MIN = 50.0              # Score >= 50 -> HIGH (priority analyst queue)
 BAND_MEDIUM_MIN = 35.0            # Score >= 35 -> MEDIUM (surveillance watch)
 

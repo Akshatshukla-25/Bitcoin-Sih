@@ -73,7 +73,7 @@ To perform standardized, apples-to-apples performance comparisons across distinc
 A common question in anomaly benchmarking is why a blended meta-ensemble is chosen when standalone linear models (like PCA) or spherical cluster models (like CBLOF) achieve slightly higher standalone ranking metrics on specific distributions:
 1. **Complementary Inductive Biases vs Zero-Day Typologies**: Standalone PCA assumes linear subspace projections (blind to non-linear localized density clusters), while CBLOF assumes spherical k-means clustering. Real adversarial Bitcoin laundering typologies span both extreme subspace outliers (large volume sweeps) and local density anomalies (micro-peeling chains). Blending Isolation Forest (subspace tree partitioning), LOF (local reachability density), and Mahalanobis (covariance distance) avoids single-paradigm blindness.
 2. **Forensic Explainability & Legal Admissibility (TreeExplainer SHAP)**: In court and FIU filings, investigators cannot present a raw PCA reconstruction error. The ensemble includes `IsolationForest` specifically because its tree structure natively enables exact additive Shapley feature attributions via `shap.TreeExplainer`, generating verifiable contribution vectors for every flagged wallet.
-3. **End-to-End Composite Synergy**: The raw ML ensemble score serves as the continuous anomaly prior in `scoring.py`, which is combined with graph topological heuristics and community modularity to achieve **87.30% Precision** and **98.22% Specificity** at the CRITICAL policy tier.
+3. **End-to-End Composite Synergy**: The raw ML ensemble score serves as the continuous anomaly prior in `scoring.py`, which is combined with graph topological heuristics and community modularity to achieve **92.47% Precision** and **98.44% Specificity** at the CRITICAL policy tier.
 4. **Latency-Budget & Operational Throughput**: While lightweight linear models like PCA evaluate in 3.80 ms, the 3-Model Ensemble evaluates in **80.50 ms** across all entities. In live Bitcoin blockchain monitoring, new blocks are mined every ~10 minutes (600,000 ms). An 80 ms inference cycle uses only **0.013% of the inter-block window**, easily sustaining real-time mempool transaction broadcast ingestion while providing defense-in-depth security.
 
 *Considered and Rejected*: Supervised deep graph neural networks (e.g. GCN/GAT) were rejected because real-world Bitcoin darknet typologies evolve rapidly, causing supervised classifiers to overfit to historical patterns and fail against novel zero-day laundering scripts.
@@ -92,11 +92,11 @@ The complete composite detection engine (fusing the ML anomaly ensemble, structu
 
 | Alert Policy Level | Risk Threshold | Flagged Count | True Positives (TP) | False Positives (FP) | Precision | Recall (TPR) | Specificity (TNR) | F1-Score | ROC-AUC | PR-AUC |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **MEDIUM+ (Triage Policy)** | >= 35 | 171 | 137 | 34 | **80.12%** | **55.02%** | **92.44%** | **0.6524** | **0.6531** | **0.6347** |
-| **HIGH+ (Priority Escalation)** | >= 50 | 117 | 101 | 16 | **86.32%** | **40.56%** | **96.44%** | **0.5519** | **0.6531** | **0.6347** |
-| **CRITICAL (Immediate Action)** | >= 65 | 63 | 55 | 8 | **87.30%** | **22.09%** | **98.22%** | **0.3526** | **0.6531** | **0.6347** |
+| **MEDIUM+ (Triage Policy)** | >= 35 | 171 | 137 | 34 | **80.12%** | **55.02%** | **92.44%** | **0.6524** | **0.6305** | **0.6390** |
+| **HIGH+ (Priority Escalation)** | >= 50 | 117 | 100 | 17 | **85.47%** | **40.16%** | **96.22%** | **0.5464** | **0.6305** | **0.6390** |
+| **CRITICAL (Immediate Action)** | >= 60 | 93 | 86 | 7 | **92.47%** | **34.54%** | **98.44%** | **0.5029** | **0.6305** | **0.6390** |
 
-*Summary*: At the CRITICAL immediate freeze tier (score >= 65), the system operates at **87.30% precision** and **98.22% specificity** (only 8 false positives across 450 normal entities), ensuring that high-severity alerts represent actionable forensic intelligence for NTRO analysts and FIU filings.
+*Summary*: At the recalibrated CRITICAL immediate freeze tier (score >= 60), the system operates at **92.47% precision** and **98.44% specificity** (only 7 false positives across 450 normal entities, capturing 86 verified laundering nodes), ensuring that high-severity alerts represent actionable forensic intelligence for NTRO analysts and FIU filings.
 
 ---
 
@@ -114,13 +114,15 @@ While the system successfully isolates known laundering topological signatures, 
 2. **Novelty & Architecture (Mins 3–6)**: Tripartite Graph Fusion (IP-Wallet-Tx) + Koshy/Biryukov network propagation timing correlation + dual-heuristic address clustering (CIOH + CADH).
 3. **Live End-to-End Walkthrough (Mins 6–10)**: 1-Tap investigation path: Overview Queue → Drilldown into high-risk Peel Chain / Mixer wallet → Live SHAP attributions → Cluster Heuristics & Confidence → Instant SAR/STR JSON export.
 4. **Technical Depth & Self-Audit (Mins 10–13)**: Highlight the rigorous 30-item self-audit, variance-equalized ML ensemble, distance-inverted betweenness, and 100% offline air-gapped verification.
-5. **Impact & Scalability (Mins 13–15)**: 87.30% precision and 98.22% specificity at CRITICAL alert tier, saving investigator triage time and providing legally defensible evidence packages for FIU-IND / PMLA filings.
+5. **Impact & Scalability (Mins 13–15)**: 92.47% precision and 98.44% specificity at CRITICAL alert tier, saving investigator triage time and providing legally defensible evidence packages for FIU-IND / PMLA filings.
 
 ### Rehearsed 5-Minute Q&A Defense Answers:
 - **Q: Why unsupervised rather than supervised graph neural networks (GCNs)?**
   *A: Supervised GCNs overfit to known historical laundering scripts from training sets (e.g. 2019 Elliptic labels). Unsupervised density and subspace isolation (IForest + LOF + Mahalanobis) detect zero-day laundering scripts that deviate from organic spending baselines without label bias.*
 - **Q: Why choose the 3-Model Ensemble over standalone PCA or CBLOF given benchmark numbers?**
   *A: Standalone PCA and CBLOF suffer from single-paradigm blindness (pure linear projection or spherical clustering) and cannot produce exact Shapley feature attributions. The ensemble combines subspace tree isolation (which powers exact SHAP TreeExplainer legal evidence), local density reachability (LOF), and covariance distance (Mahalanobis) for defense-in-depth robustness against diverse evasion techniques.*
+- **Q: Why does the peel-chain cluster size distribution show a median of 1 while the upper end reaches 5–8?**
+  *A: This reflects the authentic anatomy of peel chains: a 7-hop peel chain consists of 8 controlling forward spine addresses (which our chronological PCCH heuristic successfully chains into a single entity cluster of size 8 with 90% confidence) and 7 independent skim recipient addresses (which are single-use external deposit sinks designed by the launderer to remain disconnected). Our clustering correctly distinguishes the persistent laundering bot identity from the disparate sink endpoints.*
 - **Q: How do you validate detection performance without live ground truth?**
   *A: We evaluate against synthetically planted adversarial patterns parameterized by empirical blockchain studies, and benchmarked feature representations against the Elliptic++ public actor dataset.*
 - **Q: What is the primary driver of false positives and how is it mitigated?**

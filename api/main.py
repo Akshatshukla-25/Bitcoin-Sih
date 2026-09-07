@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from api.data_loader import ArtifactLoadError, load_data_bundle
 from api.routers import overview, alerts, cases, network, models, evaluation
@@ -43,6 +44,18 @@ def health_check():
         "entities": len(data["scored_df"]),
         "transactions": len(data["transactions"]),
     }
+
+@app.get("/api/download/{doc_name}")
+def download_doc(doc_name: str):
+    file_map = {
+        "team-explainer": ("TEAM_EXPLAINER.md", "SIH26146_Team_Explainer.md"),
+        "human-context": ("HUMAN_CONTEXT.md", "SIH26146_Human_Context_Dossier.md"),
+        "ai-context": ("AI_CONTEXT.md", "SIH26146_AI_Context_Manual.md"),
+    }
+    if doc_name not in file_map:
+        raise HTTPException(status_code=404, detail="Document not found")
+    src, filename = file_map[doc_name]
+    return FileResponse(src, media_type="text/markdown", filename=filename)
 
 if __name__ == "__main__":
     import uvicorn

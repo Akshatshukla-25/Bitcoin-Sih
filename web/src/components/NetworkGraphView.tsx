@@ -9,6 +9,7 @@ interface Node {
   label: string;
   full_label: string;
   type: "wallet" | "transaction" | "ip";
+  is_ego_center?: boolean;
   risk_band?: string;
   risk_score?: number;
   pattern?: string;
@@ -30,12 +31,14 @@ interface Node {
   y?: number;
   vx?: number;
   vy?: number;
+  isCenter?: boolean;
 }
 
 interface LinkItem {
   source: string;
   target: string;
   type: string;
+  port?: number | null;
   amount: number;
   color: string;
 }
@@ -57,9 +60,10 @@ interface NetworkGraphViewProps {
     links: LinkItem[];
     legend: Array<{ label: string; color: string; type: string }>;
   };
+  embedded?: boolean;
 }
 
-export default function NetworkGraphView({ initialData }: NetworkGraphViewProps) {
+export default function NetworkGraphView({ initialData, embedded = false }: NetworkGraphViewProps) {
   const [scope, setScope] = useState(initialData.scope || "top30");
   const [selectedEgoWallet, setSelectedEgoWallet] = useState(
     initialData.selected_wallet || (initialData.wallet_options?.[0]?.wallet ?? "")
@@ -82,6 +86,18 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
   const lastMousePosRef = useRef({ x: 0, y: 0 });
   const hasMovedRef = useRef(false);
 
+  // Sync state whenever initialData changes from parent
+  useEffect(() => {
+    if (initialData) {
+      setGraphData(initialData);
+      setScope(initialData.scope || "top30");
+      if (initialData.selected_wallet) {
+        setSelectedEgoWallet(initialData.selected_wallet);
+      }
+      setSelectedNode(null);
+    }
+  }, [initialData]);
+
   const fetchScopeData = async (newScope: string, targetWallet?: string) => {
     try {
       setIsLoading(true);
@@ -96,7 +112,9 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
       if (json && Array.isArray(json.nodes)) {
         setGraphData(json);
         setScope(newScope);
-        if (newScope === "ego" && targetWallet) {
+        if (json.selected_wallet) {
+          setSelectedEgoWallet(json.selected_wallet);
+        } else if (targetWallet) {
           setSelectedEgoWallet(targetWallet);
         }
         setSelectedNode(null);
@@ -145,16 +163,31 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
         (selectedNode && (l.source === selectedNode.id || l.target === selectedNode.id)) ||
         (hoveredNode && (l.source === hoveredNode.id || l.target === hoveredNode.id));
 
+      const isNetworkEdge = l.type === "broadcasts" || l.type === "relays_to";
+
       ctx.beginPath();
       ctx.moveTo(s.x!, s.y!);
       ctx.lineTo(t.x!, t.y!);
-      ctx.strokeStyle = isIncident
-        ? "rgba(200, 151, 59, 0.95)"
-        : (selectedNode || hoveredNode)
-        ? "rgba(232, 230, 222, 0.08)"
-        : "rgba(232, 230, 222, 0.22)";
-      ctx.lineWidth = isIncident ? 2.5 : 1.2;
+
+      if (isNetworkEdge) {
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = isIncident
+          ? "rgba(56, 189, 248, 1.0)"
+          : (selectedNode || hoveredNode)
+          ? "rgba(56, 189, 248, 0.1)"
+          : "rgba(56, 189, 248, 0.45)";
+        ctx.lineWidth = isIncident ? 2.5 : 1.2;
+      } else {
+        ctx.setLineDash([]);
+        ctx.strokeStyle = isIncident
+          ? "rgba(200, 151, 59, 1.0)"
+          : (selectedNode || hoveredNode)
+          ? "rgba(232, 230, 222, 0.08)"
+          : "rgba(232, 230, 222, 0.25)";
+        ctx.lineWidth = isIncident ? 2.5 : 1.3;
+      }
       ctx.stroke();
+      ctx.setLineDash([]);
 
       // Directional arrow head
       const angle = Math.atan2(t.y! - s.y!, t.x! - s.x!);
@@ -170,7 +203,9 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
         midX - 7 * Math.cos(angle + Math.PI / 6),
         midY - 7 * Math.sin(angle + Math.PI / 6)
       );
-      ctx.fillStyle = isIncident ? "#C8973B" : "rgba(200, 151, 59, 0.55)";
+      ctx.fillStyle = isIncident
+        ? (isNetworkEdge ? "#38BDF8" : "#C8973B")
+        : (isNetworkEdge ? "rgba(56, 189, 248, 0.7)" : "rgba(200, 151, 59, 0.6)");
       ctx.fill();
     }
 
@@ -181,6 +216,21 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
 
       const isSelected = selectedNode?.id === n.id;
       const isHovered = hoveredNode?.id === n.id;
+      const isTarget = n.is_ego_center || (scope === "ego" && n.id === selectedEgoWallet);
+
+      // Target Halo Ring & Badge
+      if (isTarget) {
+        ctx.beginPath();
+        ctx.arc(0, 0, n.size + 10, 0, 2 * Math.PI);
+        ctx.strokeStyle = "rgba(200, 151, 59, 0.9)";
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.fillStyle = "#C8973B";
+        ctx.font = "bold 9px monospace";
+        ctx.textAlign = "center";
+        ctx.fillText("★ TARGET ENTITY", 0, -n.size - 13);
+      }
 
       // Outer Selection / Hover Ring
       if (isSelected || isHovered) {
@@ -198,8 +248,8 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
         ctx.arc(0, 0, n.size, 0, 2 * Math.PI);
         ctx.fillStyle = n.color;
         ctx.fill();
-        ctx.strokeStyle = isSelected ? "#FFFFFF" : "rgba(255, 255, 255, 0.4)";
-        ctx.lineWidth = isSelected ? 2 : 1;
+        ctx.strokeStyle = isSelected || isTarget ? "#FFFFFF" : "rgba(255, 255, 255, 0.4)";
+        ctx.lineWidth = isSelected || isTarget ? 2.5 : 1;
         ctx.stroke();
       } else if (n.type === "transaction") {
         ctx.fillStyle = n.color;
@@ -219,8 +269,8 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
       }
 
       // Label below node
-      ctx.fillStyle = isSelected ? "#C8973B" : "#E8E6DE";
-      ctx.font = `${isSelected ? "bold " : ""}10px monospace`;
+      ctx.fillStyle = isSelected || isTarget ? "#C8973B" : "#E8E6DE";
+      ctx.font = `${isSelected || isTarget ? "bold " : ""}10px monospace`;
       ctx.textAlign = "center";
       ctx.fillText(n.label, 0, n.size + 13);
 
@@ -228,14 +278,14 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
     }
 
     ctx.restore();
-  }, [selectedNode, hoveredNode]);
+  }, [selectedNode, hoveredNode, scope, selectedEgoWallet]);
 
   // Layout simulation and physics
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
     const width = container?.clientWidth || 920;
-    const height = container?.clientHeight || 550;
+    const height = container?.clientHeight || (embedded ? 460 : 550);
     if (canvas) {
       canvas.width = width;
       canvas.height = height;
@@ -243,12 +293,26 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
 
     const rawNodes = graphData?.nodes || [];
     const rawLinks = graphData?.links || [];
+    const isEgo = scope === "ego";
+    const centerWallet = graphData.selected_wallet || selectedEgoWallet;
 
     const nodes: Node[] = rawNodes.map((n, i) => {
+      const isCenter = isEgo && (n.is_ego_center || n.id === centerWallet);
+      if (isCenter) {
+        return {
+          ...n,
+          isCenter: true,
+          x: width / 2,
+          y: height / 2,
+          vx: 0,
+          vy: 0,
+        };
+      }
       const angle = (i / Math.max(1, rawNodes.length)) * 2 * Math.PI;
-      const radius = 140 + (i % 5) * 35;
+      const radius = n.type === "transaction" ? 110 : (n.type === "ip" ? 210 : 170);
       return {
         ...n,
+        isCenter: false,
         x: width / 2 + Math.cos(angle) * radius,
         y: height / 2 + Math.sin(angle) * radius,
         vx: 0,
@@ -270,8 +334,13 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
     for (let iter = 0; iter < iterations; iter++) {
       const alpha = 1.0 - iter / iterations;
 
-      // Center gravity
+      // Center gravity (for non-center nodes)
       for (const n of nodes) {
+        if (n.isCenter) {
+          n.x = width / 2;
+          n.y = height / 2;
+          continue;
+        }
         n.x! += (width / 2 - n.x!) * 0.02 * alpha;
         n.y! += (height / 2 - n.y!) * 0.02 * alpha;
       }
@@ -282,13 +351,17 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
           const dx = nodes[j].x! - nodes[i].x!;
           const dy = nodes[j].y! - nodes[i].y!;
           const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          const minDist = nodes[i].size + nodes[j].size + 35;
+          const minDist = nodes[i].size + nodes[j].size + 40;
           if (dist < minDist) {
             const force = ((minDist - dist) / dist) * 0.25 * alpha;
-            nodes[i].x! -= dx * force;
-            nodes[i].y! -= dy * force;
-            nodes[j].x! += dx * force;
-            nodes[j].y! += dy * force;
+            if (!nodes[i].isCenter) {
+              nodes[i].x! -= dx * force;
+              nodes[i].y! -= dy * force;
+            }
+            if (!nodes[j].isCenter) {
+              nodes[j].x! += dx * force;
+              nodes[j].y! += dy * force;
+            }
           }
         }
       }
@@ -300,12 +373,16 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
         const dx = t.x! - s.x!;
         const dy = t.y! - s.y!;
         const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-        const targetDist = 65;
+        const targetDist = link.type === "broadcasts" || link.type === "relays_to" ? 85 : 70;
         const force = ((dist - targetDist) / dist) * 0.09 * alpha;
-        s.x! += dx * force;
-        s.y! += dy * force;
-        t.x! -= dx * force;
-        t.y! -= dy * force;
+        if (!s.isCenter) {
+          s.x! += dx * force;
+          s.y! += dy * force;
+        }
+        if (!t.isCenter) {
+          t.x! -= dx * force;
+          t.y! -= dy * force;
+        }
       }
     }
 
@@ -318,13 +395,13 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
     const handleResize = () => {
       if (container && canvas) {
         canvas.width = container.clientWidth;
-        canvas.height = container.clientHeight || 550;
+        canvas.height = container.clientHeight || (embedded ? 460 : 550);
         draw();
       }
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [graphData, draw]);
+  }, [graphData, draw, scope, selectedEgoWallet, embedded]);
 
   // Coordinate projection helper
   const getCanvasCoords = (clientX: number, clientY: number) => {
@@ -509,7 +586,9 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
       {/* Main Canvas Stage & Node Inspector Panel */}
       <div
         ref={containerRef}
-        className="relative border border-[#1F2A44] rounded-lg overflow-hidden bg-[#0B1220] h-[550px] shadow-2xl"
+        className={`relative border border-[#1F2A44] rounded-lg overflow-hidden bg-[#0B1220] shadow-2xl ${
+          embedded ? "h-[460px]" : "h-[550px]"
+        }`}
       >
         {isLoading && (
           <div className="absolute inset-0 bg-[#0B1220]/75 flex items-center justify-center font-mono text-xs text-[#C8973B] z-20">
@@ -520,10 +599,16 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
         <canvas
           ref={canvasRef}
           width={920}
-          height={550}
+          height={embedded ? 460 : 550}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
+          onMouseLeave={() => {
+            isPanningRef.current = false;
+            draggedNodeRef.current = null;
+            setHoveredNode(null);
+            draw();
+          }}
           onWheel={handleWheel}
           className={`w-full h-full ${
             hoveredNode ? "cursor-pointer" : "cursor-grab active:cursor-grabbing"
@@ -721,6 +806,12 @@ export default function NetworkGraphView({ initialData }: NetworkGraphViewProps)
         </span>
         <span className="bg-[#3E5C76]/20 text-[#A6C2DE] px-2.5 py-1 border border-[#3E5C76]/50 rounded">
           🔷 IP Node
+        </span>
+        <span className="bg-[#C8973B]/15 text-[#E8D4A2] px-2.5 py-1 border border-[#C8973B]/40 rounded">
+          ── Solid: Bitcoin Funds/Pays
+        </span>
+        <span className="bg-[#38BDF8]/15 text-[#BAE6FD] px-2.5 py-1 border border-[#38BDF8]/40 rounded">
+          - - Dashed: Network IP Signal
         </span>
       </div>
     </div>

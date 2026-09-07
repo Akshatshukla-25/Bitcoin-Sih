@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Download, ShieldAlert, Cpu, Network, FileText, CheckCircle2, ExternalLink } from "lucide-react";
+import NetworkGraphView from "./NetworkGraphView";
 import {
   BarChart,
   Bar,
@@ -47,9 +48,10 @@ interface CaseDetailProps {
     narrative_text: string;
   };
   topWallets: string[];
+  networkData?: any;
 }
 
-export default function CaseDetailView({ caseData, topWallets }: CaseDetailProps) {
+export default function CaseDetailView({ caseData, topWallets, networkData }: CaseDetailProps) {
   const router = useRouter();
   const [narrativeText, setNarrativeText] = useState(caseData.narrative_text);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -299,6 +301,35 @@ export default function CaseDetailView({ caseData, topWallets }: CaseDetailProps
           </div>
         </div>
       </div>
+
+      {/* Tripartite Ego-Network for this Target Wallet */}
+      {networkData && (
+        <div className="bg-[#131B2E] border border-[#1F2A44] rounded-lg p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1F2A44] pb-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <Network className="w-4 h-4 text-[#C8973B]" />
+                <h3 className="text-sm font-semibold text-white font-sans">
+                  Tripartite Network Graph — Target Entity Ego-Network
+                </h3>
+              </div>
+              <div className="text-xs text-[#94A3B8] mt-0.5 font-mono">
+                Centered on <span className="text-[#C8973B] font-bold">{caseData.wallet_address.slice(0, 18)}...</span> • Direct transactions, counterparty wallets, and relay/broadcast IP nodes.
+              </div>
+            </div>
+
+            <Link
+              href={`/dashboard/network?scope=ego&wallet=${encodeURIComponent(caseData.wallet_address)}`}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#1A2438] hover:bg-[#22314E] border border-[#C8973B]/40 hover:border-[#C8973B] text-xs font-mono text-[#C8973B] font-bold transition-all self-start sm:self-auto shadow-[0_2px_8px_rgba(200,151,59,0.15)]"
+            >
+              <span>Open in Full Graph Studio</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <NetworkGraphView initialData={networkData} embedded={true} />
+        </div>
+      )}
 
       {/* Law Enforcement Case Narrative & SAR Export */}
       <div className="bg-[#131B2E] border border-[#1F2A44] rounded-lg p-5 space-y-4">

@@ -34,6 +34,11 @@ def get_network(
     scored_records = scored_df.set_index("wallet_address").to_dict(orient="index")
     tx_map = {t["txid"]: t for t in data.get("transactions", [])}
 
+    active_wallet = str(wallet).strip() if wallet else None
+    if scope == "ego":
+        if not active_wallet or active_wallet not in G:
+            active_wallet = str(scored_df.iloc[0]["wallet_address"])
+
     top_wallet_options = [
         {
             "wallet": str(r["wallet_address"]),
@@ -42,20 +47,24 @@ def get_network(
         }
         for _, r in scored_df.head(50).iterrows()
     ]
+    options_set = {opt["wallet"] for opt in top_wallet_options}
+    if active_wallet and active_wallet in scored_records and active_wallet not in options_set:
+        act_info = scored_records[active_wallet]
+        top_wallet_options.insert(0, {
+            "wallet": active_wallet,
+            "score": round(float(act_info.get("composite_risk_score", 0.0)), 1),
+            "band": str(act_info.get("risk_band", "LOW"))
+        })
 
     G_undir = G.to_undirected()
     sub_nodes = set()
 
-    active_wallet = wallet
     if scope == "ego":
-        if not active_wallet or active_wallet not in G:
-            active_wallet = scored_df.iloc[0]["wallet_address"]
-        
         if active_wallet in G:
             sub_nodes.add(active_wallet)
             for tx in G_undir.neighbors(active_wallet):
                 sub_nodes.add(tx)
-                for n in list(G_undir.neighbors(tx))[:12]:
+                for n in list(G_undir.neighbors(tx))[:15]:
                     sub_nodes.add(n)
         sub_G = G.subgraph(sub_nodes)
     else:
@@ -78,17 +87,19 @@ def get_network(
             info = scored_records.get(node, {})
             score = float(info.get("composite_risk_score", 0.0))
             band = info.get("risk_band", "LOW")
+            is_center = (scope == "ego" and str(node) == str(active_wallet))
             color = (
                 "#8B2E2E" if band == "CRITICAL"
                 else ("#B8562E" if band == "HIGH"
                 else ("#C8973B" if band == "MEDIUM" else "#5B7A6B"))
             )
-            size = 20 if band == "CRITICAL" else (16 if band == "HIGH" else 12)
+            size = 24 if is_center else (20 if band == "CRITICAL" else (16 if band == "HIGH" else 12))
             nodes.append({
                 "id": str(node),
                 "label": f"{node[:6]}...",
                 "full_label": str(node),
                 "type": "wallet",
+                "is_ego_center": is_center,
                 "risk_band": band,
                 "risk_score": round(score, 1),
                 "cluster_id": str(info.get("cluster_id", "N/A")),

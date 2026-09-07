@@ -47,14 +47,17 @@ export default async function CaseDetailPage({
   const walletAddress = decodeURIComponent(params.wallet);
 
   let caseData: CaseDetailResponse | null = null;
+  let networkData: any = null;
   let topWallets: string[] = [];
 
   try {
-    const [caseRes, alertsRes] = await Promise.all([
+    const [caseRes, alertsRes, netRes] = await Promise.all([
       fetchApi<CaseDetailResponse>(`/api/cases/${encodeURIComponent(walletAddress)}`),
       fetchApi<AlertsResponse>("/api/alerts?limit=50"),
+      fetchApi<any>(`/api/network?scope=ego&wallet=${encodeURIComponent(walletAddress)}`).catch(() => null),
     ]);
     caseData = caseRes;
+    networkData = netRes;
     topWallets = alertsRes.entities.map((e) => e.wallet_address);
     if (!topWallets.includes(walletAddress)) {
       topWallets = [walletAddress, ...topWallets];
@@ -78,7 +81,7 @@ export default async function CaseDetailPage({
         </div>
       </div>
 
-      <CaseDetailView caseData={caseData} topWallets={topWallets} />
+      <CaseDetailView caseData={caseData} topWallets={topWallets} networkData={networkData} />
     </div>
   );
 }

@@ -1,6 +1,5 @@
 from fastapi import APIRouter
-from typing import Dict, Any, List
-import pandas as pd
+
 import numpy as np
 from api.data_loader import load_data_bundle, clean_nan
 
@@ -26,7 +25,9 @@ def get_model_insights():
     distributions = []
     for col, name, color in algorithms:
         if col in scored_df.columns:
-            s = scored_df[col].dropna()
+            s = scored_df[col].replace([np.inf, -np.inf], np.nan).dropna()
+            if s.empty:
+                continue
             distributions.append({
                 "model_key": col,
                 "model_name": name,
@@ -41,7 +42,11 @@ def get_model_insights():
             })
 
     # 3. IF vs Mahalanobis agreement scatter points (sampled 200 points for light payload)
-    scatter_sample = scored_df[["wallet_address", "score_iforest", "score_mahalanobis", "ground_truth_label"]].dropna()
+    scatter_columns = ["wallet_address", "score_iforest", "score_mahalanobis", "ground_truth_label"]
+    missing = sorted(set(scatter_columns).difference(scored_df.columns))
+    if missing:
+        raise ValueError(f"Scored entity data is missing model columns: {', '.join(missing)}")
+    scatter_sample = scored_df[scatter_columns].replace([np.inf, -np.inf], np.nan).dropna()
     if len(scatter_sample) > 300:
         scatter_sample = scatter_sample.sample(n=300, random_state=42)
     

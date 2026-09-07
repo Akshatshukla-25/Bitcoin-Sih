@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { fetchApi } from "@/lib/api";
 
@@ -8,15 +9,21 @@ interface AlertsResponse {
 }
 
 export default async function CasesIndexPage() {
-  let defaultWallet = "bc1qf44prawa4n3m6eevc28425279y0zme45pv99g5";
   try {
-    const res = await fetchApi<AlertsResponse>("/api/alerts?limit=1");
-    if (res.entities.length > 0) {
-      defaultWallet = res.entities[0].wallet_address;
+    const response = await fetchApi<AlertsResponse>("/api/alerts?limit=1");
+    const wallet = response.entities[0]?.wallet_address;
+    if (wallet) {
+      redirect(`/dashboard/cases/${encodeURIComponent(wallet)}`);
     }
-  } catch (e) {
-    console.error("Could not fetch top alert wallet:", e);
+  } catch {
+    // Render an actionable state below; do not redirect to fabricated evidence.
   }
 
-  redirect(`/dashboard/cases/${encodeURIComponent(defaultWallet)}`);
+  return (
+    <div role="alert" className="p-6 rounded-lg bg-[#131B2E] border border-[#1F2A44] text-[#E8E6DE]">
+      <h2 className="font-bold mb-2">No case is available</h2>
+      <p className="text-sm text-[#94A3B8] mb-4">The alert API returned no wallet that can be opened. Verify pipeline artifacts and API readiness.</p>
+      <Link className="text-[#C8973B] underline" href="/dashboard/alerts">Return to the alert queue</Link>
+    </div>
+  );
 }

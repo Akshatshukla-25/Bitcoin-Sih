@@ -366,8 +366,9 @@ def load_all_artifacts():
     comparison_df = pd.read_csv(comparison_path) if os.path.exists(comparison_path) else pd.DataFrame()
     eval_metrics_df = pd.read_csv(eval_metrics_path) if os.path.exists(eval_metrics_path) else pd.DataFrame()
 
-    if os.path.exists("transactions.json"):
-        with open("transactions.json") as f:
+    transactions_path = os.path.join(data_dir, "transactions.json")
+    if os.path.exists(transactions_path):
+        with open(transactions_path) as f:
             transactions = json.load(f)
     else:
         transactions = []
@@ -734,7 +735,8 @@ with tab3:
             sar_doc = narrative_obj.get("sar_document", {})
             if not sar_doc:
                 import narrative
-                sar_doc = narrative.generate_sar_export_document(selected_wallet, dict(row), exp, narrative_text)
+                generated_at = pd.to_datetime(row.get("last_active", row.get("first_active")), utc=True).to_pydatetime()
+                sar_doc = narrative.generate_sar_export_document(selected_wallet, dict(row), exp, narrative_text, generated_at)
 
             st.download_button(
                 label="Download Official SAR/STR Case Package (JSON)",
@@ -756,8 +758,9 @@ with tab4:
     net.force_atlas_2based(gravity=-50, central_gravity=0.01, spring_length=100, spring_strength=0.08)
 
     # Load Graph
-    if os.path.exists("graph.gml"):
-        G = nx.read_gml("graph.gml")
+    graph_path = os.path.join("data", "graph.gml")
+    if os.path.exists(graph_path):
+        G = nx.read_gml(graph_path)
     else:
         G = nx.MultiDiGraph()
 
@@ -772,7 +775,7 @@ with tab4:
                 sub_nodes.add(n2)
         sub_G = G.subgraph(sub_nodes)
     else:
-        top_wallets_set = set(scored_df.head(25)["wallet_address"])
+        top_wallets_set = set(scored_df.sort_values("composite_risk_score", ascending=False).head(30)["wallet_address"])
         sub_nodes = set(top_wallets_set)
         for w in top_wallets_set:
             if w in G:
@@ -870,7 +873,7 @@ with tab5:
             x=alt.X("Algorithm:N", sort="-y", title="Algorithm"),
             y=alt.Y("ROC_AUC:Q", title="ROC-AUC Score"),
             color=alt.Color("Type:N", scale=alt.Scale(range=["#C8973B", "#5B7A6B", "#B8562E", "#3E5C76", "#7A6B8F", "#8B2E2E"]), title="Paradigm"),
-            tooltip=["Algorithm", "Type", "ROC_AUC", "PR_AUC", "F1_Score", "Latency_ms"]
+            tooltip=["Algorithm", "Type", "ROC_AUC", "PR_AUC", "F1_Score"]
         ).properties(height=280)
         st.altair_chart(comp_bar, width="stretch")
 

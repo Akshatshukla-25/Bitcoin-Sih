@@ -44,9 +44,8 @@ NO_DRAIN_SENTINEL = -1.0         # Sentinel value representing no outgoing drain
 def parse_iso(ts_str: str) -> datetime:
     try:
         return datetime.fromisoformat(ts_str)
-    except Exception as e:
-        warnings.warn(f"Failed to parse timestamp {ts_str} ({e}); defaulting to 2025-01-01")
-        return datetime(2025, 1, 1)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Invalid ISO-8601 transaction timestamp {ts_str!r}") from exc
 
 def compute_timestamp_entropy(timestamps: List[datetime]) -> float:
     """Calculates normalized Shannon entropy of transaction hours (0-23)."""
@@ -116,6 +115,12 @@ def extract_wallet_structural_signals(transactions: List[Dict[str, Any]], G: nx.
     """
     Computes comprehensive graph and behavioral signals for every wallet.
     """
+    if not isinstance(G, nx.MultiDiGraph):
+        raise ValueError(f"Expected a MultiDiGraph, got {type(G).__name__}")
+
+    graph_wallets = {
+        node for node, data in G.nodes(data=True) if data.get("node_type") == "wallet"
+    }
     wallet_incoming = defaultdict(list)
     wallet_outgoing = defaultdict(list)
     all_wallets = set()
@@ -162,7 +167,15 @@ def extract_wallet_structural_signals(transactions: List[Dict[str, Any]], G: nx.
                 "inputs": [i["address"] for i in tx.get("input_wallet_addresses", [])],
             })
 
-    # Build wallet flow graph for centralities
+    if all_wallets != graph_wallets:
+        missing = sorted(all_wallets - graph_wallets)[:3]
+        extra = sorted(graph_wallets - all_wallets)[:3]
+        raise ValueError(
+            f"Graph/transaction wallet mismatch; missing={missing}, extra={extra}"
+        )
+
+    # Build wallet flow projection for value-weighted centralities after validating
+    # that the supplied tripartite graph contains the same wallet population.
     W = build_wallet_flow_graph(transactions)
     
     try:

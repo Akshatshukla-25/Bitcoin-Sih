@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Query
-from typing import Optional, List
-import pandas as pd
+from fastapi import APIRouter, HTTPException, Query
+from typing import Literal, Optional
+
 from api.data_loader import load_data_bundle, clean_nan
 
 router = APIRouter(prefix="/api/alerts", tags=["alerts"])
@@ -8,13 +8,13 @@ router = APIRouter(prefix="/api/alerts", tags=["alerts"])
 @router.get("")
 def get_alerts(
     bands: Optional[str] = Query("CRITICAL,HIGH,MEDIUM", description="Comma-separated risk bands"),
-    min_score: float = Query(35.0, description="Minimum composite risk score (0-100)"),
+    min_score: float = Query(35.0, ge=0.0, le=100.0, description="Minimum composite risk score (0-100)"),
     country: Optional[str] = Query("ALL", description="Geographic jurisdiction filter"),
     search: Optional[str] = Query("", description="Search term for wallet or cluster ID"),
     limit: int = Query(100, ge=1, le=1000, description="Page limit"),
     offset: int = Query(0, ge=0, description="Page offset"),
-    sort_by: str = Query("composite_risk_score", description="Sort column"),
-    sort_dir: str = Query("desc", description="Sort direction (asc/desc)")
+    sort_by: Literal["composite_risk_score", "wallet_address", "risk_band", "confidence_score", "total_received_amount", "tx_count"] = Query("composite_risk_score", description="Sort column"),
+    sort_dir: Literal["asc", "desc"] = Query("desc", description="Sort direction")
 ):
     data = load_data_bundle()
     df = data["scored_df"].copy()
@@ -22,6 +22,9 @@ def get_alerts(
     # Filter by risk bands
     if bands:
         selected_bands = [b.strip().upper() for b in bands.split(",") if b.strip()]
+        invalid_bands = sorted(set(selected_bands).difference({"CRITICAL", "HIGH", "MEDIUM", "LOW"}))
+        if invalid_bands:
+            raise HTTPException(status_code=422, detail=f"Unsupported risk bands: {', '.join(invalid_bands)}")
         if selected_bands:
             df = df[df["risk_band"].isin(selected_bands)]
 
@@ -43,11 +46,13 @@ def get_alerts(
     total_matching = len(df)
 
     # Sorting
-    ascending = (sort_dir.lower() == "asc")
-    if sort_by in df.columns:
-        df = df.sort_values(by=sort_by, ascending=ascending)
+    ascending = sort_dir == "asc"
+    if sort_by == "wallet_address":
+        df = df.sort_values(by="wallet_address", ascending=ascending, kind="mergesort")
     else:
-        df = df.sort_values(by="composite_risk_score", ascending=False)
+        df = df.sort_values(
+            by=[sort_by, "wallet_address"], ascending=[ascending, True], kind="mergesort"
+        )
 
     # Pagination
     paged = df.iloc[offset : offset + limit]

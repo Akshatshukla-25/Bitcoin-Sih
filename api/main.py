@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from api.data_loader import ArtifactLoadError, load_data_bundle
 from api.routers import overview, alerts, cases, network, models, evaluation
 
 app = FastAPI(
@@ -17,6 +19,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.exception_handler(ArtifactLoadError)
+def handle_artifact_error(_request: Request, exc: ArtifactLoadError):
+    return JSONResponse(status_code=503, content={"detail": str(exc), "status": "not_ready"})
+
+
 # Register all tab routers
 app.include_router(overview.router)
 app.include_router(alerts.router)
@@ -27,11 +34,14 @@ app.include_router(evaluation.router)
 
 @app.get("/api/health")
 def health_check():
+    data = load_data_bundle()
     return {
-        "status": "healthy",
+        "status": "ready",
         "system": "SIH26146 NTRO Forensic Engine",
-        "mode": "100% Offline Air-Gapped",
-        "version": "1.0.0"
+        "mode": "Offline local artifact serving",
+        "version": "1.0.0",
+        "entities": len(data["scored_df"]),
+        "transactions": len(data["transactions"]),
     }
 
 if __name__ == "__main__":

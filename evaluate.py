@@ -11,12 +11,12 @@ Evaluates composite detection engine against synthetic ground truth:
 
 import argparse
 import os
-import warnings
+import tempfile
 import numpy as np
 import pandas as pd
 
-# Set matplotlib cache directory for headless environments
-os.environ["MPLCONFIGDIR"] = "/tmp/mpl_config"
+# Use a portable writable cache in headless/offline environments.
+os.environ.setdefault("MPLCONFIGDIR", os.path.join(tempfile.gettempdir(), "sih26146-matplotlib"))
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -26,7 +26,6 @@ from sklearn.metrics import (
     average_precision_score, confusion_matrix, roc_curve, precision_recall_curve
 )
 
-warnings.filterwarnings("ignore")
 
 def evaluate_pipeline(
     scored_csv: str = "data/scored_entities.csv",
@@ -34,14 +33,26 @@ def evaluate_pipeline(
 ):
     os.makedirs(outdir, exist_ok=True)
     df = pd.read_csv(scored_csv)
+    required_columns = {"is_planted_anomaly", "composite_risk_score"}
+    missing = sorted(required_columns.difference(df.columns))
+    if missing:
+        raise ValueError(f"Scored entity data is missing required columns: {', '.join(missing)}")
+    if df.empty:
+        raise ValueError("Evaluation requires at least one scored entity")
 
-    y_true = df["is_planted_anomaly"].values
-    scores = df["composite_risk_score"].values
+    y_true = pd.to_numeric(df["is_planted_anomaly"], errors="raise").to_numpy()
+    scores = pd.to_numeric(df["composite_risk_score"], errors="raise").to_numpy(dtype=float)
+    if not np.isin(y_true, [0, 1]).all():
+        raise ValueError("is_planted_anomaly must contain only binary values 0 and 1")
+    if np.unique(y_true).size != 2:
+        raise ValueError("Evaluation requires both normal and anomalous ground-truth rows")
+    if not np.isfinite(scores).all():
+        raise ValueError("composite_risk_score must contain only finite numeric values")
 
     bands = [
         ("MEDIUM+ (Triage Policy >= 35)", 35.0),
         ("HIGH+ (Escalation Policy >= 50)", 50.0),
-        ("CRITICAL (Immediate Freeze >= 60)", 60.0),
+        ("CRITICAL (Immediate Review >= 60)", 60.0),
     ]
 
     metrics_list = []

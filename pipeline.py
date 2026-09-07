@@ -20,7 +20,9 @@ Usage:
 """
 
 import os
-os.environ["MPLCONFIGDIR"] = "/tmp/mpl_config"
+import tempfile
+
+os.environ.setdefault("MPLCONFIGDIR", os.path.join(tempfile.gettempdir(), "sih26146-matplotlib"))
 
 import argparse
 import sys
@@ -41,13 +43,15 @@ def main():
     parser.add_argument("--data-dir", type=str, default="data", help="data output directory")
     parser.add_argument("--reports-dir", type=str, default="reports", help="reports output directory")
     args = parser.parse_args()
+    if args.count < 2:
+        parser.error("--count must be at least 2 so the anomaly ensemble can be trained")
 
     os.makedirs(args.data_dir, exist_ok=True)
     os.makedirs(args.reports_dir, exist_ok=True)
 
     print("=" * 75)
     print("SIH26146 — NTRO BITCOIN LAUNDERING DETECTION & MONITORING PIPELINE")
-    print("Runtime: 100% Pure Python, Fully Offline Air-Gapped Operation")
+    print("Runtime: Local Python application with offline dependencies; no runtime network calls")
     print(f"Seed: {args.seed} | Transactions: {args.count}")
     print("=" * 75)
 
@@ -61,8 +65,6 @@ def main():
     def step_data_gen():
         txs, counts = data_gen.generate_dataset(args.count, args.seed)
         data_gen.write_outputs(txs, args.data_dir)
-        if args.data_dir != ".":
-            data_gen.write_outputs(txs, ".")
         return len(txs)
     run_step("1/11 Generating synthetic Bitcoin blockchain + network transactions", step_data_gen)
 
@@ -78,10 +80,6 @@ def main():
         data = json_graph.node_link_data(G, edges="edges")
         with open(graph_json, "w") as f:
             json.dump(data, f, indent=2)
-        if args.data_dir != ".":
-            nx.write_gml(G, "graph.gml")
-            with open("graph.json", "w") as f:
-                json.dump(data, f, indent=2)
         return G.number_of_nodes(), G.number_of_edges()
     run_step("2/11 Building Tripartite IP-Wallet-Tx Network Graph", step_graph_builder)
 
@@ -106,7 +104,9 @@ def main():
     # 6. ML Anomaly Ensemble
     import models
     def step_models():
-        return models.run_models_pipeline(os.path.join(args.data_dir, "features.csv"), args.data_dir)
+        return models.run_models_pipeline(
+            os.path.join(args.data_dir, "features.csv"), args.data_dir, args.seed
+        )
     run_step("6/11 Training 3-Model Unsupervised Anomaly Detection Ensemble (IForest, LOF, Mahalanobis)", step_models)
 
     # 7. Composite Risk Scoring
@@ -144,7 +144,9 @@ def main():
     # 10. Model Comparison Benchmark
     import model_comparison
     def step_model_comparison():
-        return model_comparison.run_comparison(os.path.join(args.data_dir, "features.csv"), args.reports_dir)
+        return model_comparison.run_comparison(
+            os.path.join(args.data_dir, "features.csv"), args.reports_dir, args.seed
+        )
     run_step("10/11 Benchmarking Models vs PyOD Baselines against Synthetic Ground Truth", step_model_comparison)
 
     # 11. Evaluation Suite
@@ -156,7 +158,8 @@ def main():
     print("\n" + "=" * 75)
     print("[SUCCESS] SIH26146 Full Pipeline Execution Complete!")
     print(f"All precomputed artifacts ready in '{args.data_dir}/' and '{args.reports_dir}/'.")
-    print("Launch dashboard: streamlit run app.py")
+    print("Start API: python3 -m uvicorn api.main:app --host 127.0.0.1 --port 8000")
+    print("Start dashboard: cd web && npm run dev")
     print("=" * 75)
 
 if __name__ == "__main__":

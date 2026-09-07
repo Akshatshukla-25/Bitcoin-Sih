@@ -17,8 +17,9 @@ GEOIP_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "ge
 GEOIP_DB_FILE = os.path.join(GEOIP_DIR, "geoip_lookup.json")
 GEOIP_MMDB_FILE = os.path.join(GEOIP_DIR, "GeoLite2-City.mmdb")
 
-# Grounded open CIDR routing database for offline autonomous system & geographic resolution
-OPEN_CIDR_DATABASE = [
+# Coarse synthetic CIDR metadata for deterministic offline demonstrations. These
+# broad prefixes are not a substitute for a current authoritative GeoIP database.
+SYNTHETIC_CIDR_DATABASE = [
     # North America / United States
     {"cidr": "3.0.0.0/8", "country": "United States", "code": "US", "asn": "AS16509", "org": "Amazon.com, Inc.", "city": "Ashburn", "lat": 39.0438, "lon": -77.4874},
     {"cidr": "4.0.0.0/8", "country": "United States", "code": "US", "asn": "AS3356", "org": "Level 3 Parent, LLC", "city": "Broomfield", "lat": 39.9205, "lon": -105.0867},
@@ -89,42 +90,50 @@ OPEN_CIDR_DATABASE = [
 _PARSED_CIDR_TABLE: Optional[List[Tuple[ipaddress.IPv4Network, Dict[str, Any]]]] = None
 _MMDB_READER = None
 
+def _validated_cidr_database(data: Any) -> List[Dict[str, Any]]:
+    if not isinstance(data, list) or not data:
+        raise ValueError("GeoIP CIDR database must be a non-empty JSON array")
+    required = {"cidr", "country", "code", "asn", "org", "city", "lat", "lon"}
+    validated = []
+    for index, item in enumerate(data):
+        if not isinstance(item, dict):
+            raise ValueError(f"GeoIP entry {index} must be a JSON object")
+        missing = sorted(required.difference(item))
+        if missing:
+            raise ValueError(f"GeoIP entry {index} is missing fields: {', '.join(missing)}")
+        network = ipaddress.ip_network(item["cidr"], strict=False)
+        if network.version != 4:
+            raise ValueError(f"GeoIP entry {index} must use an IPv4 CIDR")
+        lat = float(item["lat"])
+        lon = float(item["lon"])
+        if not -90 <= lat <= 90 or not -180 <= lon <= 180:
+            raise ValueError(f"GeoIP entry {index} has invalid coordinates")
+        validated.append(dict(item, lat=lat, lon=lon))
+    return validated
+
+
 def ensure_geoip_database():
-    """Initializes and persists the open-source offline GeoIP CIDR database in data/geoip/."""
+    """Create the bundled synthetic CIDR database if absent and validate it if present."""
     os.makedirs(GEOIP_DIR, exist_ok=True)
-    need_write = not os.path.exists(GEOIP_DB_FILE)
-    if not need_write:
-        try:
-            with open(GEOIP_DB_FILE) as f:
-                data = json.load(f)
-                if not isinstance(data, list):
-                    need_write = True
-        except Exception:
-            need_write = True
-    if need_write:
-        with open(GEOIP_DB_FILE, "w") as f:
-            json.dump(OPEN_CIDR_DATABASE, f, indent=2)
+    if not os.path.exists(GEOIP_DB_FILE):
+        with open(GEOIP_DB_FILE, "w", encoding="utf-8") as handle:
+            json.dump(SYNTHETIC_CIDR_DATABASE, handle, indent=2)
+    try:
+        with open(GEOIP_DB_FILE, encoding="utf-8") as handle:
+            data = json.load(handle)
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError(f"Offline GeoIP database '{GEOIP_DB_FILE}' is unreadable: {exc}") from exc
+    return _validated_cidr_database(data)
 
 def _init_cidr_table():
     global _PARSED_CIDR_TABLE
     if _PARSED_CIDR_TABLE is not None:
         return
-    ensure_geoip_database()
-    raw_db = OPEN_CIDR_DATABASE
-    if os.path.exists(GEOIP_DB_FILE):
-        try:
-            with open(GEOIP_DB_FILE) as f:
-                raw_db = json.load(f)
-        except Exception:
-            raw_db = OPEN_CIDR_DATABASE
-
+    raw_db = ensure_geoip_database()
     table = []
     for item in raw_db:
-        try:
-            net = ipaddress.ip_network(item["cidr"], strict=False)
-            table.append((net, item))
-        except Exception:
-            continue
+        net = ipaddress.ip_network(item["cidr"], strict=False)
+        table.append((net, item))
     _PARSED_CIDR_TABLE = table
 
 def resolve_ip(ip_str: str) -> Dict[str, Any]:
@@ -162,7 +171,7 @@ def resolve_ip(ip_str: str) -> Dict[str, Any]:
         except Exception:
             pass
 
-    # 2. Pure offline CIDR routing subnet lookup
+    # 2. Coarse deterministic CIDR lookup used by the synthetic demo dataset.
     try:
         ip_obj = ipaddress.ip_address(ip_str)
         for net, info in _PARSED_CIDR_TABLE:
@@ -178,8 +187,17 @@ def resolve_ip(ip_str: str) -> Dict[str, Any]:
                     "lon": info["lon"],
                     "matched_cidr": str(net),
                 }
-    except Exception:
-        pass
+    except ValueError:
+        return {
+            "ip": ip_str,
+            "country": "Unknown",
+            "country_code": "XX",
+            "asn": "AS0",
+            "as_org": "Invalid IP address",
+            "city": "Unknown",
+            "lat": 0.0,
+            "lon": 0.0,
+        }
 
     return {
         "ip": ip_str,

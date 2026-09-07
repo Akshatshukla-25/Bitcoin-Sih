@@ -11,42 +11,47 @@ Aggregates one comprehensive feature row per unique wallet-entity combining:
 """
 
 import argparse
-import csv
-import json
 import os
 import networkx as nx
 import pandas as pd
-import numpy as np
 
 from geoip import resolve_ips
+from graph_builder import validate_graph
 from graph_signals import extract_wallet_structural_signals
+from transaction_schema import load_transactions_csv
+
+FEATURE_OUTPUT_COLUMNS = [
+    "wallet_address", "tx_count", "in_degree", "out_degree", "degree_ratio",
+    "fanin_count", "fanout_count", "total_received_amount", "total_sent_amount",
+    "net_balance", "turnover_ratio", "avg_hop_interval_mins",
+    "median_hop_interval_mins", "min_hop_interval_mins", "max_hop_interval_mins",
+    "min_drain_minutes", "wallet_age_hours", "forwarded_pct_10m",
+    "forwarded_pct_30m", "forwarded_pct_60m", "forwarded_pct_120m",
+    "peel_skim_ratio", "peel_signal", "transient_velocity", "velocity_drain_score",
+    "fanout_burst_signal", "fanin_burst_signal", "is_peel_chain_node",
+    "is_mixer_hub", "is_mixer_intermediate", "is_rapid_cashout_node",
+    "unique_counterparties", "unique_ips_count", "unique_src_ips_count",
+    "unique_countries_count", "unique_src_countries_count", "unique_asns_count",
+    "unique_src_asns_count", "dominant_country", "dominant_asn", "timestamp_entropy",
+    "betweenness_centrality", "pagerank", "ground_truth_label", "is_planted_anomaly",
+]
+
 
 def load_transactions_data(path: str):
-    with open(path, newline="") as f:
-        reader = csv.DictReader(f)
-        rows = []
-        for row in reader:
-            row["input_wallet_addresses"] = json.loads(row["input_wallet_addresses"])
-            row["output_wallet_addresses"] = json.loads(row["output_wallet_addresses"])
-            row["total_input_amount"] = float(row["total_input_amount"])
-            row["fee"] = float(row["fee"])
-            row["src_port"] = int(row["src_port"])
-            row["dst_port"] = int(row["dst_port"])
-            rows.append(row)
-    return rows
+    return load_transactions_csv(path)
 
 def build_feature_table(transactions_path: str = "transactions.csv", graph_path: str = "graph.gml") -> pd.DataFrame:
     transactions = load_transactions_data(transactions_path)
     
-    if os.path.exists(graph_path):
-        try:
-            G = nx.read_gml(graph_path)
-        except Exception as e:
-            import warnings
-            warnings.warn(f"Failed to read graph file {graph_path} ({e}); using empty MultiDiGraph fallback.")
-            G = nx.MultiDiGraph()
-    else:
-        G = nx.MultiDiGraph()
+    if not os.path.exists(graph_path):
+        raise FileNotFoundError(
+            f"Required graph artifact {graph_path!r} does not exist; run graph_builder.py first."
+        )
+    try:
+        G = nx.read_gml(graph_path)
+    except (OSError, nx.NetworkXError) as exc:
+        raise ValueError(f"Unable to read graph artifact {graph_path!r}: {exc}") from exc
+    validate_graph(G, expected_transaction_count=len(transactions))
 
     # Extract graph and behavioral signals
     signals = extract_wallet_structural_signals(transactions, G)
@@ -139,8 +144,9 @@ def build_feature_table(transactions_path: str = "transactions.csv", graph_path:
         }
         rows.append(row)
 
-    df = pd.DataFrame(rows)
-    df = df.sort_values("wallet_address").reset_index(drop=True)
+    df = pd.DataFrame(rows, columns=FEATURE_OUTPUT_COLUMNS)
+    if not df.empty:
+        df = df.sort_values("wallet_address").reset_index(drop=True)
     return df
 
 def main():

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { fetchApi } from "@/lib/api";
 import CaseDetailView from "@/components/CaseDetailView";
+import type { NetworkData } from "@/components/NetworkGraphView";
 
 export const dynamic = "force-dynamic";
 
@@ -47,14 +48,14 @@ export default async function CaseDetailPage({
   const walletAddress = decodeURIComponent(params.wallet);
 
   let caseData: CaseDetailResponse | null = null;
-  let networkData: any = null;
+  let networkData: NetworkData | null = null;
   let topWallets: string[] = [];
 
   try {
     const [caseRes, alertsRes, netRes] = await Promise.all([
       fetchApi<CaseDetailResponse>(`/api/cases/${encodeURIComponent(walletAddress)}`),
       fetchApi<AlertsResponse>("/api/alerts?limit=50"),
-      fetchApi<any>(`/api/network?scope=ego&wallet=${encodeURIComponent(walletAddress)}`).catch(() => null),
+      fetchApi<NetworkData>(`/api/network?scope=ego&wallet=${encodeURIComponent(walletAddress)}`).catch(() => null),
     ]);
     caseData = caseRes;
     networkData = netRes;
@@ -74,7 +75,7 @@ export default async function CaseDetailPage({
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-bold font-serif text-white mb-1">
-          Forensic Case Detail & Legal Evidence Dossier
+          Forensic Case Detail & Investigative Evidence Dossier
         </h2>
         <div className="text-xs text-[#94A3B8] font-mono">
           Target Entity: <span className="text-[#C8973B] font-bold">{caseData.wallet_address}</span>

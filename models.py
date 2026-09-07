@@ -27,6 +27,9 @@ from sklearn.preprocessing import RobustScaler
 # Completely independent of synthetic data composition
 DEFAULT_CONTAMINATION = 0.10
 
+LOF_NEIGHBORS = 150
+MIN_MODEL_ROWS = 2
+
 FEATURE_COLS = [
     "forwarded_pct_10m",
     "forwarded_pct_30m",
@@ -45,10 +48,27 @@ FEATURE_COLS = [
     "is_rapid_cashout_node",
 ]
 
+def _validated_feature_matrix(df: pd.DataFrame) -> np.ndarray:
+    missing = [column for column in FEATURE_COLS if column not in df.columns]
+    if missing:
+        raise ValueError(f"Feature table is missing required columns: {', '.join(missing)}")
+    if len(df) < MIN_MODEL_ROWS:
+        raise ValueError(f"At least {MIN_MODEL_ROWS} wallet rows are required for anomaly modelling; got {len(df)}")
+    numeric = df[FEATURE_COLS].apply(pd.to_numeric, errors="coerce").fillna(0.0)
+    matrix = numeric.to_numpy(dtype=float)
+    if not np.isfinite(matrix).all():
+        bad_columns = [
+            column for index, column in enumerate(FEATURE_COLS)
+            if not np.isfinite(matrix[:, index]).all()
+        ]
+        raise ValueError(f"Feature table contains non-finite values in: {', '.join(bad_columns)}")
+    return matrix
+
+
 def train_ensemble(df: pd.DataFrame, random_state: int = 42):
     np.random.seed(random_state)
-    
-    X_raw = df[FEATURE_COLS].fillna(0.0).values
+
+    X_raw = _validated_feature_matrix(df)
     scaler = RobustScaler()
     X_scaled = scaler.fit_transform(X_raw)
 
@@ -64,7 +84,7 @@ def train_ensemble(df: pd.DataFrame, random_state: int = 42):
 
     # 2. Local Outlier Factor (Density-based local reachability)
     lof = LocalOutlierFactor(
-        n_neighbors=150,
+        n_neighbors=min(LOF_NEIGHBORS, len(df) - 1),
         contamination=DEFAULT_CONTAMINATION,
         novelty=True,
         n_jobs=-1,
@@ -124,10 +144,10 @@ def train_ensemble(df: pd.DataFrame, random_state: int = 42):
 
     return result_df, models_bundle
 
-def run_models_pipeline(features_path: str = "data/features.csv", outdir: str = "data"):
+def run_models_pipeline(features_path: str = "data/features.csv", outdir: str = "data", random_state: int = 42):
     os.makedirs(outdir, exist_ok=True)
     df = pd.read_csv(features_path)
-    scored_df, models_bundle = train_ensemble(df, random_state=42)
+    scored_df, models_bundle = train_ensemble(df, random_state=random_state)
     
     out_csv = os.path.join(outdir, "anomaly_scores.csv")
     scored_df.to_csv(out_csv, index=False)
@@ -141,9 +161,10 @@ def main():
     parser = argparse.ArgumentParser(description="SIH26146 Part 3 — Multi-Model Anomaly Ensemble")
     parser.add_argument("--features", type=str, default="data/features.csv", help="path to features.csv")
     parser.add_argument("--outdir", type=str, default="data", help="output directory")
+    parser.add_argument("--seed", type=int, default=42, help="random seed")
     args = parser.parse_args()
 
-    scored_df, _ = run_models_pipeline(args.features, args.outdir)
+    scored_df, _ = run_models_pipeline(args.features, args.outdir, args.seed)
 
     print("=" * 60)
     print("SIH26146 Part 3 — models.py summary")

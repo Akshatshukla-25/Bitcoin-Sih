@@ -57,7 +57,7 @@ export default function AlertQueueTable({ entities, totalMatching }: AlertQueueT
   });
 
   const exportCSV = () => {
-    const headers = [
+    const headers: Array<keyof Entity> = [
       "wallet_address",
       "composite_risk_score",
       "risk_band",
@@ -68,18 +68,21 @@ export default function AlertQueueTable({ entities, totalMatching }: AlertQueueT
       "total_received_amount",
       "reason_codes",
     ];
-    const rows = sortedEntities.map((e) =>
-      headers.map((h) => `"${(e as any)[h] ?? ""}"`).join(",")
-    );
-    const csvContent = [headers.join(","), ...rows].join("\n");
+    const escapeCsv = (value: unknown) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+    const rows = sortedEntities.map((entity) => headers.map((header) => escapeCsv(entity[header])).join(","));
+    const csvContent = [`\uFEFF${headers.join(",")}`, ...rows].join("\r\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
     link.setAttribute("download", `ntro_filtered_alert_queue_${Date.now()}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      document.body.appendChild(link);
+      link.click();
+    } finally {
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
   };
 
   const totalPages = Math.ceil(sortedEntities.length / pageSize);
@@ -178,7 +181,7 @@ export default function AlertQueueTable({ entities, totalMatching }: AlertQueueT
           </thead>
           <tbody className="divide-y divide-[#1F2A44]/60">
             {pageItems.map((r, i) => (
-              <tr key={i} className="hover:bg-[#1A2438]/80 transition-colors">
+              <tr key={r.wallet_address} className="hover:bg-[#1A2438]/80 transition-colors">
                 <td className="p-3 pl-4">
                   <Link
                     href={`/dashboard/cases/${encodeURIComponent(r.wallet_address)}`}
@@ -208,6 +211,7 @@ export default function AlertQueueTable({ entities, totalMatching }: AlertQueueT
 
       {/* Pagination & Export Controls */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+        <span className="text-xs font-mono text-[#94A3B8]">{totalMatching} matching entities</span>
         <button
           onClick={exportCSV}
           className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[#131B2E] hover:bg-[#1A2438] border border-[#1F2A44] hover:border-[#C8973B]/50 text-xs font-mono text-[#E8E6DE] transition-all"

@@ -9,14 +9,13 @@ Compares Isolation Forest, LOF, and Mahalanobis against PyOD anomaly baselines:
   - KNN (K-Nearest Neighbors Outlier Detector)
   - 3-Model Blended Ensemble
 
-Evaluates Precision, Recall, F1, ROC-AUC, PR-AUC, and Latency against synthetic ground truth.
+Evaluates Precision, Recall, F1, ROC-AUC, and PR-AUC against synthetic ground truth.
 Outputs: reports/model_comparison.csv
 """
 
 import argparse
 import os
-import time
-import warnings
+
 import numpy as np
 import pandas as pd
 from sklearn.metrics import precision_score, recall_score, f1_score, roc_auc_score, average_precision_score
@@ -26,11 +25,15 @@ from sklearn.neighbors import LocalOutlierFactor
 from sklearn.covariance import LedoitWolf
 from scipy.spatial.distance import mahalanobis
 
-warnings.filterwarnings('ignore')
-
 from models import FEATURE_COLS
 
+REQUIRED_COLUMNS = ["is_planted_anomaly", *FEATURE_COLS]
+
 def evaluate_detector(y_true, scores, contamination=0.15):
+    scores = np.asarray(scores, dtype=float)
+    if not np.isfinite(scores).all():
+        raise ValueError("Detector produced non-finite anomaly scores")
+
     # Determine binary threshold at contamination quantile
     threshold = np.quantile(scores, 1.0 - contamination)
     y_pred = (scores >= threshold).astype(int)
@@ -49,133 +52,126 @@ def evaluate_detector(y_true, scores, contamination=0.15):
         "PR_AUC": round(pr_auc, 4),
     }
 
-def run_comparison(features_path: str = "data/features.csv", outdir: str = "reports"):
+def run_comparison(
+    features_path: str = "data/features.csv",
+    outdir: str = "reports",
+    random_state: int = 42,
+):
     os.makedirs(outdir, exist_ok=True)
     df = pd.read_csv(features_path)
-    
-    y_true = df["is_planted_anomaly"].values
-    X_raw = df[FEATURE_COLS].fillna(0.0).values
-    
+    missing = [column for column in REQUIRED_COLUMNS if column not in df.columns]
+    if missing:
+        raise ValueError(f"Feature data is missing required columns: {', '.join(missing)}")
+    if len(df) < 2:
+        raise ValueError("Model comparison requires at least 2 feature rows")
+
+    y_true = pd.to_numeric(df["is_planted_anomaly"], errors="raise").to_numpy()
+    if not np.isin(y_true, [0, 1]).all():
+        raise ValueError("is_planted_anomaly must contain only binary values 0 and 1")
+    if np.unique(y_true).size != 2:
+        raise ValueError("Model comparison requires both normal and anomalous ground-truth rows")
+
+    X_raw = df[FEATURE_COLS].apply(pd.to_numeric, errors="raise").fillna(0.0).to_numpy(dtype=float)
+    if not np.isfinite(X_raw).all():
+        raise ValueError("Model comparison features must contain only finite numeric values")
+
     scaler = RobustScaler()
     X = scaler.fit_transform(X_raw)
 
-    contamination = float(np.mean(y_true)) if np.mean(y_true) > 0 else 0.15
+    contamination = float(np.mean(y_true))
     results = []
 
     # 1. Isolation Forest
-    t0 = time.perf_counter()
-    iforest = IsolationForest(n_estimators=150, contamination=contamination, random_state=42)
+    iforest = IsolationForest(n_estimators=150, contamination=contamination, random_state=random_state)
     iforest.fit(X)
     scores_iforest = -iforest.decision_function(X)
-    lat_iforest = (time.perf_counter() - t0) * 1000
     res = evaluate_detector(y_true, scores_iforest, contamination)
     res["Algorithm"] = "Isolation Forest"
     res["Type"] = "Tree Partitioning"
-    res["Latency_ms"] = round(lat_iforest, 2)
+
     results.append(res)
 
     # 2. Local Outlier Factor
-    t0 = time.perf_counter()
-    lof = LocalOutlierFactor(n_neighbors=150, contamination=contamination, novelty=True)
+    lof = LocalOutlierFactor(n_neighbors=min(150, len(df) - 1), contamination=contamination, novelty=True)
     lof.fit(X)
     scores_lof = -lof.decision_function(X)
-    lat_lof = (time.perf_counter() - t0) * 1000
     res = evaluate_detector(y_true, scores_lof, contamination)
     res["Algorithm"] = "Local Outlier Factor (LOF)"
     res["Type"] = "Density Estimation"
-    res["Latency_ms"] = round(lat_lof, 2)
+
     results.append(res)
 
     # 3. Robust Mahalanobis
-    t0 = time.perf_counter()
     lw = LedoitWolf(assume_centered=False)
     lw.fit(X)
     cov_inv = lw.get_precision()
     mean_vec = lw.location_
     scores_mahal = np.array([mahalanobis(x, mean_vec, cov_inv) for x in X])
-    lat_mahal = (time.perf_counter() - t0) * 1000
     res = evaluate_detector(y_true, scores_mahal, contamination)
     res["Algorithm"] = "Robust Mahalanobis"
     res["Type"] = "Ellipsoidal Distance"
-    res["Latency_ms"] = round(lat_mahal, 2)
+
     results.append(res)
 
-    # PyOD Baselines
+    # PyOD baselines are optional. Run independently so one incompatible model
+    # cannot hide the results of other installed baselines.
     try:
         from pyod.models.hbos import HBOS
         from pyod.models.cblof import CBLOF
         from pyod.models.pca import PCA as PyODPCA
         from pyod.models.knn import KNN
-
-        # 4. HBOS
-        t0 = time.perf_counter()
-        hbos = HBOS(contamination=contamination)
-        hbos.fit(X)
-        scores_hbos = hbos.decision_scores_
-        lat_hbos = (time.perf_counter() - t0) * 1000
-        res = evaluate_detector(y_true, scores_hbos, contamination)
-        res["Algorithm"] = "HBOS"
-        res["Type"] = "Histogram / Fast Density"
-        res["Latency_ms"] = round(lat_hbos, 2)
-        results.append(res)
-
-        # 5. CBLOF
-        t0 = time.perf_counter()
-        cblof = CBLOF(contamination=contamination, random_state=42, n_clusters=8)
-        cblof.fit(X)
-        scores_cblof = cblof.decision_scores_
-        lat_cblof = (time.perf_counter() - t0) * 1000
-        res = evaluate_detector(y_true, scores_cblof, contamination)
-        res["Algorithm"] = "CBLOF"
-        res["Type"] = "Clustering Outlier"
-        res["Latency_ms"] = round(lat_cblof, 2)
-        results.append(res)
-
-        # 6. PCA Reconstruction Error
-        t0 = time.perf_counter()
-        pca_model = PyODPCA(contamination=contamination, random_state=42)
-        pca_model.fit(X)
-        scores_pca = pca_model.decision_scores_
-        lat_pca = (time.perf_counter() - t0) * 1000
-        res = evaluate_detector(y_true, scores_pca, contamination)
-        res["Algorithm"] = "PCA"
-        res["Type"] = "Linear Subspace Projection"
-        res["Latency_ms"] = round(lat_pca, 2)
-        results.append(res)
-
-        # 7. KNN
-        t0 = time.perf_counter()
-        knn_model = KNN(contamination=contamination, n_neighbors=15)
-        knn_model.fit(X)
-        scores_knn = knn_model.decision_scores_
-        lat_knn = (time.perf_counter() - t0) * 1000
-        res = evaluate_detector(y_true, scores_knn, contamination)
-        res["Algorithm"] = "k-NN"
-        res["Type"] = "Distance to k-th Neighbor"
-        res["Latency_ms"] = round(lat_knn, 2)
-        results.append(res)
-
-    except Exception as e:
-        print(f"Note: PyOD extra models skipped due to {e}")
+    except ImportError as exc:
+        print(f"Note: PyOD baselines unavailable: {exc}")
+    else:
+        pyod_detectors = [
+            ("HBOS", "Histogram / Fast Density", lambda: HBOS(contamination=contamination)),
+            (
+                "CBLOF",
+                "Clustering Outlier",
+                lambda: CBLOF(
+                    contamination=contamination,
+                    random_state=random_state,
+                    n_clusters=min(8, len(df)),
+                ),
+            ),
+            (
+                "PCA",
+                "Linear Subspace Projection",
+                lambda: PyODPCA(contamination=contamination, random_state=random_state),
+            ),
+            (
+                "k-NN",
+                "Distance to k-th Neighbor",
+                lambda: KNN(contamination=contamination, n_neighbors=min(15, len(df) - 1)),
+            ),
+        ]
+        for algorithm, detector_type, make_detector in pyod_detectors:
+            try:
+                detector = make_detector()
+                detector.fit(X)
+                res = evaluate_detector(y_true, detector.decision_scores_, contamination)
+                res["Algorithm"] = algorithm
+                res["Type"] = detector_type
+                results.append(res)
+            except (ValueError, TypeError, RuntimeError) as exc:
+                print(f"Note: {algorithm} baseline skipped: {exc}")
 
     # 8. Blended Ensemble (Variance-standardized meta-ensemble matching production models.py)
-    t0 = time.perf_counter()
     z_if = (scores_iforest - np.mean(scores_iforest)) / (np.std(scores_iforest) if np.std(scores_iforest) > 1e-8 else 1.0)
     z_lof = (scores_lof - np.mean(scores_lof)) / (np.std(scores_lof) if np.std(scores_lof) > 1e-8 else 1.0)
     z_mah = (scores_mahal - np.mean(scores_mahal)) / (np.std(scores_mahal) if np.std(scores_mahal) > 1e-8 else 1.0)
     blended_z = (z_if + z_lof + z_mah) / 3.0
     mn, mx = np.min(blended_z), np.max(blended_z)
     scores_ensemble = (blended_z - mn) / (mx - mn if mx > mn else 1.0)
-    lat_ens = lat_iforest + lat_lof + lat_mahal
     res = evaluate_detector(y_true, scores_ensemble, contamination)
     res["Algorithm"] = "3-Model Ensemble (Proposed)"
     res["Type"] = "Blended Meta-Ensemble"
-    res["Latency_ms"] = round(lat_ens, 2)
+
     results.append(res)
 
     out_df = pd.DataFrame(results)
     # Order columns
-    cols = ["Algorithm", "Type", "ROC_AUC", "PR_AUC", "F1_Score", "Precision", "Recall", "Latency_ms"]
+    cols = ["Algorithm", "Type", "ROC_AUC", "PR_AUC", "F1_Score", "Precision", "Recall"]
     out_df = out_df[cols].sort_values("ROC_AUC", ascending=False).reset_index(drop=True)
     
     out_csv = os.path.join(outdir, "model_comparison.csv")
@@ -186,9 +182,10 @@ def main():
     parser = argparse.ArgumentParser(description="SIH26146 — Model Comparison Benchmark")
     parser.add_argument("--features", type=str, default="data/features.csv", help="path to features.csv")
     parser.add_argument("--outdir", type=str, default="reports", help="output directory")
+    parser.add_argument("--seed", type=int, default=42, help="random seed")
     args = parser.parse_args()
 
-    res_df = run_comparison(args.features, args.outdir)
+    res_df = run_comparison(args.features, args.outdir, args.seed)
 
     print("=" * 80)
     print("SIH26146 — Anomaly Detection Model Benchmark Table (Ground Truth Evaluation)")

@@ -8,18 +8,18 @@ investigator-ready alert explanations.
 """
 
 import os
-os.environ["MPLCONFIGDIR"] = "/tmp/mpl_config"
+import tempfile
+
+os.environ.setdefault("MPLCONFIGDIR", os.path.join(tempfile.gettempdir(), "sih26146-matplotlib"))
 
 import argparse
 import json
-import warnings
+
 from typing import List, Dict, Any, Optional
 import joblib
 import numpy as np
 import pandas as pd
 import shap
-
-warnings.filterwarnings('ignore')
 
 from models import FEATURE_COLS
 
@@ -86,14 +86,41 @@ def generate_shap_explanations(
 ) -> Dict[str, Any]:
     os.makedirs(outdir, exist_ok=True)
     df = pd.read_csv(scored_csv)
-    models_bundle = joblib.load(artifacts_joblib)
-    
+    artifact_path = os.path.realpath(artifacts_joblib)
+    trusted_root = os.path.realpath(os.path.dirname(scored_csv))
+    if os.path.commonpath([artifact_path, trusted_root]) != trusted_root:
+        raise ValueError("Model artifact must be inside the trusted pipeline data directory")
+    if not os.path.isfile(artifact_path):
+        raise FileNotFoundError(f"Required model artifact '{artifact_path}' does not exist")
+
+    # joblib uses pickle semantics; only pipeline-generated local artifacts are trusted.
+    models_bundle = joblib.load(artifact_path)
+    required_bundle_keys = {"scaler", "iso_forest", "feature_cols"}
+    missing_keys = sorted(required_bundle_keys.difference(models_bundle))
+    if missing_keys:
+        raise ValueError(f"Model artifact is missing keys: {', '.join(missing_keys)}")
+
     scaler = models_bundle["scaler"]
     iso_forest = models_bundle["iso_forest"]
     feature_cols = models_bundle["feature_cols"]
 
-    X_raw = df[feature_cols].fillna(0.0).values
+    if list(feature_cols) != list(FEATURE_COLS):
+        raise ValueError("Model artifact feature columns do not match the current pipeline schema")
+    required_columns = {"wallet_address", "composite_risk_score", "risk_band", "confidence_score", *feature_cols}
+    missing_columns = sorted(required_columns.difference(df.columns))
+    if missing_columns:
+        raise ValueError(f"Scored entity data is missing required columns: {', '.join(missing_columns)}")
+    if df.empty:
+        raise ValueError("SHAP explanation requires at least one scored entity")
+    if df["wallet_address"].duplicated().any():
+        raise ValueError("Scored entity data contains duplicate wallet addresses")
+
+    X_raw = df[feature_cols].apply(pd.to_numeric, errors="raise").fillna(0.0).to_numpy(dtype=float)
+    if not np.isfinite(X_raw).all():
+        raise ValueError("SHAP features must contain only finite numeric values")
     X_scaled = scaler.transform(X_raw)
+    if not np.isfinite(X_scaled).all():
+        raise ValueError("Scaled SHAP features contain non-finite values")
 
     # Compute SHAP values with TreeExplainer
     try:
@@ -175,11 +202,14 @@ def main():
     for g in global_top[:5]:
         print(f"  - {g['feature']:25}: {g['importance']:.4f}")
     
-    print("Sample Top Flagged Plain Language Explanation:")
-    sample_wallet = list(explanations.keys())[0]
-    sample = explanations[sample_wallet]
-    print(f"Wallet: {sample_wallet} (Risk: {sample['composite_risk_score']} - {sample['risk_band']})")
-    print(f"Text:   {sample['plain_language_explanation']}")
+    if explanations:
+        print("Sample Top Flagged Plain Language Explanation:")
+        sample_wallet = next(iter(explanations))
+        sample = explanations[sample_wallet]
+        print(f"Wallet: {sample_wallet} (Risk: {sample['composite_risk_score']} - {sample['risk_band']})")
+        print(f"Text:   {sample['plain_language_explanation']}")
+    else:
+        print("No explanations generated.")
     print(f"Wrote:  {os.path.join(args.outdir, 'explanations.json')}")
 
 if __name__ == "__main__":

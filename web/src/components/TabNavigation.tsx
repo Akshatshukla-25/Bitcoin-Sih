@@ -7,7 +7,17 @@ import { usePathname, useSearchParams } from "next/navigation";
 export default function TabNavigation() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const queryString = searchParams.toString() ? `?${searchParams.toString()}` : "";
+  const withPreservedParams = (href: string) => {
+    const [path, ownQuery = ""] = href.split("?");
+    const merged = new URLSearchParams(searchParams.toString());
+    const owned = new URLSearchParams(ownQuery);
+    if (path !== "/dashboard/network") {
+      merged.delete("scope");
+    }
+    owned.forEach((value, key) => merged.set(key, value));
+    const query = merged.toString();
+    return query ? `${path}?${query}` : path;
+  };
 
   let activeWallet = searchParams.get("wallet") || "";
   if (!activeWallet && pathname.startsWith("/dashboard/cases/")) {
@@ -45,13 +55,14 @@ export default function TabNavigation() {
   };
 
   return (
-    <div className="flex items-center gap-6 border-b border-[#1F2A44] overflow-x-auto">
+    <nav aria-label="Dashboard sections" className="flex items-center gap-6 border-b border-[#1F2A44] overflow-x-auto">
       {tabs.map((tab) => {
         const active = isTabActive(tab);
         return (
           <Link
             key={tab.href}
-            href={`${tab.href}${queryString}`}
+            href={withPreservedParams(tab.href)}
+            aria-current={active ? "page" : undefined}
             className={`text-xs font-mono font-medium pb-3 border-b-2 whitespace-nowrap transition-all ${
               active
                 ? "border-[#C8973B] text-[#C8973B] font-bold"
@@ -62,6 +73,6 @@ export default function TabNavigation() {
           </Link>
         );
       })}
-    </div>
+    </nav>
   );
 }

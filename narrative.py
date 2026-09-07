@@ -16,6 +16,7 @@ Supports:
 """
 
 import argparse
+from collections import defaultdict
 import json
 import os
 from datetime import datetime, timezone
@@ -68,18 +69,18 @@ def generate_template_narrative(row: Dict[str, Any], explanation: Dict[str, Any]
         typologies.append(
             f"Rapid fund drain signature observed: {fwd_10m:.1%} of total received balance was forwarded within 10 minutes of receipt "
             f"(rising to {fwd_30m:.1%} within 30 minutes) on a newly generated address active for only {age_h:.2f} hours. "
-            f"This velocity profile is strongly indicative of ransomware extortion cash-out or automated theft extraction."
+            f"This velocity profile warrants review for possible automated cash-out or theft-related extraction."
         )
     if "PEEL_CHAIN" in reasons:
         typologies.append(
             f"Flow structure matches a peeling chain layering sequence with an average hop interval of {row.get('avg_hop_interval_mins', 0):.1f} "
-            f"minutes and a {row.get('peel_skim_ratio', 0):.1%} skim per hop, designed to obscure source provenance through incremental hops."
+            f"minutes and a {row.get('peel_skim_ratio', 0):.1%} skim per hop, a pattern that can complicate provenance tracing."
         )
     if "CROSS_BORDER_HOP" in reasons:
         typologies.append(
             f"Network-layer telemetry detected cross-border IP routing spanning {int(row.get('unique_countries_count', 1))} geographic "
-            f"jurisdictions and {int(row.get('unique_asns_count', 1))} ASNs within a condensed transaction window, indicating intentional "
-            f"geopolitical hopping or multi-relay proxy obfuscation."
+            f"jurisdictions and {int(row.get('unique_asns_count', 1))} ASNs within a condensed transaction window, which may reflect "
+            f"multi-relay routing or proxy use and requires corroboration."
         )
     if "NEW_WALLET_HIGH_VOLUME" in reasons:
         typologies.append(
@@ -93,10 +94,12 @@ def generate_template_narrative(row: Dict[str, Any], explanation: Dict[str, Any]
             "The entity displayed severe anomalous deviations in graph flow betweenness centrality and transaction timing entropy relative to population baselines."
         )
 
-    # Recommendation
+    # These outputs are investigative leads, not legal conclusions or automatic
+    # enforcement decisions; a trained analyst must corroborate the evidence.
     p3 = (
-        f"RECOMMENDATION: File Suspicious Transaction Report (STR/SAR) under PMLA/AML guidelines. Immediate freeze and monitoring "
-        f"of counterparties within entity cluster {cluster_id} is advised. Subpoena logs from ISP {asn} regarding broadcast nodes."
+        f"RECOMMENDATION: Prioritize entity cluster {cluster_id} for analyst review, corroborate the detected signals against "
+        f"authoritative blockchain and network records, and consider an STR/SAR filing under applicable AML procedures if the "
+        f"review confirms suspicion. Any preservation request or action involving provider {asn} requires appropriate legal authority."
     )
     narrative_paragraphs.append(p3)
 
@@ -106,14 +109,17 @@ def generate_sar_export_document(
     wallet: str,
     row: Dict[str, Any],
     explanation: Dict[str, Any],
-    narrative_text: str
+    narrative_text: str,
+    generated_at: datetime,
 ) -> Dict[str, Any]:
-    """Builds a standardized SAR/STR JSON export package for investigative handoff."""
-    now = datetime.now(timezone.utc)
+    """Build a deterministic draft SAR/STR package for investigative handoff."""
+    if generated_at.tzinfo is None:
+        generated_at = generated_at.replace(tzinfo=timezone.utc)
+    generated_at = generated_at.astimezone(timezone.utc)
     return {
         "report_type": "SUSPICIOUS_ACTIVITY_REPORT_STR_SAR",
-        "report_id": f"SAR-NTRO-{now.year}-{wallet[:8].upper()}",
-        "timestamp_utc": now.isoformat(),
+        "report_id": f"SAR-NTRO-{generated_at.year}-{wallet[:8].upper()}",
+        "timestamp_utc": generated_at.isoformat(),
         "agency": "National Technical Research Organisation (NTRO) / FIU-IND Reference",
         "investigation_case": "SIH26146-BITCOIN-TRAFFIC-MONITOR",
         "subject_entity": {
@@ -138,7 +144,8 @@ def generate_sar_export_document(
             "top_shap_features": explanation.get("top_features", []),
         },
         "forensic_investigator_narrative": narrative_text,
-        "recommended_action": "FIU-IND STR Filing & Exchange Hot-Wallet Blacklisting"
+        "recommended_action": "Analyst review and corroboration; consider STR/SAR filing if warranted",
+        "disclaimer": "Draft investigative aid generated from synthetic/offline analytical data; not a legal conclusion or automatic enforcement directive.",
     }
 
 def cache_top_narratives(
@@ -147,20 +154,66 @@ def cache_top_narratives(
     outdir: str = "data",
     top_n: int = 50
 ) -> Dict[str, Any]:
+    if top_n < 0:
+        raise ValueError("top_n must be zero or greater")
     os.makedirs(outdir, exist_ok=True)
     df = pd.read_csv(scored_csv)
+    required_columns = {"wallet_address", "composite_risk_score", "risk_band"}
+    missing = sorted(required_columns.difference(df.columns))
+    if missing:
+        raise ValueError(f"Scored entity data is missing required columns: {', '.join(missing)}")
     with open(explanations_json) as f:
         exp_data = json.load(f)
     
+    if not isinstance(exp_data, dict) or not isinstance(exp_data.get("entities", {}), dict):
+        raise ValueError("Explanations JSON must contain an object-valued 'entities' field")
+
     entities_exp = exp_data.get("entities", {})
     cached = {}
+
+    # Source timestamps are deterministic pipeline evidence; resolve authentic transaction timestamps
+    # from transactions.json when available instead of falling back to the 1970 Unix epoch.
+    transactions_path = os.path.join(outdir, "transactions.json")
+    if not os.path.exists(transactions_path):
+        transactions_path = os.path.join(os.path.dirname(scored_csv), "transactions.json")
+
+    tx_wallet_timestamps = defaultdict(list)
+    dataset_timestamps = []
+    if os.path.exists(transactions_path):
+        try:
+            with open(transactions_path, "r", encoding="utf-8") as handle:
+                transactions = json.load(handle)
+            for tx in transactions:
+                ts = tx.get("timestamp")
+                if ts:
+                    dataset_timestamps.append(ts)
+                    for item in tx.get("input_wallet_addresses", []):
+                        tx_wallet_timestamps[item.get("address")].append(ts)
+                    for item in tx.get("output_wallet_addresses", []):
+                        tx_wallet_timestamps[item.get("address")].append(ts)
+        except Exception:
+            pass
+
+    if dataset_timestamps:
+        default_generated_at = pd.to_datetime(max(dataset_timestamps), utc=True).to_pydatetime()
+    elif "last_active" in df.columns and not df.empty:
+        default_generated_at = pd.to_datetime(df["last_active"], utc=True, errors="coerce").max().to_pydatetime()
+    elif "first_active" in df.columns and not df.empty:
+        default_generated_at = pd.to_datetime(df["first_active"], utc=True, errors="coerce").max().to_pydatetime()
+    else:
+        default_generated_at = datetime(2025, 2, 1, tzinfo=timezone.utc)
 
     top_df = df.head(top_n)
     for _, row in top_df.iterrows():
         wallet = row["wallet_address"]
         exp = entities_exp.get(wallet, {"reason_codes": [], "top_features": []})
         narrative = generate_template_narrative(dict(row), exp)
-        sar_doc = generate_sar_export_document(wallet, dict(row), exp, narrative)
+        wallet_timestamps = tx_wallet_timestamps.get(wallet, [])
+        if wallet_timestamps:
+            wallet_generated_at = pd.to_datetime(max(wallet_timestamps), utc=True).to_pydatetime()
+        else:
+            wallet_generated_at = default_generated_at
+        sar_doc = generate_sar_export_document(wallet, dict(row), exp, narrative, wallet_generated_at)
         cached[wallet] = {
             "narrative": narrative,
             "sar_document": sar_doc,
@@ -186,9 +239,12 @@ def main():
     print("SIH26146 Part 3 — narrative.py summary")
     print("=" * 60)
     print(f"Pre-cached forensic narratives for top {len(cached)} flagged entities.")
-    sample_wallet = list(cached.keys())[0]
-    print(f"\nSample Forensic Case Narrative for Top Entity ({sample_wallet}):\n")
-    print(cached[sample_wallet]["narrative"])
+    if cached:
+        sample_wallet = next(iter(cached))
+        print(f"\nSample Forensic Case Narrative for Top Entity ({sample_wallet}):\n")
+        print(cached[sample_wallet]["narrative"])
+    else:
+        print("No narratives generated: no entities were selected.")
     print(f"\nWrote: {os.path.join(args.outdir, 'cached_narratives.json')}")
 
 if __name__ == "__main__":

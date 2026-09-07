@@ -23,7 +23,6 @@ interface ModelInsightsProps {
       ROC_AUC: number;
       PR_AUC: number;
       F1_Score: number;
-      Latency_ms: number;
     }>;
     distributions: Array<{
       model_key: string;
@@ -215,7 +214,6 @@ export default function ModelInsightsView({ data }: ModelInsightsProps) {
                 <th className="p-3">ROC-AUC</th>
                 <th className="p-3">PR-AUC</th>
                 <th className="p-3">F1-Score</th>
-                <th className="p-3">Latency (ms)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1F2A44]">
@@ -240,7 +238,6 @@ export default function ModelInsightsView({ data }: ModelInsightsProps) {
                   </td>
                   <td className="p-3">{Number(row.PR_AUC).toFixed(4)}</td>
                   <td className="p-3">{Number(row.F1_Score).toFixed(4)}</td>
-                  <td className="p-3 text-[#94A3B8]">{Number(row.Latency_ms).toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>

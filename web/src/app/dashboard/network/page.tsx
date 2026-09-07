@@ -1,19 +1,9 @@
 import React from "react";
 import { fetchApi } from "@/lib/api";
-import NetworkGraphView from "@/components/NetworkGraphView";
+import NetworkGraphView, { NetworkData } from "@/components/NetworkGraphView";
 
 export const dynamic = "force-dynamic";
 
-interface NetworkResponse {
-  scope: string;
-  selected_wallet: string;
-  wallet_options?: Array<{ wallet: string; score: number; band: string }>;
-  node_count: number;
-  edge_count: number;
-  nodes: any[];
-  links: any[];
-  legend: any[];
-}
 
 interface NetworkPageProps {
   searchParams?: {
@@ -26,9 +16,9 @@ export default async function NetworkPage({ searchParams }: NetworkPageProps) {
   const scope = searchParams?.scope === "ego" ? "ego" : "top30";
   const wallet = searchParams?.wallet || "";
 
-  let initialData: NetworkResponse = {
+  let initialData: NetworkData = {
     scope,
-    selected_wallet: wallet,
+    selected_wallet: wallet || null,
     node_count: 0,
     edge_count: 0,
     nodes: [],
@@ -36,14 +26,15 @@ export default async function NetworkPage({ searchParams }: NetworkPageProps) {
     legend: [],
   };
 
+  let initialError: string | null = null;
   try {
     const endpoint =
       scope === "ego" && wallet
         ? `/api/network?scope=ego&wallet=${encodeURIComponent(wallet)}`
         : `/api/network?scope=top30`;
-    initialData = await fetchApi<NetworkResponse>(endpoint);
+    initialData = await fetchApi<NetworkData>(endpoint);
   } catch (err) {
-    console.error("Failed to load initial network graph:", err);
+    initialError = err instanceof Error ? err.message : "Unable to load network graph.";
   }
 
   return (
@@ -57,7 +48,7 @@ export default async function NetworkPage({ searchParams }: NetworkPageProps) {
         </div>
       </div>
 
-      <NetworkGraphView initialData={initialData} />
+      <NetworkGraphView initialData={initialData} initialError={initialError} />
     </div>
   );
 }

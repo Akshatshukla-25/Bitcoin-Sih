@@ -1,8 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
-from typing import Dict, Any
-import json
-import pandas as pd
+from datetime import datetime, timezone
+import re
 from api.data_loader import load_data_bundle, clean_nan
 import narrative
 
@@ -56,16 +55,28 @@ def get_case_detail(wallet_address: str):
     for tx in transactions:
         in_addrs = [inp.get("address") for inp in tx.get("input_wallet_addresses", [])]
         out_addrs = [out.get("address") for out in tx.get("output_wallet_addresses", [])]
-        if wallet_address in in_addrs or wallet_address in out_addrs:
+        if wallet_address in in_addrs:
             wallet_txs.append({
                 "txid": tx.get("txid"),
                 "timestamp": tx.get("timestamp"),
-                "amount": tx.get("total_input_amount", 0.0),
-                "direction": "OUTGOING" if wallet_address in in_addrs else "INCOMING",
+                "amount": sum(float(item["amount"]) for item in tx["input_wallet_addresses"] if item["address"] == wallet_address),
+                "direction": "OUTGOING",
                 "src_ip": tx.get("src_ip"),
                 "dst_ip": tx.get("dst_ip"),
                 "label": tx.get("_ground_truth_label", "normal")
             })
+        if wallet_address in out_addrs:
+            wallet_txs.append({
+                "txid": tx.get("txid"),
+                "timestamp": tx.get("timestamp"),
+                "amount": sum(float(item["amount"]) for item in tx["output_wallet_addresses"] if item["address"] == wallet_address),
+                "direction": "INCOMING",
+                "src_ip": tx.get("src_ip"),
+                "dst_ip": tx.get("dst_ip"),
+                "label": tx.get("_ground_truth_label", "normal")
+            })
+
+    wallet_txs.sort(key=lambda item: (str(item["timestamp"]), str(item["txid"]), item["direction"]), reverse=True)
 
     return clean_nan({
         "wallet_address": wallet_address,
@@ -104,15 +115,36 @@ def get_case_sar(wallet_address: str):
     narrative_obj = narratives_json.get(wallet_address, {})
 
     sar_doc = narrative_obj.get("sar_document")
-    if not sar_doc:
+    if not sar_doc or str(sar_doc.get("timestamp_utc", "")).startswith("1970"):
         narrative_text = narrative_obj.get("narrative", "")
         if not narrative_text:
             narrative_text = narrative.generate_template_narrative(row, exp)
-        sar_doc = narrative.generate_sar_export_document(wallet_address, row, exp, narrative_text)
+        timestamp_column = "last_active" if "last_active" in match.columns else "first_active"
+        if timestamp_column in match.columns:
+            generated_at = datetime.fromisoformat(str(row[timestamp_column])).replace(tzinfo=timezone.utc)
+        else:
+            all_transactions = data.get("transactions", [])
+            wallet_timestamps = [
+                tx["timestamp"]
+                for tx in all_transactions
+                if tx.get("timestamp") and (
+                    any(i.get("address") == wallet_address for i in tx.get("input_wallet_addresses", []))
+                    or any(o.get("address") == wallet_address for o in tx.get("output_wallet_addresses", []))
+                )
+            ]
+            if wallet_timestamps:
+                generated_at = datetime.fromisoformat(str(max(wallet_timestamps))).replace(tzinfo=timezone.utc)
+            elif all_transactions:
+                all_ts = [t["timestamp"] for t in all_transactions if t.get("timestamp")]
+                generated_at = datetime.fromisoformat(str(max(all_ts))).replace(tzinfo=timezone.utc)
+            else:
+                generated_at = datetime(2025, 2, 1, tzinfo=timezone.utc)
+        sar_doc = narrative.generate_sar_export_document(wallet_address, row, exp, narrative_text, generated_at)
 
+    safe_wallet = re.sub(r"[^A-Za-z0-9_-]", "_", wallet_address)[:32] or "UNKNOWN"
     return JSONResponse(
         content=clean_nan(sar_doc),
         headers={
-            "Content-Disposition": f'attachment; filename="SAR_CASE_{wallet_address[:10]}.json"'
+            "Content-Disposition": f'attachment; filename="SAR_CASE_{safe_wallet}.json"'
         }
     )

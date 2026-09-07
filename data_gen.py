@@ -360,6 +360,8 @@ def gen_normal_chain(used_addresses, background_wallets, wallet_regions, wallet_
 # Orchestration
 # ---------------------------------------------------------------------------
 def generate_dataset(total, seed):
+    if total < 0:
+        raise ValueError(f"Transaction count must not be negative; got {total}")
     random.seed(seed)
     np.random.seed(seed)
 

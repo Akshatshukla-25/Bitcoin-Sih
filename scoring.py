@@ -126,11 +126,43 @@ def calculate_composite_scores(
 
     df = pd.read_csv(anomaly_csv)
     clusters_df = pd.read_csv(wallet_clusters_csv)
+    required_anomaly_columns = {"wallet_address", "ensemble_anomaly_score"}
+    required_cluster_columns = {"wallet_address", "cluster_id"}
+    if missing := sorted(required_anomaly_columns - set(df.columns)):
+        raise ValueError(f"Anomaly score table is missing required columns: {', '.join(missing)}")
+    if missing := sorted(required_cluster_columns - set(clusters_df.columns)):
+        raise ValueError(f"Wallet cluster table is missing required columns: {', '.join(missing)}")
+    if df.empty:
+        raise ValueError("Anomaly score table contains no wallet rows")
+    for name, frame in (("anomaly score", df), ("wallet cluster", clusters_df)):
+        duplicates = frame["wallet_address"].duplicated(keep=False)
+        if duplicates.any():
+            sample = frame.loc[duplicates, "wallet_address"].astype(str).iloc[0]
+            raise ValueError(f"{name.title()} table contains duplicate wallet {sample!r}")
+    anomaly_scores = pd.to_numeric(df["ensemble_anomaly_score"], errors="coerce")
+    if not np.isfinite(anomaly_scores.to_numpy(dtype=float)).all():
+        raise ValueError("ensemble_anomaly_score must contain only finite numbers")
+    if not anomaly_scores.between(0.0, 1.0).all():
+        raise ValueError("ensemble_anomaly_score values must be between 0 and 1")
+    df["ensemble_anomaly_score"] = anomaly_scores
     with open(clusters_json) as f:
         clusters_meta = json.load(f)
 
     # Merge cluster ID into scored dataframe
-    df = df.merge(clusters_df[["wallet_address", "cluster_id"]], on="wallet_address", how="left")
+    df = df.merge(
+        clusters_df[["wallet_address", "cluster_id"]],
+        on="wallet_address",
+        how="left",
+        validate="one_to_one",
+    )
+    if df["cluster_id"].isna().any():
+        sample = str(df.loc[df["cluster_id"].isna(), "wallet_address"].iloc[0])
+        raise ValueError(f"No cluster mapping exists for wallet {sample!r}")
+    missing_cluster_metadata = sorted(set(df["cluster_id"]) - set(clusters_meta))
+    if missing_cluster_metadata:
+        raise ValueError(
+            f"Cluster metadata is missing IDs: {', '.join(missing_cluster_metadata[:5])}"
+        )
 
     # Calculate cluster-level risk (mean ML anomaly score per cluster)
     cluster_ml_means = df.groupby("cluster_id")["ensemble_anomaly_score"].mean().to_dict()

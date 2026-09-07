@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Download, ShieldAlert, Cpu, Network, FileText, CheckCircle2, ExternalLink } from "lucide-react";
-import NetworkGraphView from "./NetworkGraphView";
+import NetworkGraphView, { NetworkData } from "./NetworkGraphView";
 import {
   BarChart,
   Bar,
@@ -48,13 +48,18 @@ interface CaseDetailProps {
     narrative_text: string;
   };
   topWallets: string[];
-  networkData?: any;
+  networkData?: NetworkData | null;
 }
 
 export default function CaseDetailView({ caseData, topWallets, networkData }: CaseDetailProps) {
   const router = useRouter();
   const [narrativeText, setNarrativeText] = useState(caseData.narrative_text);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setNarrativeText(caseData.narrative_text);
+  }, [caseData.narrative_text, caseData.wallet_address]);
 
   const handleWalletSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = e.target.value;
@@ -64,18 +69,26 @@ export default function CaseDetailView({ caseData, topWallets, networkData }: Ca
   const handleDownloadSAR = async () => {
     try {
       setIsDownloading(true);
+      setDownloadError(null);
       const res = await fetch(`/api/cases/${encodeURIComponent(caseData.wallet_address)}/sar`);
+      if (!res.ok) {
+        const message = await res.text().catch(() => "");
+        throw new Error(message || `SAR export failed with HTTP ${res.status}`);
+      }
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
       a.download = `SAR_CASE_${caseData.wallet_address.slice(0, 10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      try {
+        document.body.appendChild(a);
+        a.click();
+      } finally {
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      }
     } catch (err) {
-      console.error("Failed to download SAR dossier:", err);
+      setDownloadError(err instanceof Error ? err.message : "Failed to download SAR dossier.");
     } finally {
       setIsDownloading(false);
     }
@@ -93,10 +106,11 @@ export default function CaseDetailView({ caseData, topWallets, networkData }: Ca
       {/* Wallet Selector Dropdown */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-lg bg-[#131B2E] border border-[#1F2A44]">
         <div className="flex items-center gap-2">
-          <label className="text-xs font-mono font-semibold text-[#94A3B8] uppercase">
+          <label htmlFor="case-wallet" className="text-xs font-mono font-semibold text-[#94A3B8] uppercase">
             Target Wallet:
           </label>
           <select
+            id="case-wallet"
             value={caseData.wallet_address}
             onChange={handleWalletSelect}
             className="bg-[#0B1220] border border-[#1F2A44] rounded px-3 py-1.5 text-xs font-mono text-[#C8973B] font-bold focus:outline-none focus:border-[#C8973B]"
@@ -220,7 +234,7 @@ export default function CaseDetailView({ caseData, topWallets, networkData }: Ca
                   tick={{ fill: "#94A3B8", fontSize: 10, fontFamily: "monospace" }}
                 />
                 <Tooltip
-                  formatter={(val: any) => [Number(val).toFixed(4), "SHAP Value"]}
+                  formatter={(val: number | string) => [Number(val).toFixed(4), "SHAP Value"]}
                   contentStyle={{ backgroundColor: "#0B1220", borderColor: "#1F2A44", color: "#E8E6DE", fontSize: "11px", fontFamily: "monospace" }}
                 />
                 <ReferenceLine x={0} stroke="#64748B" strokeWidth={1} />
@@ -339,7 +353,7 @@ export default function CaseDetailView({ caseData, topWallets, networkData }: Ca
               Law Enforcement Case Narrative (SAR / STR Package)
             </h3>
             <div className="text-xs text-[#94A3B8]">
-              Standardized evidence summary ready for submission to Financial Intelligence Unit (FIU-IND).
+              Draft investigative aid for analyst review; filing requires corroboration and authorization.
             </div>
           </div>
 
@@ -353,7 +367,10 @@ export default function CaseDetailView({ caseData, topWallets, networkData }: Ca
           </button>
         </div>
 
+        {downloadError && <div role="alert" className="text-sm text-[#E8A3A3]">{downloadError}</div>}
+        <label htmlFor="case-narrative" className="sr-only">Draft case narrative</label>
         <textarea
+          id="case-narrative"
           rows={7}
           value={narrativeText}
           onChange={(e) => setNarrativeText(e.target.value)}

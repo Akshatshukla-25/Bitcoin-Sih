@@ -25,30 +25,21 @@ Usage:
 """
 
 import argparse
-import csv
 import json
 import os
 
 import networkx as nx
 from networkx.readwrite import json_graph
 
+from transaction_schema import load_transactions_csv, validate_transactions
+
 
 def load_transactions(path):
-    with open(path, newline="") as f:
-        reader = csv.DictReader(f)
-        rows = []
-        for row in reader:
-            row["input_wallet_addresses"] = json.loads(row["input_wallet_addresses"])
-            row["output_wallet_addresses"] = json.loads(row["output_wallet_addresses"])
-            row["total_input_amount"] = float(row["total_input_amount"])
-            row["fee"] = float(row["fee"])
-            row["src_port"] = int(row["src_port"])
-            row["dst_port"] = int(row["dst_port"])
-            rows.append(row)
-    return rows
+    return load_transactions_csv(path)
 
 
 def build_graph(transactions):
+    transactions = validate_transactions(transactions)
     G = nx.MultiDiGraph()
 
     for tx in transactions:
@@ -82,6 +73,50 @@ def build_graph(transactions):
         if dst_ip not in G:
             G.add_node(dst_ip, node_type="ip")
         G.add_edge(txid, dst_ip, port=tx["dst_port"], edge_type="relays_to")
+
+    validate_graph(G, expected_transaction_count=len(transactions))
+    return G
+
+
+def validate_graph(G, expected_transaction_count=None):
+    """Reject graph artifacts that violate the documented tripartite convention."""
+    if not isinstance(G, nx.MultiDiGraph):
+        raise ValueError(f"Expected networkx.MultiDiGraph, got {type(G).__name__}")
+
+    valid_node_types = {"wallet", "transaction", "ip"}
+    for node, data in G.nodes(data=True):
+        node_type = data.get("node_type")
+        if node_type not in valid_node_types:
+            raise ValueError(f"Node {node!r} has invalid node_type {node_type!r}")
+
+    edge_conventions = {
+        "funds": ("wallet", "transaction"),
+        "pays": ("transaction", "wallet"),
+        "broadcasts": ("ip", "transaction"),
+        "relays_to": ("transaction", "ip"),
+    }
+    for source, target, key, data in G.edges(keys=True, data=True):
+        edge_type = data.get("edge_type")
+        if edge_type not in edge_conventions:
+            raise ValueError(f"Edge {(source, target, key)!r} has invalid edge_type {edge_type!r}")
+        actual = (G.nodes[source]["node_type"], G.nodes[target]["node_type"])
+        if actual != edge_conventions[edge_type]:
+            raise ValueError(
+                f"Edge {(source, target, key)!r} violates {edge_type!r} convention: {actual}"
+            )
+
+    transaction_nodes = [node for node, data in G.nodes(data=True) if data["node_type"] == "transaction"]
+    if expected_transaction_count is not None and len(transaction_nodes) != expected_transaction_count:
+        raise ValueError(
+            f"Expected {expected_transaction_count} transaction nodes, found {len(transaction_nodes)}"
+        )
+    for txid in transaction_nodes:
+        incoming_types = {data.get("edge_type") for _, _, data in G.in_edges(txid, data=True)}
+        outgoing_types = {data.get("edge_type") for _, _, data in G.out_edges(txid, data=True)}
+        if not {"funds", "broadcasts"}.issubset(incoming_types):
+            raise ValueError(f"Transaction {txid!r} is missing funds or broadcasts input edges")
+        if not {"pays", "relays_to"}.issubset(outgoing_types):
+            raise ValueError(f"Transaction {txid!r} is missing pays or relays_to output edges")
 
     return G
 

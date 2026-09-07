@@ -17,13 +17,14 @@ Outputs:
 """
 
 import argparse
-import csv
 import json
 import os
 from collections import defaultdict
 from typing import Dict, Any, List, Set, Tuple
 import networkx as nx
 import pandas as pd
+
+from transaction_schema import load_transactions_csv
 
 class UnionFind:
     """Disjoint Set Union (DSU) with path compression and union by rank."""
@@ -92,16 +93,9 @@ def perform_heuristic_clustering(transactions: List[Dict[str, Any]]) -> Tuple[Un
             # Freshness evaluated strictly prior to current transaction timestamp (no lookahead)
             fresh_indices = [idx for idx, addr in enumerate(out_addrs) if addr not in seen_addresses and addr != sender]
             
-            # Case A: Standard Change Address (exactly 1 fresh output, other output is existing counterparty)
-            if len(fresh_indices) == 1:
-                change_addr = out_addrs[fresh_indices[0]]
-                uf.union(sender, change_addr)
-                pair = tuple(sorted([sender, change_addr]))
-                if pair not in link_reasons:
-                    link_reasons[pair] = "CHANGE_ADDRESS_DETECTION"
-                    
-            # Case B: Peel-Chain Continuation (2 fresh outputs, but asymmetric forward vs skim structure)
-            elif len(fresh_indices) == 2 and sum(out_amts) > 0:
+            # Freshness alone cannot distinguish change from a new recipient, so
+            # ownership linkage is reserved for the asymmetric peel continuation case.
+            if len(fresh_indices) == 2 and sum(out_amts) > 0:
                 tot = sum(out_amts)
                 ratios = [a / tot for a in out_amts]
                 for idx, r in enumerate(ratios):
@@ -125,15 +119,21 @@ def perform_community_detection(transactions: List[Dict[str, Any]]) -> Dict[str,
     Constructs undirected co-spending & direct interaction graph and applies Louvain.
     """
     G = nx.Graph()
-    for tx in transactions:
-        inputs = [i["address"] for i in tx.get("input_wallet_addresses", [])]
-        outputs = [o["address"] for o in tx.get("output_wallet_addresses", [])]
+    ordered_transactions = sorted(
+        transactions, key=lambda tx: (tx.get("timestamp", ""), tx.get("txid", ""))
+    )
+    for tx in ordered_transactions:
+        inputs = sorted(i["address"] for i in tx.get("input_wallet_addresses", []))
+        outputs = sorted(o["address"] for o in tx.get("output_wallet_addresses", []))
         
         # Connect co-inputs
         for i in range(len(inputs)):
             G.add_node(inputs[i])
             for j in range(i + 1, len(inputs)):
-                G.add_edge(inputs[i], inputs[j], weight=2.0)
+                if G.has_edge(inputs[i], inputs[j]):
+                    G[inputs[i]][inputs[j]]["weight"] += 2.0
+                else:
+                    G.add_edge(inputs[i], inputs[j], weight=2.0)
         
         # Connect input to output
         for inp in inputs:
@@ -147,8 +147,12 @@ def perform_community_detection(transactions: List[Dict[str, Any]]) -> Dict[str,
 
     try:
         communities = nx.community.louvain_communities(G, seed=42)
+        canonical_communities = sorted(
+            (sorted(community) for community in communities),
+            key=lambda members: members[0] if members else "",
+        )
         community_map = {}
-        for comm_id, comm in enumerate(communities):
+        for comm_id, comm in enumerate(canonical_communities):
             for node in comm:
                 community_map[node] = comm_id
         return community_map
@@ -166,14 +170,7 @@ def perform_community_detection(transactions: List[Dict[str, Any]]) -> Dict[str,
 def cluster_wallets(transactions_path: str = "transactions.csv", features_path: str = "data/features.csv", outdir: str = "data"):
     os.makedirs(outdir, exist_ok=True)
     
-    # Load transactions
-    with open(transactions_path, newline="") as f:
-        reader = csv.DictReader(f)
-        transactions = []
-        for row in reader:
-            row["input_wallet_addresses"] = json.loads(row["input_wallet_addresses"])
-            row["output_wallet_addresses"] = json.loads(row["output_wallet_addresses"])
-            transactions.append(row)
+    transactions = load_transactions_csv(transactions_path)
 
     # Heuristic Clustering with Link Tracking
     uf, link_reasons = perform_heuristic_clustering(transactions)
@@ -218,7 +215,10 @@ def cluster_wallets(transactions_path: str = "transactions.csv", features_path: 
             "louvain_community_id": louvain_id,
         })
 
-    cluster_df = pd.DataFrame(wallet_cluster_records)
+    cluster_df = pd.DataFrame(
+        wallet_cluster_records,
+        columns=["wallet_address", "cluster_id", "root_address", "louvain_community_id"],
+    )
     
     # Calculate cluster stats, heuristic rationales, and confidence
     cluster_metadata = {}
@@ -270,12 +270,16 @@ def cluster_wallets(transactions_path: str = "transactions.csv", features_path: 
             "has_disagreement": has_disagreement,
         }
 
-    cluster_df["obfuscation_disagreement"] = cluster_df["cluster_id"].map(
-        lambda cid: cluster_metadata[cid]["has_disagreement"]
-    )
-    cluster_df["clustering_confidence"] = cluster_df["cluster_id"].map(
-        lambda cid: cluster_metadata[cid]["clustering_confidence"]
-    )
+    if cluster_df.empty:
+        cluster_df["obfuscation_disagreement"] = pd.Series(dtype=bool)
+        cluster_df["clustering_confidence"] = pd.Series(dtype=float)
+    else:
+        cluster_df["obfuscation_disagreement"] = cluster_df["cluster_id"].map(
+            lambda cid: cluster_metadata[cid]["has_disagreement"]
+        )
+        cluster_df["clustering_confidence"] = cluster_df["cluster_id"].map(
+            lambda cid: cluster_metadata[cid]["clustering_confidence"]
+        )
 
     csv_out = os.path.join(outdir, "wallet_clusters.csv")
     json_out = os.path.join(outdir, "clusters.json")
@@ -304,7 +308,8 @@ def main():
     print(f"Total wallets clustered: {len(cluster_df)}")
     print(f"Total unique entity clusters: {len(metadata)}")
     print(f"Multi-wallet clusters: {len(multi_wallet_clusters)}")
-    print(f"Max cluster size: {max(c['wallet_count'] for c in metadata.values())}")
+    max_cluster_size = max((c["wallet_count"] for c in metadata.values()), default=0)
+    print(f"Max cluster size: {max_cluster_size}")
     print(f"Clusters with obfuscation disagreement: {len(disagreements)}")
     print(f"Wrote: {os.path.join(args.outdir, 'wallet_clusters.csv')}")
     print(f"Wrote: {os.path.join(args.outdir, 'clusters.json')}")

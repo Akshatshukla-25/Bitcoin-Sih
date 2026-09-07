@@ -48,14 +48,16 @@ def health_check():
 @app.get("/api/download/{doc_name}")
 def download_doc(doc_name: str):
     file_map = {
-        "team-explainer": ("TEAM_EXPLAINER.md", "SIH26146_Team_Explainer.md"),
-        "human-context": ("HUMAN_CONTEXT.md", "SIH26146_Human_Context_Dossier.md"),
-        "ai-context": ("AI_CONTEXT.md", "SIH26146_AI_Context_Manual.md"),
+        "team-explainer": ("TEAM_EXPLAINER.md", "SIH26146_Team_Explainer.md", "text/markdown"),
+        "team-explainer-txt": ("TEAM_EXPLAINER.txt", "SIH26146_Team_Explainer.txt", "text/plain"),
+        "human-context": ("HUMAN_CONTEXT.md", "SIH26146_Human_Context_Dossier.md", "text/markdown"),
+        "human-context-txt": ("HUMAN_CONTEXT.txt", "SIH26146_Human_Context_Dossier.txt", "text/plain"),
+        "ai-context": ("AI_CONTEXT.md", "SIH26146_AI_Context_Manual.md", "text/markdown"),
     }
     if doc_name not in file_map:
         raise HTTPException(status_code=404, detail="Document not found")
-    src, filename = file_map[doc_name]
-    return FileResponse(src, media_type="text/markdown", filename=filename)
+    src, filename, media_type = file_map[doc_name]
+    return FileResponse(src, media_type=media_type, filename=filename)
 
 if __name__ == "__main__":
     import uvicorn

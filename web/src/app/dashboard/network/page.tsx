@@ -2,9 +2,12 @@ import React from "react";
 import { fetchApi } from "@/lib/api";
 import NetworkGraphView from "@/components/NetworkGraphView";
 
+export const dynamic = "force-dynamic";
+
 interface NetworkResponse {
   scope: string;
   selected_wallet: string;
+  wallet_options?: Array<{ wallet: string; score: number; band: string }>;
   node_count: number;
   edge_count: number;
   nodes: any[];
@@ -12,10 +15,20 @@ interface NetworkResponse {
   legend: any[];
 }
 
-export default async function NetworkPage() {
+interface NetworkPageProps {
+  searchParams?: {
+    scope?: string;
+    wallet?: string;
+  };
+}
+
+export default async function NetworkPage({ searchParams }: NetworkPageProps) {
+  const scope = searchParams?.scope === "ego" ? "ego" : "top30";
+  const wallet = searchParams?.wallet || "";
+
   let initialData: NetworkResponse = {
-    scope: "top30",
-    selected_wallet: "",
+    scope,
+    selected_wallet: wallet,
     node_count: 0,
     edge_count: 0,
     nodes: [],
@@ -24,7 +37,11 @@ export default async function NetworkPage() {
   };
 
   try {
-    initialData = await fetchApi<NetworkResponse>("/api/network?scope=top30");
+    const endpoint =
+      scope === "ego" && wallet
+        ? `/api/network?scope=ego&wallet=${encodeURIComponent(wallet)}`
+        : `/api/network?scope=top30`;
+    initialData = await fetchApi<NetworkResponse>(endpoint);
   } catch (err) {
     console.error("Failed to load initial network graph:", err);
   }

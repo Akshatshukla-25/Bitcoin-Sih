@@ -23,6 +23,8 @@ interface AlertQueueTableProps {
 
 export default function AlertQueueTable({ entities, totalMatching }: AlertQueueTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortField, setSortField] = useState<keyof Entity>("composite_risk_score");
+  const [sortAsc, setSortAsc] = useState(false);
   const pageSize = 25;
 
   if (entities.length === 0) {
@@ -32,6 +34,27 @@ export default function AlertQueueTable({ entities, totalMatching }: AlertQueueT
       </div>
     );
   }
+
+  const handleSort = (field: keyof Entity) => {
+    if (sortField === field) {
+      setSortAsc(!sortAsc);
+    } else {
+      setSortField(field);
+      setSortAsc(field === "wallet_address" || field === "dominant_country" ? true : false);
+    }
+    setCurrentPage(1);
+  };
+
+  const sortedEntities = [...entities].sort((a, b) => {
+    const valA = a[sortField];
+    const valB = b[sortField];
+    if (typeof valA === "number" && typeof valB === "number") {
+      return sortAsc ? valA - valB : valB - valA;
+    }
+    const strA = String(valA ?? "").toLowerCase();
+    const strB = String(valB ?? "").toLowerCase();
+    return sortAsc ? strA.localeCompare(strB) : strB.localeCompare(strA);
+  });
 
   const exportCSV = () => {
     const headers = [
@@ -45,7 +68,7 @@ export default function AlertQueueTable({ entities, totalMatching }: AlertQueueT
       "total_received_amount",
       "reason_codes",
     ];
-    const rows = entities.map((e) =>
+    const rows = sortedEntities.map((e) =>
       headers.map((h) => `"${(e as any)[h] ?? ""}"`).join(",")
     );
     const csvContent = [headers.join(","), ...rows].join("\n");
@@ -59,9 +82,9 @@ export default function AlertQueueTable({ entities, totalMatching }: AlertQueueT
     document.body.removeChild(link);
   };
 
-  const totalPages = Math.ceil(entities.length / pageSize);
+  const totalPages = Math.ceil(sortedEntities.length / pageSize);
   const startIdx = (currentPage - 1) * pageSize;
-  const pageItems = entities.slice(startIdx, startIdx + pageSize);
+  const pageItems = sortedEntities.slice(startIdx, startIdx + pageSize);
 
   const getBadgeClass = (band: string) => {
     switch (band) {
@@ -76,21 +99,80 @@ export default function AlertQueueTable({ entities, totalMatching }: AlertQueueT
     }
   };
 
+  const renderSortIndicator = (field: keyof Entity) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="w-3 h-3 opacity-30 group-hover:opacity-70 inline ml-1" />;
+    }
+    return (
+      <span className="text-[#C8973B] font-bold ml-1">
+        {sortAsc ? "▲" : "▼"}
+      </span>
+    );
+  };
+
   return (
     <div className="space-y-4">
       {/* Evidence-Grade Table Container */}
       <div className="border border-[#1F2A44] rounded-lg overflow-x-auto bg-[#131B2E] shadow-xl">
         <table className="w-full text-left font-mono text-xs text-[#E8E6DE] border-collapse">
           <thead>
-            <tr className="bg-[#1A2438] text-[11px] font-semibold uppercase tracking-wider text-[#94A3B8] border-b border-[#1F2A44]">
-              <th className="p-3 pl-4">Wallet Address</th>
-              <th className="p-3">Risk Score</th>
-              <th className="p-3">Band</th>
-              <th className="p-3">Confidence</th>
-              <th className="p-3">Cluster ID</th>
-              <th className="p-3">Jurisdiction</th>
-              <th className="p-3">ASN</th>
-              <th className="p-3">Volume (₿)</th>
+            <tr className="bg-[#1A2438] text-[11px] font-semibold uppercase tracking-wider text-[#94A3B8] border-b border-[#1F2A44] select-none">
+              <th
+                onClick={() => handleSort("wallet_address")}
+                className="p-3 pl-4 cursor-pointer hover:text-white group transition-colors"
+              >
+                <span>Wallet Address</span>
+                {renderSortIndicator("wallet_address")}
+              </th>
+              <th
+                onClick={() => handleSort("composite_risk_score")}
+                className="p-3 cursor-pointer hover:text-white group transition-colors"
+              >
+                <span>Risk Score</span>
+                {renderSortIndicator("composite_risk_score")}
+              </th>
+              <th
+                onClick={() => handleSort("risk_band")}
+                className="p-3 cursor-pointer hover:text-white group transition-colors"
+              >
+                <span>Band</span>
+                {renderSortIndicator("risk_band")}
+              </th>
+              <th
+                onClick={() => handleSort("confidence_score")}
+                className="p-3 cursor-pointer hover:text-white group transition-colors"
+              >
+                <span>Confidence</span>
+                {renderSortIndicator("confidence_score")}
+              </th>
+              <th
+                onClick={() => handleSort("cluster_id")}
+                className="p-3 cursor-pointer hover:text-white group transition-colors"
+              >
+                <span>Cluster ID</span>
+                {renderSortIndicator("cluster_id")}
+              </th>
+              <th
+                onClick={() => handleSort("dominant_country")}
+                className="p-3 cursor-pointer hover:text-white group transition-colors"
+              >
+                <span>Jurisdiction</span>
+                {renderSortIndicator("dominant_country")}
+              </th>
+              <th
+                onClick={() => handleSort("dominant_asn")}
+                className="p-3 cursor-pointer hover:text-white group transition-colors"
+              >
+                <span>ASN</span>
+                {renderSortIndicator("dominant_asn")}
+              </th>
+              <th
+                onClick={() => handleSort("total_received_amount")}
+                className="p-3 cursor-pointer hover:text-white group transition-colors"
+              >
+                <span>Volume (₿)</span>
+                {renderSortIndicator("total_received_amount")}
+              </th>
               <th className="p-3 pr-4">Triggered Reason Codes</th>
             </tr>
           </thead>

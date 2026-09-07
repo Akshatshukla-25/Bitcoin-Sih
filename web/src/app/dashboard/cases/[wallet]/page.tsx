@@ -1,7 +1,8 @@
-import React from "react";
 import { notFound } from "next/navigation";
 import { fetchApi } from "@/lib/api";
 import CaseDetailView from "@/components/CaseDetailView";
+
+export const dynamic = "force-dynamic";
 
 interface CaseDetailResponse {
   wallet_address: string;

@@ -1,6 +1,7 @@
-import React from "react";
 import { fetchApi } from "@/lib/api";
 import EvaluationView from "@/components/EvaluationView";
+
+export const dynamic = "force-dynamic";
 
 export default async function EvaluationPage() {
   let data = null;

@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Download, ShieldAlert, Cpu, Network, FileText, CheckCircle2 } from "lucide-react";
+import { Download, ShieldAlert, Cpu, Network, FileText, CheckCircle2, ExternalLink } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -106,10 +107,19 @@ export default function CaseDetailView({ caseData, topWallets }: CaseDetailProps
           </select>
         </div>
 
-        <div className="flex items-center gap-2 text-xs font-mono text-[#94A3B8]">
-          <span>IP: <b className="text-white">{caseData.dominant_ip}</b></span>
-          <span>•</span>
-          <span>ASN: <b className="text-white">{caseData.dominant_asn}</b></span>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 text-xs font-mono text-[#94A3B8]">
+            <span>IP: <b className="text-white">{caseData.dominant_ip}</b></span>
+            <span>•</span>
+            <span>ASN: <b className="text-white">{caseData.dominant_asn}</b></span>
+          </div>
+          <Link
+            href={`/dashboard/network?scope=ego&wallet=${encodeURIComponent(caseData.wallet_address)}`}
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#1A2438] hover:bg-[#22314E] border border-[#C8973B]/40 hover:border-[#C8973B] text-xs font-mono text-[#C8973B] font-bold transition-all shadow-[0_2px_8px_rgba(200,151,59,0.15)]"
+          >
+            <Network className="w-3.5 h-3.5" />
+            <span>View in Tripartite Graph</span>
+          </Link>
         </div>
       </div>
 
@@ -264,8 +274,23 @@ export default function CaseDetailView({ caseData, topWallets }: CaseDetailProps
               <tbody className="divide-y divide-[#1F2A44]">
                 {caseData.cluster_info.member_wallets.map((m, i) => (
                   <tr key={i} className="hover:bg-[#1A2438]/50">
-                    <td className="p-2.5 pl-3 text-[#C8973B] font-mono text-[11px] truncate">
-                      {m}
+                    <td className="p-2.5 pl-3 font-mono text-[11px] truncate">
+                      {m === caseData.wallet_address ? (
+                        <div className="text-white font-bold flex items-center justify-between">
+                          <span className="truncate">{m}</span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#C8973B]/20 text-[#C8973B] border border-[#C8973B]/40 uppercase ml-2 flex-shrink-0">
+                            Current
+                          </span>
+                        </div>
+                      ) : (
+                        <Link
+                          href={`/dashboard/cases/${encodeURIComponent(m)}`}
+                          className="text-[#C8973B] hover:text-[#DDAE55] hover:underline flex items-center justify-between group"
+                        >
+                          <span className="truncate">{m}</span>
+                          <ExternalLink className="w-3 h-3 opacity-60 group-hover:opacity-100 flex-shrink-0 ml-2" />
+                        </Link>
+                      )}
                     </td>
                   </tr>
                 ))}

@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { fetchApi } from "@/lib/api";
 
+export const dynamic = "force-dynamic";
+
 interface AlertsResponse {
   entities: Array<{ wallet_address: string }>;
 }

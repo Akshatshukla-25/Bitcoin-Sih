@@ -1,6 +1,7 @@
-import React from "react";
 import { fetchApi } from "@/lib/api";
 import ModelInsightsView from "@/components/ModelInsightsView";
+
+export const dynamic = "force-dynamic";
 
 export default async function ModelsPage() {
   let data = null;

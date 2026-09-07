@@ -3,6 +3,8 @@ import SidebarFilters from "@/components/SidebarFilters";
 import TabNavigation from "@/components/TabNavigation";
 import { fetchApi } from "@/lib/api";
 
+export const dynamic = "force-dynamic";
+
 interface AlertsResponse {
   available_countries: string[];
 }

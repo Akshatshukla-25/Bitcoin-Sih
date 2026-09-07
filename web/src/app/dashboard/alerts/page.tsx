@@ -1,7 +1,7 @@
-import React from "react";
-import Link from "next/link";
 import { fetchApi } from "@/lib/api";
 import AlertQueueTable from "@/components/AlertQueueTable";
+
+export const dynamic = "force-dynamic";
 
 interface AlertsData {
   total_matching: number;

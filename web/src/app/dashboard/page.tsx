@@ -1,6 +1,7 @@
-import React from "react";
 import { fetchApi } from "@/lib/api";
 import OverviewCharts from "@/components/OverviewCharts";
+
+export const dynamic = "force-dynamic";
 
 interface OverviewData {
   kpis: {

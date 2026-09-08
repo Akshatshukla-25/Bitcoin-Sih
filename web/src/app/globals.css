@@ -144,3 +144,42 @@ body {
 .metric-card.high-card {
   border-top-color: var(--nt-high);
 }
+
+/* Hero bento grid — 3D perspective floor and outer gradient frame */
+.grid-floor {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 260px;
+  background-image:
+    linear-gradient(to right, #1F2A44 1px, transparent 1px),
+    linear-gradient(to bottom, #1F2A44 1px, transparent 1px);
+  background-size: 48px 48px;
+  transform: perspective(500px) rotateX(60deg);
+  transform-origin: bottom;
+  -webkit-mask-image: linear-gradient(to top, black, transparent);
+  mask-image: linear-gradient(to top, black, transparent);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.hero-gradient-frame {
+  position: relative;
+}
+.hero-gradient-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(200, 151, 59, 0.5), transparent 40%, transparent 60%, rgba(139, 46, 46, 0.35));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.bento-card {
+  background: #131B2E;
+  border: 1px solid #1F2A44;
+  border-radius: 12px;
+}

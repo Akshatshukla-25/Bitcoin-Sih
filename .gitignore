@@ -4,7 +4,9 @@ __pycache__/
 *$py.class
 
 # Generated deterministic pipeline artifacts (regenerated via pipeline.py)
-data/
+data/*
+!data/ofac_crypto_addresses.csv
+!data/geoip/
 reports/
 graph.gml
 graph.json
@@ -17,6 +19,9 @@ transactions.json
 ._*
 .Spotlight-V100
 .Trashes
+
+# Temporary verification dirs
+.verify_run_*/
 
 # Virtual Environments
 .env

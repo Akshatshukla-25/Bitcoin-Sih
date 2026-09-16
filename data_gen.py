@@ -357,6 +357,38 @@ def gen_normal_chain(used_addresses, background_wallets, wallet_regions, wallet_
 
 
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Planted OFAC-sanctioned addresses (Prompt 1 of 4: OFAC Cross-Referencing)
+# The following 10 Bitcoin addresses are from data/ofac_crypto_addresses.csv
+# and are planted directly into the wallet pool so they appear in generated
+# transactions and trigger sanctions flags during downstream screening:
+#
+# 1. 124ASTydd2hpRMn5gu98iVnm57JxeEp2Sj  - Lazarus Group (DPRK, 2019-09-13)
+# 2. 1P5ZEDWTKTFGxQjZphgWPQUpe554WKDfHQ  - Lazarus Group (DPRK, 2020-03-02)
+# 3. 12QtD5BFwRsdNsymqfDGHmK81U3YgS1F9Z  - Hydra Market (RUSSIA, 2022-04-05)
+# 4. 1L1v2e5fH3Yf8aQW5p9v8rQ7w1xY3z5a7B  - Garantex Europe OU (RUSSIA, 2022-04-05)
+# 5. 385cR5DM96n1HvBDMzLHPYCW89fZAXULJP  - SUEX OTC (CYBER, 2021-09-21)
+# 6. 3LQuXMcrvd1vRwnAcVaFeHaLXY4vGphjLL  - Chatex (CYBER, 2021-11-08)
+# 7. bc1q2dssgwq48p4w6cvc3sl2t6vd5sccsc03v88480 - Sinbad.io Mixer (DPRK, 2023-11-29)
+# 8. bc1q8w4p6v7z3m8k2y5q4r9t0e1w2u3v4x5y6z7a8b - Tornado Cash Affiliated (CYBER, 2022-08-08)
+# 9. 149vaAnrA1KXtm7ne4G894JbULKqVNdZf3  - Evil Corp (CYBER, 2019-12-05)
+# 10. bc1qx982v4q9t5y8z2w3e4r5t6y7u8i9o0p1a2s3d4 - Bitzlato (RUSSIA, 2023-01-18)
+# ---------------------------------------------------------------------------
+PLANTED_OFAC_ADDRESSES = [
+    "124ASTydd2hpRMn5gu98iVnm57JxeEp2Sj",
+    "1P5ZEDWTKTFGxQjZphgWPQUpe554WKDfHQ",
+    "12QtD5BFwRsdNsymqfDGHmK81U3YgS1F9Z",
+    "1L1v2e5fH3Yf8aQW5p9v8rQ7w1xY3z5a7B",
+    "385cR5DM96n1HvBDMzLHPYCW89fZAXULJP",
+    "3LQuXMcrvd1vRwnAcVaFeHaLXY4vGphjLL",
+    "bc1q2dssgwq48p4w6cvc3sl2t6vd5sccsc03v88480",
+    "bc1q8w4p6v7z3m8k2y5q4r9t0e1w2u3v4x5y6z7a8b",
+    "149vaAnrA1KXtm7ne4G894JbULKqVNdZf3",
+    "bc1qx982v4q9t5y8z2w3e4r5t6y7u8i9o0p1a2s3d4",
+]
+
+
+# ---------------------------------------------------------------------------
 # Orchestration
 # ---------------------------------------------------------------------------
 def generate_dataset(total, seed):
@@ -369,6 +401,14 @@ def generate_dataset(total, seed):
     wallet_regions = {}
     wallet_ips = {}
     background_wallets = []
+
+    # Pre-seed wallet pool with planted OFAC-sanctioned addresses
+    for w in PLANTED_OFAC_ADDRESSES:
+        used_addresses.add(w)
+        background_wallets.append(w)
+        get_wallet_region(w, wallet_regions)
+        get_wallet_ips(w, wallet_ips, wallet_regions)
+
     num_init_wallets = min(30, max(5, total // 2))
     for _ in range(num_init_wallets):
         w = mint_wallet(used_addresses)

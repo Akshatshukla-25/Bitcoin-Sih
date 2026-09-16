@@ -39,9 +39,13 @@ FEATURE_DESCRIPTIONS = {
     "is_mixer_hub": ("mixer hub node", lambda v: "fan-out/fan-in consolidation hub"),
     "is_rapid_cashout_node": ("rapid cash-out signature", lambda v: "lump sum quick extraction"),
     "unique_counterparties": ("counterparty network breadth", lambda v: f"{int(v)} distinct counterparties"),
-    "unique_ips_count": ("associated IP count", lambda v: f"{int(v)} distinct IP addresses"),
-    "unique_countries_count": ("geographic jurisdiction span", lambda v: f"{int(v)} countries"),
-    "unique_asns_count": ("autonomous system diversity", lambda v: f"{int(v)} ASNs"),
+    "is_ofac_flagged": ("OFAC sanctions match", lambda v: "direct OFAC SDN list hit" if v else "not flagged"),
+    "has_ofac_counterparty": ("OFAC counterparty exposure", lambda v: "transacted with sanctioned address" if v else "clean"),
+    "ofac_counterparty_count": ("sanctioned counterparties", lambda v: f"{int(v)} OFAC-listed counterparties"),
+    "fee_rate_mean": ("mean fee rate", lambda v: f"{v:.6f} BTC/input"),
+    "fee_rate_zscore": ("fee rate anomaly score", lambda v: f"{v:.2f}σ from population mean"),
+    "round_output_ratio": ("round-output structuring ratio", lambda v: f"{v:.1%} of outputs are round amounts"),
+    "temporal_burst_score": ("temporal burst coefficient", lambda v: f"{v:.2f} CoV of inter-tx intervals"),
     "tx_count": ("transaction frequency", lambda v: f"{int(v)} transactions"),
     "wallet_age_hours": ("wallet entity lifespan", lambda v: f"created {v:.2f} hours before last tx"),
 }
@@ -51,6 +55,15 @@ def generate_plain_language_narrative(top_features: List[Dict[str, Any]], reason
     parts = []
     
     # Mention active reason codes first if any
+    if "OFAC_MATCH" in reason_codes:
+        entity = row.get("ofac_entity_name", "unknown entity")
+        program = row.get("ofac_program", "unknown program")
+        parts.append(f"direct OFAC sanctions match — address listed under {program} program ({entity})")
+
+    if "OFAC_COUNTERPARTY" in reason_codes:
+        count = int(row.get("ofac_counterparty_count", 1))
+        parts.append(f"transacted with {count} OFAC-sanctioned address{'es' if count > 1 else ''}")
+
     if "MIXER_FANOUT" in reason_codes:
         parts.append(f"mixer-style fanout/consolidation behavior ({int(row.get('fanout_count', 0))} out-hubs)")
     if "RAPID_CASHOUT" in reason_codes:
@@ -59,10 +72,12 @@ def generate_plain_language_narrative(top_features: List[Dict[str, Any]], reason
         parts.append(f"peel chain layering structure ({row.get('peel_skim_ratio', 0):.1%} skim per hop)")
     if "NEW_WALLET_HIGH_VOLUME" in reason_codes:
         parts.append(f"abnormal new wallet volume ({row.get('total_received_amount', 0):.2f} BTC in <{row.get('wallet_age_hours', 0):.1f}h)")
-    if "CROSS_BORDER_HOP" in reason_codes:
-        c_count = int(row.get("unique_countries_count", 1))
-        dom_c = row.get("dominant_country", "Unknown")
-        parts.append(f"cross-border IP routing ({c_count} jurisdictions including {dom_c})")
+    if "FEE_FINGERPRINT" in reason_codes:
+        zscore = row.get("fee_rate_zscore", 0)
+        parts.append(f"anomalous fee rate pattern ({abs(zscore):.1f}σ from population — consistent with mixing services)")
+    if "ROUND_OUTPUT_STRUCTURING" in reason_codes:
+        ratio = row.get("round_output_ratio", 0)
+        parts.append(f"structuring pattern detected ({ratio:.0%} of outputs are round BTC amounts)")
 
     # Add top SHAP feature contributions
     for feat in top_features[:2]:

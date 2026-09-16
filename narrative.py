@@ -35,8 +35,6 @@ def generate_template_narrative(row: Dict[str, Any], explanation: Dict[str, Any]
     band = row.get("risk_band", "UNKNOWN")
     reasons = explanation.get("reason_codes", [])
     cluster_id = row.get("cluster_id", "CLUSTER_UNKNOWN")
-    country = row.get("dominant_country", "Unknown jurisdiction")
-    asn = row.get("dominant_asn", "Unknown ASN")
     received = row.get("total_received_amount", 0.0)
     sent = row.get("total_sent_amount", 0.0)
     turnover = row.get("turnover_ratio", 0.0)
@@ -44,7 +42,6 @@ def generate_template_narrative(row: Dict[str, Any], explanation: Dict[str, Any]
     fwd_30m = row.get("forwarded_pct_30m", 0.0)
     age_h = row.get("wallet_age_hours", 0.0)
     tx_count = row.get("tx_count", 0)
-    ips_count = row.get("unique_ips_count", 1)
 
     narrative_paragraphs = []
 
@@ -53,13 +50,25 @@ def generate_template_narrative(row: Dict[str, Any], explanation: Dict[str, Any]
         f"Subject wallet entity {wallet} has been flagged at {band} risk level (Composite Risk Score: {risk_score:.1f}/100, "
         f"Confidence: {row.get('confidence_score', 0.85):.0%}) associated with entity cluster {cluster_id}. "
         f"The entity participated in {tx_count} transactions with aggregate cumulative volume of {received:.4f} BTC received "
-        f"and {sent:.4f} BTC disbursed ({turnover:.1%} turnover ratio). Primary broadcast activity originated from "
-        f"{country} via autonomous system {asn} across {ips_count} unique IP nodes."
+        f"and {sent:.4f} BTC disbursed ({turnover:.1%} turnover ratio)."
     )
     narrative_paragraphs.append(p1)
 
     # Typology Specific Analysis
     typologies = []
+    if "OFAC_MATCH" in reasons:
+        typologies.append(
+            f"CRITICAL COMPLIANCE FLAG: This address appears directly on the OFAC Specially Designated "
+            f"Nationals (SDN) list under the {row.get('ofac_program', 'UNKNOWN')} sanctions program, "
+            f"associated with entity: {row.get('ofac_entity_name', 'Unknown')}. "
+            f"Any transaction involving this address may constitute a sanctions violation under applicable law."
+        )
+    if "OFAC_COUNTERPARTY" in reasons:
+        typologies.append(
+            f"Counterparty sanctions exposure: {int(row.get('ofac_counterparty_count', 1))} direct "
+            f"transaction counterpart(ies) of this entity are listed on the OFAC SDN register, "
+            f"indicating potential facilitation of sanctioned activity."
+        )
     if "MIXER_FANOUT" in reasons:
         typologies.append(
             f"Transaction patterns exhibit strong mixer fan-out/fan-in characteristics with {int(row.get('fanout_count', 0))} "
@@ -76,11 +85,11 @@ def generate_template_narrative(row: Dict[str, Any], explanation: Dict[str, Any]
             f"Flow structure matches a peeling chain layering sequence with an average hop interval of {row.get('avg_hop_interval_mins', 0):.1f} "
             f"minutes and a {row.get('peel_skim_ratio', 0):.1%} skim per hop, a pattern that can complicate provenance tracing."
         )
-    if "CROSS_BORDER_HOP" in reasons:
+    if "FEE_FINGERPRINT" in reasons:
         typologies.append(
-            f"Network-layer telemetry detected cross-border IP routing spanning {int(row.get('unique_countries_count', 1))} geographic "
-            f"jurisdictions and {int(row.get('unique_asns_count', 1))} ASNs within a condensed transaction window, which may reflect "
-            f"multi-relay routing or proxy use and requires corroboration."
+            f"Transaction fee anomaly detected: fee rate deviates {abs(row.get('fee_rate_zscore', 0)):.1f} "
+            f"standard deviations from the population baseline, a pattern consistent with commercial "
+            f"mixing services and CoinJoin implementations."
         )
     if "NEW_WALLET_HIGH_VOLUME" in reasons:
         typologies.append(
@@ -98,8 +107,8 @@ def generate_template_narrative(row: Dict[str, Any], explanation: Dict[str, Any]
     # enforcement decisions; a trained analyst must corroborate the evidence.
     p3 = (
         f"RECOMMENDATION: Prioritize entity cluster {cluster_id} for analyst review, corroborate the detected signals against "
-        f"authoritative blockchain and network records, and consider an STR/SAR filing under applicable AML procedures if the "
-        f"review confirms suspicion. Any preservation request or action involving provider {asn} requires appropriate legal authority."
+        f"authoritative blockchain and sanctions records, and consider an STR/SAR filing under applicable AML procedures if the "
+        f"review confirms suspicion."
     )
     narrative_paragraphs.append(p3)
 
@@ -128,9 +137,10 @@ def generate_sar_export_document(
             "risk_band": str(row.get("risk_band", "UNKNOWN")),
             "composite_risk_score": float(row.get("composite_risk_score", 0.0)),
             "confidence": float(row.get("confidence_score", 0.0)),
-            "dominant_country": str(row.get("dominant_country", "Unknown")),
-            "dominant_asn": str(row.get("dominant_asn", "Unknown")),
-            "unique_ips_count": int(row.get("unique_ips_count", 1)),
+            "ofac_flagged": bool(row.get("is_ofac_flagged", False)),
+            "ofac_entity": str(row.get("ofac_entity_name", "")),
+            "ofac_program": str(row.get("ofac_program", "")),
+            "ofac_counterparty_exposure": int(row.get("ofac_counterparty_count", 0)),
             "total_received_btc": float(row.get("total_received_amount", 0.0)),
             "total_sent_btc": float(row.get("total_sent_amount", 0.0)),
             "turnover_pct": float(row.get("turnover_ratio", 0.0)) * 100,

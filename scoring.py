@@ -47,11 +47,15 @@ NEW_WALLET_MIN_VOL_BTC = 2.5      # 2.5 BTC minimum volume for fresh wallet spik
 
 # Reason Code Severity Contributions (0 - 100)
 REASON_WEIGHTS = {
+    "OFAC_MATCH": 95.0,           # near-automatic CRITICAL — direct sanctions hit
+    "OFAC_COUNTERPARTY": 45.0,    # transacted with a sanctioned address
     "MIXER_FANOUT": 45.0,
     "RAPID_CASHOUT": 45.0,
     "PEEL_CHAIN": 40.0,
     "NEW_WALLET_HIGH_VOLUME": 25.0,
-    "CROSS_BORDER_HOP": 20.0,
+    "ROUND_OUTPUT_STRUCTURING": 22.0,  # round-number output amounts (structuring signal)
+    "FEE_FINGERPRINT": 18.0,      # anomalous fee rate pattern (mixing/coinjoin signal)
+    "TEMPORAL_BURST": 15.0,       # highly bursty transaction timing
     "OBFUSCATION_DISAGREEMENT": 15.0,
 }
 
@@ -60,6 +64,14 @@ def evaluate_wallet_reason_codes(row: pd.Series, cluster_info: Dict[str, Any]) -
     reasons = []
     drain_mins = float(row.get("min_drain_minutes", -1.0))
     age_hours = float(row.get("wallet_age_hours", 99.0))
+
+    # OFAC direct match — highest priority, check first
+    if row.get("is_ofac_flagged", 0) == 1.0:
+        reasons.append("OFAC_MATCH")
+
+    # OFAC counterparty contamination
+    if row.get("ofac_counterparty_count", 0) >= 1:
+        reasons.append("OFAC_COUNTERPARTY")
 
     # 1. Mixer Fan-out / Fan-in Hub (Restricted by time window to avoid false flagging long-term hubs)
     if row.get("is_mixer_hub", 0) == 1 or (
@@ -89,11 +101,19 @@ def evaluate_wallet_reason_codes(row: pd.Series, cluster_info: Dict[str, Any]) -
     if age_hours <= NEW_WALLET_MAX_AGE_HOURS and float(row.get("total_received_amount", 0.0)) >= NEW_WALLET_MIN_VOL_BTC:
         reasons.append("NEW_WALLET_HIGH_VOLUME")
 
-    # 5. Cross-Border / Diverse ASN Hopping (Origin broadcast multi-region hopping)
-    if row.get("unique_src_countries_count", 0) >= 2 or row.get("unique_countries_count", 0) >= 3 or row.get("unique_src_asns_count", 0) >= 2:
-        reasons.append("CROSS_BORDER_HOP")
+    # 5. Fee rate anomaly (mixing/coinjoin fingerprint)
+    if abs(row.get("fee_rate_zscore", 0)) >= 2.0:
+        reasons.append("FEE_FINGERPRINT")
 
-    # 6. Obfuscation Disagreement
+    # 6. Round-number structuring
+    if row.get("round_output_ratio", 0) >= 0.5:
+        reasons.append("ROUND_OUTPUT_STRUCTURING")
+
+    # 7. Temporal burst
+    if row.get("temporal_burst_score", 0) >= 2.5:
+        reasons.append("TEMPORAL_BURST")
+
+    # 8. Obfuscation Disagreement
     if cluster_info.get("has_disagreement", False):
         reasons.append("OBFUSCATION_DISAGREEMENT")
 
@@ -194,6 +214,11 @@ def calculate_composite_scores(
         composite_risk = round(min(100.0, max(0.0, composite_risk)), 2)
         band = compute_risk_band(composite_risk)
 
+        # Hard override: OFAC-matched entities are always CRITICAL
+        if "OFAC_MATCH" in reasons:
+            composite_risk = max(composite_risk, 85.0)
+            band = "CRITICAL"
+
         # Confidence Score: Higher when ML and Structural Signals agree
         signal_agreement = 1.0 - (abs(ml_score_100 - struct_score_100) / 100.0)
         base_conf = 0.65 if band in ("HIGH", "CRITICAL") else (0.50 if band == "MEDIUM" else 0.35)
@@ -219,8 +244,9 @@ def calculate_composite_scores(
                 "reason_codes": reasons,
                 "cluster_id": cid,
                 "cluster_size": c_meta.get("wallet_count", 1),
-                "dominant_country": row.get("dominant_country", "Unknown"),
-                "dominant_asn": row.get("dominant_asn", "Unknown"),
+                "is_ofac_flagged": bool(row.get("is_ofac_flagged", 0)),
+                "ofac_entity": str(row.get("ofac_entity_name", "")),
+                "ofac_program": str(row.get("ofac_program", "")),
                 "total_volume": row.get("total_received_amount", 0.0),
                 "ground_truth_label": row.get("ground_truth_label", "normal"),
             })

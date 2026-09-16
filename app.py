@@ -409,8 +409,11 @@ filter_bands = st.sidebar.multiselect(
 
 min_score = st.sidebar.slider("MINIMUM RISK SCORE", min_value=0.0, max_value=100.0, value=35.0, step=5.0)
 
-all_countries = sorted([c for c in scored_df["dominant_country"].unique() if c and c != "Unknown"])
-selected_country = st.sidebar.selectbox("GEOGRAPHIC JURISDICTION", options=["ALL"] + all_countries, index=0)
+ofac_filter = st.sidebar.selectbox(
+    "OFAC STATUS",
+    options=["ALL", "SDN Match only", "Counterparty exposure", "Clean only"],
+    index=0
+)
 
 search_query = st.sidebar.text_input("SEARCH WALLET / CLUSTER ID", "").strip()
 
@@ -419,8 +422,14 @@ filtered_df = scored_df.copy()
 if filter_bands:
     filtered_df = filtered_df[filtered_df["risk_band"].isin(filter_bands)]
 filtered_df = filtered_df[filtered_df["composite_risk_score"] >= min_score]
-if selected_country != "ALL":
-    filtered_df = filtered_df[filtered_df["dominant_country"] == selected_country]
+if ofac_filter == "SDN Match only":
+    filtered_df = filtered_df[filtered_df.get("is_ofac_flagged", pd.Series(False, index=filtered_df.index)) == 1.0]
+elif ofac_filter == "Counterparty exposure":
+    filtered_df = filtered_df[filtered_df.get("ofac_counterparty_count", pd.Series(0, index=filtered_df.index)) > 0]
+elif ofac_filter == "Clean only":
+    is_flagged = filtered_df.get("is_ofac_flagged", pd.Series(0, index=filtered_df.index))
+    cp_count = filtered_df.get("ofac_counterparty_count", pd.Series(0, index=filtered_df.index))
+    filtered_df = filtered_df[(is_flagged == 0) & (cp_count == 0)]
 if search_query:
     filtered_df = filtered_df[
         filtered_df["wallet_address"].str.contains(search_query, case=False, na=False, regex=False) |
@@ -497,15 +506,55 @@ with tab1:
 
     c3, c4 = st.columns(2)
     with c3:
-        st.markdown("#### Top Geographic Jurisdictions (GeoIP Origin)")
-        active_country_df = filtered_df if not filtered_df.empty else scored_df
-        country_counts = active_country_df[active_country_df["dominant_country"] != "Unknown"]["dominant_country"].value_counts().reset_index().head(8)
-        country_counts.columns = ["Country", "Entities"]
-        c_chart = alt.Chart(country_counts).mark_bar(color="#3E5C76", cornerRadiusTopRight=2, cornerRadiusBottomRight=2).encode(
-            x=alt.X("Entities:Q", title="Entities"),
-            y=alt.Y("Country:N", sort="-x", title="Jurisdiction"),
-            tooltip=["Country", "Entities"]
-        ).properties(height=270)
+        st.markdown("#### OFAC Sanctions Exposure Summary")
+        ofac_direct = int((scored_df["is_ofac_flagged"] == 1.0).sum()) if "is_ofac_flagged" in scored_df.columns else 0
+        ofac_counter = int((scored_df["ofac_counterparty_count"] > 0).sum()) if "ofac_counterparty_count" in scored_df.columns else 0
+        programs = sorted(list(scored_df[scored_df["ofac_program"].notna() & (scored_df["ofac_program"] != "")]["ofac_program"].unique()))
+        programs_str = ", ".join(programs) if programs else "None"
+
+        om1, om2 = st.columns(2)
+        with om1:
+            st.html(
+                f"<div class='metric-card critical-card'>"
+                f"<div class='metric-label'>Direct SDN List Hits</div>"
+                f"<div class='metric-val' style='color:var(--nt-critical);'>{ofac_direct} <span style='font-size:14px; font-weight:400;'>Wallets</span></div>"
+                f"</div>"
+            )
+        with om2:
+            st.html(
+                f"<div class='metric-card high-card'>"
+                f"<div class='metric-label'>Counterparty Exposure</div>"
+                f"<div class='metric-val' style='color:var(--nt-high);'>{ofac_counter} <span style='font-size:14px; font-weight:400;'>Wallets</span></div>"
+                f"</div>"
+            )
+        st.html(
+            f"<div style='margin-top:8px; margin-bottom:12px; font-size:12px; color:var(--nt-text-muted);'>"
+            f"<b>Programs Triggered:</b> <span style='color:var(--nt-accent);'>{html.escape(programs_str)}</span>"
+            f"</div>"
+        )
+
+        ofac_dist = []
+        for _, r in scored_df.iterrows():
+            if r.get("is_ofac_flagged") == 1.0:
+                cat = "OFAC SDN Match"
+            elif r.get("ofac_counterparty_count", 0) > 0:
+                cat = "OFAC Counterparty"
+            else:
+                cat = "Non-Flagged"
+            ofac_dist.append({"Status": cat, "Composite Risk Score": float(r["composite_risk_score"])})
+        ofac_dist_df = pd.DataFrame(ofac_dist)
+        ofac_summary = ofac_dist_df.groupby("Status")["Composite Risk Score"].agg(["mean", "count"]).reset_index()
+        ofac_summary.columns = ["Status", "Mean Risk Score", "Count"]
+
+        c_chart = alt.Chart(ofac_summary).mark_bar(cornerRadiusTopRight=2, cornerRadiusBottomRight=2).encode(
+            x=alt.X("Mean Risk Score:Q", title="Mean Composite Risk Score (0-100)", scale=alt.Scale(domain=[0, 100])),
+            y=alt.Y("Status:N", sort=["OFAC SDN Match", "OFAC Counterparty", "Non-Flagged"], title="Sanctions Status"),
+            color=alt.Color("Status:N", scale=alt.Scale(
+                domain=["OFAC SDN Match", "OFAC Counterparty", "Non-Flagged"],
+                range=["#8B2E2E", "#C8973B", "#3E5C76"]
+            ), legend=None),
+            tooltip=["Status", alt.Tooltip("Mean Risk Score:Q", format=".1f"), "Count"]
+        ).properties(height=140)
         st.altair_chart(c_chart, width="stretch")
 
     with c4:
@@ -551,8 +600,21 @@ with tab2:
             score_val = html.escape(f"{float(r['composite_risk_score']):.1f}")
             conf_val = html.escape(f"{float(r.get('confidence_score', 0)):.0%}")
             vol_val = html.escape(f"{float(r.get('total_received_amount', 0)):.4f}")
-            country_val = html.escape(str(r.get("dominant_country", "Unknown")))
-            asn_val = html.escape(str(r.get("dominant_asn", "Unknown")))
+            if r.get("is_ofac_flagged") == 1.0:
+                ofac_val = "<span style='color:var(--nt-critical); font-weight:700;'>⚠ SDN MATCH</span>"
+            elif r.get("ofac_counterparty_count", 0) > 0:
+                cnt = int(r["ofac_counterparty_count"])
+                ofac_val = f"<span style='color:var(--nt-high); font-weight:600;'>{cnt} CP Hit{'s' if cnt > 1 else ''}</span>"
+            else:
+                ofac_val = "<span style='color:var(--nt-text-muted);'>—</span>"
+
+            zscore = float(r.get("fee_rate_zscore", 0.0))
+            if abs(zscore) >= 2.0:
+                sign = "+" if zscore > 0 else ""
+                fee_val = f"<span style='color:var(--nt-high); font-weight:600;'>{sign}{zscore:.1f}σ</span>"
+            else:
+                fee_val = "<span style='color:var(--nt-text-muted);'>—</span>"
+
             reasons_val = html.escape(str(r.get("reason_codes", "None")))
             cluster_val = html.escape(str(r.get("cluster_id", "N/A")))
 
@@ -563,8 +625,8 @@ with tab2:
                 f"<td><span class='{badge_class}'>{band}</span></td>"
                 f"<td>{conf_val}</td>"
                 f"<td>{cluster_val}</td>"
-                f"<td>{country_val}</td>"
-                f"<td>{asn_val}</td>"
+                f"<td>{ofac_val}</td>"
+                f"<td>{fee_val}</td>"
                 f"<td>{vol_val}</td>"
                 f"<td style='color:var(--nt-text-muted); font-size:11px;'>{reasons_val}</td>"
                 f"</tr>"
@@ -580,8 +642,8 @@ with tab2:
             "<th>Band</th>"
             "<th>Confidence</th>"
             "<th>Cluster ID</th>"
-            "<th>Jurisdiction</th>"
-            "<th>ASN</th>"
+            "<th>OFAC</th>"
+            "<th>Fee Anomaly</th>"
             "<th>Volume (BTC)</th>"
             "<th>Triggered Reason Codes</th>"
             "</tr></thead>"
@@ -629,7 +691,6 @@ with tab3:
             card1_class = "critical-card" if row['risk_band'] == "CRITICAL" else ("high-card" if row['risk_band'] == "HIGH" else "")
             
             cluster_id_esc = html.escape(str(row.get('cluster_id', 'N/A')))
-            country_esc = html.escape(str(row.get('dominant_country', 'N/A')))
 
             k1.html(
                 f"<div class='metric-card {card1_class}'>"
@@ -652,10 +713,30 @@ with tab3:
                 f"</div>"
             )
 
+            is_ofac = bool(row.get("is_ofac_flagged") == 1.0 or row.get("is_ofac_flagged") is True)
+            cp_count = int(row.get("ofac_counterparty_count", 0))
+            if is_ofac:
+                ofac_status_text = "⚠ SDN MATCH"
+                ofac_status_color = "var(--nt-critical)"
+                card4_class = "critical-card"
+            elif cp_count > 0:
+                ofac_status_text = f"{cp_count} Counterparty Hit{'s' if cp_count > 1 else ''}"
+                ofac_status_color = "var(--nt-high)"
+                card4_class = "high-card"
+            else:
+                ofac_status_text = "Clean"
+                ofac_status_color = "var(--nt-text-muted)"
+                card4_class = ""
+
+            ofac_prog = row.get("ofac_program") or ("Clean" if not is_ofac else "SDN")
+            ofac_entity_name = row.get("ofac_entity_name") or ""
+            sub_label = f"{ofac_prog} ({ofac_entity_name})" if ofac_entity_name else str(ofac_prog)
+
             k4.html(
-                f"<div class='metric-card'>"
-                f"<div class='metric-label'>Geographic Origin</div>"
-                f"<div class='metric-val' style='font-size:20px;'>{country_esc}</div>"
+                f"<div class='metric-card {card4_class}'>"
+                f"<div class='metric-label'>OFAC Sanctions Status</div>"
+                f"<div class='metric-val' style='font-size:18px; color:{ofac_status_color};'>{ofac_status_text}</div>"
+                f"<div style='font-size:11px; color:var(--nt-text-muted); margin-top:4px;'>{html.escape(sub_label)}</div>"
                 f"</div>"
             )
 

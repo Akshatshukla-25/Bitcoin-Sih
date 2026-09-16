@@ -13,12 +13,33 @@ MultiDiGraph (wallets, transactions, IPs) and the wallet-flow projection:
 
 import collections
 import math
+import os
 import warnings
 from collections import defaultdict
 from datetime import datetime
 from typing import Dict, Any, List
 import networkx as nx
 import numpy as np
+
+from ofac import OFACScreener
+
+_ofac_path = "data/ofac_crypto_addresses.csv"
+if not os.path.exists(_ofac_path):
+    _repo_root = os.path.dirname(os.path.abspath(__file__))
+    _ofac_path = os.path.join(_repo_root, "data", "ofac_crypto_addresses.csv")
+_ofac = OFACScreener(csv_path=_ofac_path)
+
+def _is_round_amount(amount: float) -> bool:
+    """Detect AML structuring via suspiciously round output amounts (divisible by 0.1, 0.5, 1.0 BTC)."""
+    if amount <= 0.0:
+        return False
+    for step in (0.1, 0.5, 1.0):
+        rem = amount % step
+        if rem < 0.001 or abs(step - rem) < 0.001:
+            return True
+        if abs(amount - round(amount / step) * step) < 0.001:
+            return True
+    return False
 
 # ---------------------------------------------------------------------------
 # Named Forensic Constants & Thresholds
@@ -128,15 +149,24 @@ def extract_wallet_structural_signals(transactions: List[Dict[str, Any]], G: nx.
     for tx in transactions:
         ts = parse_iso(tx["timestamp"])
         txid = tx["txid"]
-        src_ip = tx.get("src_ip", "")
-        dst_ip = tx.get("dst_ip", "")
         label = tx.get("_ground_truth_label", "normal")
 
         fee = float(tx.get("fee", 0.0))
         tot_in = max(float(tx.get("total_input_amount", 1.0)), 1e-8)
         fee_ratio = fee / tot_in
 
-        for inp in tx.get("input_wallet_addresses", []):
+        inputs = tx.get("input_wallet_addresses", [])
+        outputs = tx.get("output_wallet_addresses", [])
+        tx_size_proxy = max(len(inputs) + len(outputs), 1)
+        tx_fee_rate = fee / tx_size_proxy
+
+        has_round_output = any(_is_round_amount(float(o.get("amount", 0.0))) for o in outputs)
+        # Bitcoin transaction version and locktime: default to 0 if not present in schema
+        # (would be populated from real Bitcoin node data)
+        locktime = tx.get("locktime", tx.get("nLockTime", 0))
+        is_nonzero_locktime = (locktime != 0)
+
+        for inp in inputs:
             addr = inp["address"]
             amt = float(inp["amount"])
             all_wallets.add(addr)
@@ -144,15 +174,17 @@ def extract_wallet_structural_signals(transactions: List[Dict[str, Any]], G: nx.
                 "timestamp": ts,
                 "amount": amt,
                 "txid": txid,
-                "src_ip": src_ip,
-                "dst_ip": dst_ip,
                 "label": label,
                 "fee_ratio": fee_ratio,
-                "outputs": [o["address"] for o in tx.get("output_wallet_addresses", [])],
-                "output_amounts": [float(o["amount"]) for o in tx.get("output_wallet_addresses", [])],
+                "fee_rate": tx_fee_rate,
+                "has_round_output": has_round_output,
+                "is_nonzero_locktime": is_nonzero_locktime,
+                "inputs": [i["address"] for i in inputs],
+                "outputs": [o["address"] for o in outputs],
+                "output_amounts": [float(o["amount"]) for o in outputs],
             })
 
-        for out in tx.get("output_wallet_addresses", []):
+        for out in outputs:
             addr = out["address"]
             amt = float(out["amount"])
             all_wallets.add(addr)
@@ -160,11 +192,10 @@ def extract_wallet_structural_signals(transactions: List[Dict[str, Any]], G: nx.
                 "timestamp": ts,
                 "amount": amt,
                 "txid": txid,
-                "src_ip": src_ip,
-                "dst_ip": dst_ip,
                 "label": label,
                 "fee_ratio": fee_ratio,
-                "inputs": [i["address"] for i in tx.get("input_wallet_addresses", [])],
+                "inputs": [i["address"] for i in inputs],
+                "outputs": [o["address"] for o in outputs],
             })
 
     if all_wallets != graph_wallets:
@@ -213,12 +244,16 @@ def extract_wallet_structural_signals(transactions: List[Dict[str, Any]], G: nx.
             max_hop_interval = float(np.max(intervals))
             median_hop_interval = float(np.median(intervals))
             wallet_age_hours = (all_timestamps[-1] - all_timestamps[0]).total_seconds() / 3600.0
+            mean_interval = float(np.mean(intervals))
+            std_interval = float(np.std(intervals))
+            temporal_burst_score = float(std_interval / mean_interval) if mean_interval > 1e-6 else 0.0
         else:
             avg_hop_interval = 0.0
             min_hop_interval = 0.0
             max_hop_interval = 0.0
             median_hop_interval = 0.0
             wallet_age_hours = 0.0
+            temporal_burst_score = 0.0
 
         # Rapid drain ratios (10m, 30m, 60m, 120m) computed with running remaining attribution
         fwd_10m_vol = compute_windowed_forward_vol(in_events, out_events, DRAIN_WINDOW_10M)
@@ -255,7 +290,47 @@ def extract_wallet_structural_signals(transactions: List[Dict[str, Any]], G: nx.
 
         fanin_count = len(in_counterparties)
         fanout_count = len(out_counterparties)
-        total_counterparties = len(in_counterparties | out_counterparties)
+        all_counterparties = in_counterparties | out_counterparties
+        total_counterparties = len(all_counterparties)
+
+        # OFAC sanctions cross-reference
+        ofac_result = _ofac.screen(wallet)
+        is_ofac_flagged = 1.0 if ofac_result["is_flagged"] else 0.0
+        ofac_entity_name = ofac_result.get("entity_name") or ""
+        ofac_program = ofac_result.get("program") or ""
+
+        ofac_counterparty_count = sum(
+            1 for c in all_counterparties if _ofac.screen(c)["is_flagged"]
+        )
+        has_ofac_counterparty = 1.0 if ofac_counterparty_count > 0 else 0.0
+
+        # On-chain transaction fingerprints (fee rate, round output structuring, locktime ratio)
+        seen_out_txids = set()
+        wallet_rates = []
+        wallet_round_tx_count = 0
+        wallet_nonzero_locktime_count = 0
+        for e in out_events:
+            tx_id = e["txid"]
+            if tx_id not in seen_out_txids:
+                seen_out_txids.add(tx_id)
+                wallet_rates.append(e["fee_rate"])
+                if e.get("has_round_output"):
+                    wallet_round_tx_count += 1
+                if e.get("is_nonzero_locktime"):
+                    wallet_nonzero_locktime_count += 1
+
+        num_out_txs = len(seen_out_txids)
+        if wallet_rates:
+            fee_rate_mean = float(np.mean(wallet_rates))
+            fee_rate_std = float(np.std(wallet_rates)) if len(wallet_rates) > 1 else 0.0
+        else:
+            fee_rate_mean = 0.0
+            fee_rate_std = 0.0
+
+        round_output_ratio = float(wallet_round_tx_count) / max(num_out_txs, 1) if num_out_txs > 0 else 0.0
+        # Bitcoin transaction version and locktime: default to 0 if not present in schema
+        # (would be populated from real Bitcoin node data)
+        nonzero_locktime_ratio = float(wallet_nonzero_locktime_count) / max(num_out_txs, 1) if num_out_txs > 0 else 0.0
 
         # Mixer Hub Detection: High fanout or fanin within tight duration
         is_mixer_fanout_hub = 1.0 if (fanout_count >= MIXER_FANOUT_THRESHOLD and wallet_age_hours <= MIXER_FANOUT_MAX_AGE_HOURS) else 0.0
@@ -294,18 +369,6 @@ def extract_wallet_structural_signals(transactions: List[Dict[str, Any]], G: nx.
         if in_degree >= 1 and out_degree >= 1 and total_in_vol >= 0.5:
             if forwarded_pct_10m >= 0.85 or (forwarded_pct_30m >= 0.90 and 0.0 <= min_drain_minutes <= 15.0):
                 is_rapid_cashout_node = 1.0
-
-        unique_src_ips = set()
-        for e in out_events:
-            if e.get("src_ip"):
-                unique_src_ips.add(e["src_ip"])
-
-        unique_ips = set()
-        for e in all_events:
-            if e.get("src_ip"):
-                unique_ips.add(e["src_ip"])
-            if e.get("dst_ip"):
-                unique_ips.add(e["dst_ip"])
 
         # Ground truth label extraction with deterministic tie-breaking
         labels = [e["label"] for e in all_events if "label" in e]
@@ -348,15 +411,35 @@ def extract_wallet_structural_signals(transactions: List[Dict[str, Any]], G: nx.
             "is_mixer_intermediate": is_mixer_intermediate,
             "is_rapid_cashout_node": is_rapid_cashout_node,
             "unique_counterparties": total_counterparties,
-            "unique_ips_count": len(unique_ips),
-            "unique_src_ips_count": len(unique_src_ips),
-            "associated_ips": sorted(list(unique_ips)),
-            "associated_src_ips": sorted(list(unique_src_ips)),
             "timestamp_entropy": round(compute_timestamp_entropy(all_timestamps), 4),
             "betweenness_centrality": round(float(betweenness.get(wallet, 0.0)), 6),
             "pagerank": round(float(pagerank.get(wallet, 0.0)), 6),
             "primary_label": primary_label,
             "is_planted_anomaly": 0 if primary_label == "normal" else 1,
+            # OFAC Sanctions Cross-Reference
+            "is_ofac_flagged": is_ofac_flagged,
+            "ofac_entity_name": ofac_entity_name,
+            "ofac_program": ofac_program,
+            "has_ofac_counterparty": has_ofac_counterparty,
+            "ofac_counterparty_count": ofac_counterparty_count,
+            # On-chain Fingerprints
+            "fee_rate_mean": round(fee_rate_mean, 8),
+            "fee_rate_std": round(fee_rate_std, 8),
+            "fee_rate_zscore": 0.0,
+            "round_output_ratio": round(round_output_ratio, 4),
+            "nonzero_locktime_ratio": round(nonzero_locktime_ratio, 4),
+            "temporal_burst_score": round(temporal_burst_score, 4),
         }
+
+    # Population z-score computation for fee_rate_mean across all wallets
+    pop_fee_means = [sig["fee_rate_mean"] for sig in signals.values()]
+    pop_mean = float(np.mean(pop_fee_means)) if pop_fee_means else 0.0
+    pop_std = float(np.std(pop_fee_means)) if pop_fee_means else 0.0
+
+    for sig in signals.values():
+        if pop_std > 1e-8:
+            sig["fee_rate_zscore"] = round(float((sig["fee_rate_mean"] - pop_mean) / pop_std), 4)
+        else:
+            sig["fee_rate_zscore"] = 0.0
 
     return signals

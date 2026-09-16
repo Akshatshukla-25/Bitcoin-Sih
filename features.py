@@ -15,25 +15,48 @@ import os
 import networkx as nx
 import pandas as pd
 
-from geoip import resolve_ips
 from graph_builder import validate_graph
 from graph_signals import extract_wallet_structural_signals
+from ofac import OFACScreener
 from transaction_schema import load_transactions_csv
 
+_ofac_path = "data/ofac_crypto_addresses.csv"
+if not os.path.exists(_ofac_path):
+    _repo_root = os.path.dirname(os.path.abspath(__file__))
+    _ofac_path = os.path.join(_repo_root, "data", "ofac_crypto_addresses.csv")
+_ofac = OFACScreener(csv_path=_ofac_path)
+
 FEATURE_OUTPUT_COLUMNS = [
+    # Identity & Basic Graph Stats
     "wallet_address", "tx_count", "in_degree", "out_degree", "degree_ratio",
     "fanin_count", "fanout_count", "total_received_amount", "total_sent_amount",
-    "net_balance", "turnover_ratio", "avg_hop_interval_mins",
-    "median_hop_interval_mins", "min_hop_interval_mins", "max_hop_interval_mins",
-    "min_drain_minutes", "wallet_age_hours", "forwarded_pct_10m",
-    "forwarded_pct_30m", "forwarded_pct_60m", "forwarded_pct_120m",
+    "net_balance", "turnover_ratio",
+    
+    # Hop intervals & Timing
+    "avg_hop_interval_mins", "median_hop_interval_mins", "min_hop_interval_mins", "max_hop_interval_mins",
+    "min_drain_minutes", "wallet_age_hours", "temporal_burst_score", "timestamp_entropy",
+    
+    # Rapid Drain Percentiles
+    "forwarded_pct_10m", "forwarded_pct_30m", "forwarded_pct_60m", "forwarded_pct_120m",
+    
+    # Heuristic & Behavioral Signals
     "peel_skim_ratio", "peel_signal", "transient_velocity", "velocity_drain_score",
-    "fanout_burst_signal", "fanin_burst_signal", "is_peel_chain_node",
-    "is_mixer_hub", "is_mixer_intermediate", "is_rapid_cashout_node",
-    "unique_counterparties", "unique_ips_count", "unique_src_ips_count",
-    "unique_countries_count", "unique_src_countries_count", "unique_asns_count",
-    "unique_src_asns_count", "dominant_country", "dominant_asn", "timestamp_entropy",
-    "betweenness_centrality", "pagerank", "ground_truth_label", "is_planted_anomaly",
+    "fanout_burst_signal", "fanin_burst_signal",
+    "is_peel_chain_node", "is_mixer_hub", "is_mixer_intermediate", "is_rapid_cashout_node",
+    
+    # On-Chain Fingerprints
+    "fee_rate_mean", "fee_rate_std", "fee_rate_zscore",
+    "round_output_ratio", "nonzero_locktime_ratio",
+    
+    # OFAC Sanctions Cross-Reference
+    "is_ofac_flagged", "ofac_entity_name", "ofac_program",
+    "has_ofac_counterparty", "ofac_counterparty_count",
+    
+    # Graph Topology
+    "unique_counterparties", "betweenness_centrality", "pagerank",
+    
+    # Evaluation / Labels
+    "ground_truth_label", "is_planted_anomaly",
 ]
 
 
@@ -53,48 +76,11 @@ def build_feature_table(transactions_path: str = "transactions.csv", graph_path:
         raise ValueError(f"Unable to read graph artifact {graph_path!r}: {exc}") from exc
     validate_graph(G, expected_transaction_count=len(transactions))
 
-    # Extract graph and behavioral signals
+    # Extract graph, behavioral, and OFAC signals
     signals = extract_wallet_structural_signals(transactions, G)
-
-    # Collect all unique IPs across all wallets for batch GeoIP resolution
-    all_ips = set()
-    for s in signals.values():
-        all_ips.update(s.get("associated_ips", []))
-    
-    geo_map = resolve_ips(list(all_ips))
 
     rows = []
     for wallet, sig in signals.items():
-        ips = sig.get("associated_ips", [])
-        src_ips = sig.get("associated_src_ips", [])
-        countries = set()
-        asns = set()
-        country_counts = {}
-        src_countries = set()
-        src_asns = set()
-
-        for ip in ips:
-            g = geo_map.get(ip, {})
-            c = g.get("country", "Unknown")
-            a = g.get("asn", "Unknown")
-            if c != "Unknown":
-                countries.add(c)
-                country_counts[c] = country_counts.get(c, 0) + 1
-            if a != "Unknown":
-                asns.add(a)
-
-        for ip in src_ips:
-            g = geo_map.get(ip, {})
-            c = g.get("country", "Unknown")
-            a = g.get("asn", "Unknown")
-            if c != "Unknown":
-                src_countries.add(c)
-            if a != "Unknown":
-                src_asns.add(a)
-
-        dominant_country = sorted(country_counts.items(), key=lambda x: (-x[1], x[0]))[0][0] if country_counts else "Unknown"
-        dominant_asn = sorted(list(asns))[0] if asns else "Unknown"
-
         row = {
             "wallet_address": wallet,
             "tx_count": sig["tx_count"],
@@ -113,6 +99,8 @@ def build_feature_table(transactions_path: str = "transactions.csv", graph_path:
             "max_hop_interval_mins": sig["max_hop_interval_mins"],
             "min_drain_minutes": sig["min_drain_minutes"],
             "wallet_age_hours": sig["wallet_age_hours"],
+            "temporal_burst_score": sig["temporal_burst_score"],
+            "timestamp_entropy": sig["timestamp_entropy"],
             "forwarded_pct_10m": sig["forwarded_pct_10m"],
             "forwarded_pct_30m": sig["forwarded_pct_30m"],
             "forwarded_pct_60m": sig["forwarded_pct_60m"],
@@ -127,16 +115,17 @@ def build_feature_table(transactions_path: str = "transactions.csv", graph_path:
             "is_mixer_hub": sig["is_mixer_hub"],
             "is_mixer_intermediate": sig["is_mixer_intermediate"],
             "is_rapid_cashout_node": sig["is_rapid_cashout_node"],
+            "fee_rate_mean": sig["fee_rate_mean"],
+            "fee_rate_std": sig["fee_rate_std"],
+            "fee_rate_zscore": sig["fee_rate_zscore"],
+            "round_output_ratio": sig["round_output_ratio"],
+            "nonzero_locktime_ratio": sig["nonzero_locktime_ratio"],
+            "is_ofac_flagged": sig["is_ofac_flagged"],
+            "ofac_entity_name": sig["ofac_entity_name"],
+            "ofac_program": sig["ofac_program"],
+            "has_ofac_counterparty": sig["has_ofac_counterparty"],
+            "ofac_counterparty_count": sig["ofac_counterparty_count"],
             "unique_counterparties": sig["unique_counterparties"],
-            "unique_ips_count": sig["unique_ips_count"],
-            "unique_src_ips_count": len(src_ips),
-            "unique_countries_count": len(countries),
-            "unique_src_countries_count": len(src_countries),
-            "unique_asns_count": len(asns),
-            "unique_src_asns_count": len(src_asns),
-            "dominant_country": dominant_country,
-            "dominant_asn": dominant_asn,
-            "timestamp_entropy": sig["timestamp_entropy"],
             "betweenness_centrality": sig["betweenness_centrality"],
             "pagerank": sig["pagerank"],
             "ground_truth_label": sig["primary_label"],

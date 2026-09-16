@@ -17,7 +17,7 @@ import pandas as pd
 import numpy as np
 import altair as alt
 import networkx as nx
-from pyvis.network import Network
+from network_graph import build_network_html
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -750,79 +750,46 @@ with tab3:
 # ---------------------------------------------------------------------------
 with tab4:
     st.subheader("Network")
-    st.html("<div style='color:var(--nt-text-muted); font-size:13px; margin-top:-8px; margin-bottom:16px;'>Interactive tripartite network graph (Wallets, Transactions, Broadcast/Relay IPs).</div>")
+    st.html("<div style='color:var(--nt-text-muted); font-size:13px; margin-top:-8px; margin-bottom:16px;'>Interactive tripartite network — wallets, transactions, broadcast IPs. Click any node to inspect. Double-click to focus. Use the controls bar to search, filter, and trace paths.</div>")
 
-    net_filter = st.radio("Graph Scope:", ["Ego-Network of Selected Case", "Top 30 High-Risk Subgraph"], horizontal=True)
-    
-    net = Network(height="550px", width="100%", bgcolor="#0B1220", font_color="#E8E6DE", directed=True)
-    net.force_atlas_2based(gravity=-50, central_gravity=0.01, spring_length=100, spring_strength=0.08)
+    t4_col1, t4_col2, t4_col3 = st.columns([2, 2, 1])
+    with t4_col1:
+        net_filter = st.radio("Graph Scope", ["Top 30 High-Risk Subgraph", "Ego-Network of Selected Case"], horizontal=True, key="net_scope")
+    with t4_col2:
+        wallet_options = list(scored_df.sort_values("composite_risk_score", ascending=False)["wallet_address"])
+        ego_wallet = st.selectbox("Wallet for Ego-Network", wallet_options, key="ego_wallet_select") if net_filter == "Ego-Network of Selected Case" else None
+    with t4_col3:
+        graph_height = st.slider("Height", 480, 820, 640, 40, key="graph_height")
 
-    # Load Graph
-    graph_path = os.path.join("data", "graph.gml")
+    graph_path = "data/graph.gml"
     if os.path.exists(graph_path):
-        G = nx.read_gml(graph_path)
+        G_net = nx.read_gml(graph_path)
     else:
-        G = nx.MultiDiGraph()
+        G_net = nx.MultiDiGraph()
+        st.warning("Graph file not found — run pipeline.py first.")
 
-    scored_map = scored_df.set_index("wallet_address")["composite_risk_score"].to_dict()
-    band_map = scored_df.set_index("wallet_address")["risk_band"].to_dict()
+    scope = "ego" if net_filter == "Ego-Network of Selected Case" else "top30"
+    html_content = build_network_html(
+        G_net, scored_df,
+        scope=scope,
+        selected_wallet=ego_wallet,
+        height=graph_height,
+    )
+    components.html(html_content, height=graph_height + 10, scrolling=False)
 
-    if net_filter == "Ego-Network of Selected Case" and selected_wallet in G:
-        sub_nodes = set([selected_wallet])
-        for n1 in G.neighbors(selected_wallet):
-            sub_nodes.add(n1)
-            for n2 in G.neighbors(n1):
-                sub_nodes.add(n2)
-        sub_G = G.subgraph(sub_nodes)
-    else:
-        top_wallets_set = set(scored_df.sort_values("composite_risk_score", ascending=False).head(30)["wallet_address"])
-        sub_nodes = set(top_wallets_set)
-        for w in top_wallets_set:
-            if w in G:
-                for n in list(G.neighbors(w))[:3]:
-                    sub_nodes.add(n)
-        sub_G = G.subgraph(sub_nodes)
-
-    for node, data in sub_G.nodes(data=True):
-        ntype = data.get("node_type", "wallet")
-        if ntype == "wallet":
-            score = scored_map.get(node, 0.0)
-            band = band_map.get(node, "LOW")
-            color = "#8B2E2E" if band == "CRITICAL" else ("#B8562E" if band == "HIGH" else ("#C8973B" if band == "MEDIUM" else "#5B7A6B"))
-            net.add_node(node, label=f"{node[:6]}...", title=f"Wallet: {node} | Risk: {score:.1f} ({band})", color=color, shape="dot", size=16)
-        elif ntype == "transaction":
-            lbl = data.get("label", "")
-            color = "#7A6B8F" if lbl != "normal" else "#2E4057"
-            net.add_node(node, label=f"tx:{node[:4]}", title=f"TXID: {node} | Pattern: {lbl}", color=color, shape="square", size=10)
-        elif ntype == "ip":
-            net.add_node(node, label=node, title=f"IP Node: {node}", color="#3E5C76", shape="diamond", size=8)
-
-    for u, v, data in sub_G.edges(data=True):
-        etype = data.get("edge_type", "flow")
-        net.add_edge(u, v, title=f"{etype}", color="rgba(232, 230, 222, 0.15)", arrows="to")
-
-    html_path = "reports/network_view.html"
-    net.save_graph(html_path)
-    with open(html_path, 'r', encoding='utf-8') as f:
-        html_content = f.read()
-
-    components.html(html_content, height=580)
-    legend_html = (
-        "<div style='display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; margin-bottom: 6px; font-size: 11px; font-family: var(--nt-font-mono);'>"
-        "<span style='background: rgba(139,46,46,0.2); color: #E8A3A3; padding: 4px 9px; border: 1px solid rgba(139,46,46,0.5); border-radius: 2px;'>🔴 Critical Wallet (Score &ge; 60)</span>"
-        "<span style='background: rgba(184,86,46,0.2); color: #E8B896; padding: 4px 9px; border: 1px solid rgba(184,86,46,0.5); border-radius: 2px;'>🟠 High Risk Wallet (Score 50–59)</span>"
-        "<span style='background: rgba(200,151,59,0.2); color: #E8D4A2; padding: 4px 9px; border: 1px solid rgba(200,151,59,0.5); border-radius: 2px;'>🟡 Medium Risk Wallet (Score 35–49)</span>"
-        "<span style='background: rgba(91,122,107,0.2); color: #B3D1C2; padding: 4px 9px; border: 1px solid rgba(91,122,107,0.5); border-radius: 2px;'>🟢 Normal Wallet</span>"
-        "<span style='background: rgba(122,107,143,0.2); color: #D1C5DE; padding: 4px 9px; border: 1px solid rgba(122,107,143,0.5); border-radius: 2px;'>🟣 Anomaly Tx</span>"
-        "<span style='background: rgba(46,64,87,0.2); color: #ADC2D8; padding: 4px 9px; border: 1px solid rgba(46,64,87,0.5); border-radius: 2px;'>🔵 Normal Tx</span>"
-        "<span style='background: rgba(62,92,118,0.2); color: #A6C2DE; padding: 4px 9px; border: 1px solid rgba(62,92,118,0.5); border-radius: 2px;'>🔷 IP Node</span>"
+    st.html(
+        "<div style='display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:10px;font-family:var(--nt-font-mono);'>"
+        "<span style='background:rgba(139,46,46,0.18);color:#E8A3A3;padding:3px 8px;border:1px solid rgba(139,46,46,0.4);border-radius:4px;'>● Critical wallet (≥60)</span>"
+        "<span style='background:rgba(184,86,46,0.18);color:#E8B896;padding:3px 8px;border:1px solid rgba(184,86,46,0.4);border-radius:4px;'>● High (50–59)</span>"
+        "<span style='background:rgba(200,151,59,0.18);color:#E8CE9E;padding:3px 8px;border:1px solid rgba(200,151,59,0.4);border-radius:4px;'>● Medium (35–49)</span>"
+        "<span style='background:rgba(91,122,107,0.18);color:#B3D1C2;padding:3px 8px;border:1px solid rgba(91,122,107,0.4);border-radius:4px;'>● Low wallet</span>"
+        "<span style='background:rgba(122,107,143,0.18);color:#D1C5DE;padding:3px 8px;border:1px solid rgba(122,107,143,0.4);border-radius:4px;'>■ Anomaly Tx</span>"
+        "<span style='background:rgba(46,64,87,0.18);color:#ADC2D8;padding:3px 8px;border:1px solid rgba(46,64,87,0.4);border-radius:4px;'>■ Normal Tx</span>"
+        "<span style='background:rgba(56,189,248,0.1);color:#38BDF8;padding:3px 8px;border:1px solid rgba(56,189,248,0.3);border-radius:4px;'>◆ IP Node</span>"
+        "<span style='color:#64748B;margin-left:4px;'>Double-click node to focus · Ctrl+click to multi-select · Esc to reset</span>"
         "</div>"
     )
-    st.html(legend_html)
 
-# ---------------------------------------------------------------------------
-# TAB 5: MODEL INSIGHTS
-# ---------------------------------------------------------------------------
 with tab5:
     st.subheader("Model Insights")
     st.html("<div style='color:var(--nt-text-muted); font-size:13px; margin-top:-8px; margin-bottom:16px;'>Inspection of unsupervised anomaly detectors, cross-model agreement, and PyOD baseline benchmark.</div>")

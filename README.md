@@ -57,7 +57,7 @@ Open `http://localhost:8501` to explore the 6 interactive investigation tabs.
 
 ## Verification of Air-Gapped Offline Execution
 To verify that the system runs 100% offline without network calls:
-1. Disconnect your internet connection or run in an isolated sandbox.
+1. Disconnect your internet connection or run in an isolated sandbox
 2. Re-run `python3 pipeline.py`
 3. Launch `streamlit run app.py`
 4. Confirm instant sub-second dashboard loading from local precomputed files.
